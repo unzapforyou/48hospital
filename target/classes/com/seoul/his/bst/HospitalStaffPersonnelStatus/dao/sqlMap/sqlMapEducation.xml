@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.seoul.his.bst.HospitalStaffPersonnelStatus.dao.EducationDAO1">
+
+	<select id="findEducationList" resultType="EducaBean">
+		SELECT
+		EMP_NO AS empNo,				<!-- 사원번호 -->
+		ADM_DAY AS admDay,				<!-- 입학일 -->
+		GRADU_DAY AS graduDay,			<!-- 졸업일 -->
+		SCHOOL_NAME AS schoolName,		<!-- 학교명 -->
+		MAJOR ,							<!-- 전공 -->
+		DEGREE ,						<!-- 학위 -->
+		FIN_YN AS finYn,				<!-- 최종여부 -->
+		EDUCATION_SEQ AS educationSeq	<!-- 학력시퀀스 -->
+		FROM
+		HM_EDUCATION_INFO
+		where emp_no=#{empNo}			<!-- 사원번호 -->
+	</select>
+
+
+
+</mapper>

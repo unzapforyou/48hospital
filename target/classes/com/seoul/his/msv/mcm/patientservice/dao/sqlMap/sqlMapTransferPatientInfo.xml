@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.msv.mcm.patientservice.dao.TransferPatientInfoDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+	<resultMap type="TransferPatientInfoBean" id="TransferPatientInfo">
+		<result property="patNo" column="PAT_NO" />
+		<result property="patNm" column="PAT_NM" />
+		<result property="trmtDate" column="TRMT_DATE" />
+		<result property="trmtDept" column="TRMT_DEPT" />
+		<result property="trmtDoct" column="TRMT_DOCT" />
+		<result property="receiptDate" column="RECEIPT_DATE" />
+		<result property="dgnsNm" column="DGNS_NM" />
+		<result property="hosptlzDate" column="HOSPTLZ_DATE" />
+		<result property="hosptlzYb" column="HOSPTLZ_YB" />
+		<result property="rrn1" column="RRN1" />
+		<result property="rrn2" column="RRN2" />
+		<result property="gender" column="GENDER" />
+		<result property="age" column="AGE" />
+		<result property="tel" column="TEL" />
+		<result property="zip" column="ZIP" />
+		<result property="addr" column="ADDR" />
+		<result property="dtlAddr" column="DTL_ADDR" />
+		<result property="trmtDeptNm" column="TRMT_DEPT_NM" />
+		<result property="trmtDoctNm" column="TRMT_DOCT_NM" />
+
+ 	</resultMap>
+
+ 	  <select id="selectTransferPatInfoList" resultMap="TransferPatientInfo">
+        SELECT
+            P.PAT_NO,
+            P.PAT_NM ,
+            R.TRMT_DATE,
+            R.TRMT_DEPT,
+            FN_CM_CODE_DTL_NAME('GP080',R.TRMT_DEPT) AS TRMT_DEPT_NM,
+            R.TRMT_DOCT,
+            FN_HM_EMP(R.TRMT_DOCT) AS TRMT_DOCT_NM,
+            R.RECEIPT_DATE,
+            R.DGNS_NM,
+            R.HOSPTLZ_DATE,
+            R.HOSPTLZ_YB ,
+            P.RRN1,
+            P.RRN2,
+            P.GENDER,
+            P.AGE,
+            P.TEL,
+            P.ZIP,
+            P.ADDR,
+            P.DTL_ADDR
+        FROM
+            WS_OUTPA_RECEIPT R
+        ,   WS_PAT P
+        WHERE R.PAT_NO=P.PAT_NO
+            <if test="trmtDoct != '' and trmtDoct != null">
+                AND R.trmt_doct=#{trmtDoct}
+            </if>
+            <if test="trmtDate != '' and trmtDate != null">
+                AND R.trmt_date=#{trmtDate}
+            </if>
+        ORDER BY R.OUTPA_RECEIPT_NO
+    </select>
+
+
+</mapper>

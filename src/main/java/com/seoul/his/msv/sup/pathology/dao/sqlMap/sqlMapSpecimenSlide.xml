@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.msv.sup.pathology.dao.SpecimenSlideDAO">
+
+	<!-- 슬라이드 리스트 조회 -->
+	<select id="selectClinspeSliList" resultType="SpecimenSlideBean">
+        SELECT CLINSPE_NO,
+               CLINSPE_BLOK_CODE,
+               SLI_CODE,
+               SLI_PROD_DAY,
+               SLI_QNT,
+               SLI_CON
+          FROM SL_CLINSPE_SLI
+         WHERE CLINSPE_NO = #{clinspeNo}
+        ORDER BY CLINSPE_NO,
+               CLINSPE_BLOK_CODE,
+               SLI_CODE
+	</select>
+
+	<insert id="insertClinspeSli" parameterType="SpecimenSlideBean">
+        INSERT
+          INTO SL_CLINSPE_SLI
+               (
+                   CLINSPE_NO,
+                   CLINSPE_BLOK_CODE,
+                   SLI_CODE,
+                   SLI_PROD_DAY,
+                   SLI_QNT,
+                   SLI_CON
+               )
+               VALUES
+               (
+                   #{clinspeNo},
+                   #{clinspeBlokCode},
+                   #{sliCode},
+                   #{sliProdDay},
+                   #{sliQnt},
+                   #{sliCon}
+               )
+	</insert>
+
+	<update id="updateClinspeSli" parameterType="SpecimenSlideBean">
+        UPDATE SL_CLINSPE_SLI
+               SET CLINSPE_NO=#{clinspeNo},
+               CLINSPE_BLOK_CODE=#{clinspeBlokCode},
+               SLI_CODE=#{sliCode},
+               SLI_PROD_DAY=#{sliProdDay},
+               SLI_QNT=#{sliQnt},
+               SLI_CON=#{sliCon}
+         WHERE CLINSPE_NO=#{clinspeNo}
+               AND SLI_CODE=#{sliCode}
+	</update>
+
+	<delete id="deleteClinspeSli" parameterType="SpecimenSlideBean">
+        DELETE
+          FROM SL_CLINSPE_SLI
+         WHERE CLINSPE_NO=#{clinspeNo}
+               AND SLI_CODE = #{sliCode}
+	</delete>
+</mapper>

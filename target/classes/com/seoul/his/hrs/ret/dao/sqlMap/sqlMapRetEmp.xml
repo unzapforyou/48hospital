@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.seoul.his.hrs.ret.dao.RetEmpDAO">
+
+	<cache flushInterval="86400000" eviction="LRU" />
+
+	<select id="selectRetEmpList" flushCache="false" useCache="true"
+		resultType="RetEmpBean">
+		
+		SELECT EMP_NO as empNo
+					,EMP_NM as empNm
+					,DEPT_NM as deptNm
+					,JOBTT as jobtt
+					,JOBCL as jobcl
+					,HIRE_DIV as hireDiv
+					,HIRE_DATE as hireDate
+					,RET_DATE as retDate
+
+		FROM HM_EMP
+		
+		WHERE RET_DATE IS NOT NULL
+		
+		<if test="sDate != null">
+		AND RET_DATE
+		BETWEEN #{sDate} AND #{eDate}
+		</if>
+		
+		<if test="empNo != null">
+		AND EMP_NO
+		LIKE '%'||#{empNo}||'%'
+		</if>
+
+	</select>
+
+</mapper>

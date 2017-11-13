@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.msv.sup.bookingexam.dao.BookingExamDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+ 	<select id="selectBookingExamList" flushCache="false"  useCache="true" resultType="BookingExamBean" parameterType="map">
+		SELECT PAT_NO
+		     , PAT_NM
+		     , NEWON_GUBUN
+		     , EXAM_TYPE
+		     , RESERVATION_DATE
+		     , RESERVATION_TIME
+		     , MEMO
+		  FROM ERP48.SSP_BOOKING_EXAM
+		 WHERE PAT_NO = #{patNo}
+		       AND PAT_NM = #{patNm}
+		       <if test='newonGubun=="A"'>
+		       		AND NEWON_GUBUN IN ('F','H')
+		       </if>
+		       <if test='newonGubun=="F"'>
+		       		AND NEWON_GUBUN = 'F'
+		       </if>
+		       <if test='newonGubun=="H"'>
+		       		AND NEWON_GUBUN = 'H'
+		       </if>
+		       AND EXAM_TYPE = #{examType}
+		       <!-- AND RESERVATION_DATE = #{reservationDate} -->
+ 	</select>
+
+ 	<update id="insertBookingExam" parameterType="BookingExamBean">
+		INSERT INTO ERP48.SSP_BOOKING_EXAM
+		       (
+		           PAT_NO
+		         , PAT_NM
+		         , NEWON_GUBUN
+		         , EXAM_TYPE
+		         , RESERVATION_DATE
+		         , RESERVATION_TIME
+		         , MEMO
+		       )
+		       VALUES
+		       (
+		           #{patNo}
+		         , #{patNm}
+		         , #{newonGubun}
+		         , #{examType}
+		         , #{reservationDate}
+		         , #{reservationTime}
+		         , #{memo}
+		       )
+ 	</update>
+
+ 	<update id="updateBookingExam" parameterType="BookingExamBean">
+		UPDATE ERP48.SSP_BOOKING_EXAM
+		       SET NEWON_GUBUN =#{newonGubun}
+		     , EXAM_TYPE =#{examType}
+		     , RESERVATION_DATE =#{reservationDate}
+		     , RESERVATION_TIME =#{reservationTime}
+		     , MEMO =#{memo}
+		 WHERE PAT_NO =#{patNo}
+		       AND PAT_NM =#{patNm}
+ 	</update>
+
+</mapper>

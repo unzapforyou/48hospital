@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.hdm.foreign.dao.ReceiptInfoDAO">
+    <cache flushInterval="86400000" eviction="LRU" />
+
+        <resultMap type="ReceiptInfoBean" id="resultReceipt">
+        <result property="outpaReceiptNo"  column="OUTPA_RECEIPT_NO" />      <!--외래접수번호   -->
+        <result property="trmtDate"        column="TRMT_DATE" />             <!--진료일시       -->
+        <result property="trmtDept"        column="TRMT_DEPT" />             <!--진료과코드   -->
+        <result property="trmtDeptNm"      column="TRMT_DEPT_NM" />          <!--진료과명        -->
+        <result property="trmtDoct"        column="TRMT_DOCT" />             <!--진료의사코드   -->
+        <result property="trmtDoctNm"      column="TRMT_DOCT_NM" />          <!--진료의사명     -->
+        <result property="hosptlzYb"       column="HOSPTLZ_YB" />            <!--입원여부       -->
+        <result property="hosptlzRsvtYb"   column="HOSPTLZ_RSVT_YB" />       <!--입원예약여부   -->
+        <result property="patType"         column="PAT_TYPE" />              <!--환자유형       -->
+        <result property="trmtCostCalcuYb" column="TRMT_COST_CALCU_YB" />    <!--진찰료계산여부 -->
+        <result property="trmtYb"          column="TRMT_YB" />               <!--진료여부       -->
+        <result property="prescYb"         column="PRESC_YB" />              <!--처방여부       -->
+        <result property="regDept"         column="REG_DEPT" />              <!--등록부서       -->
+        <result property="cngDept"         column="CNG_DEPT" />              <!--변경부서       -->
+        <result property="receiptDate"     column="RECEIPT_DATE" />          <!--접수날짜       -->
+        <result property="dgnsNm"          column="DGNS_NM" />               <!--진단명         -->
+        <result property="ntTtYb"          column="NT_TT_YB" />              <!--초/재진여부    -->
+        <result property="expCd"           column="EXP_CD" />                <!--감면코드       -->
+        <result property="expNm"           column="EXP_NM" />                <!--감면명         -->
+        <result property="nwDiv"           column="NW_DIV" />                <!--내원구분       -->
+        <result property="patNo"           column="PAT_NO" />                <!--환자등록번호   -->
+        <result property="patNm"           column="PAT_NM" />                <!--환자이름       -->
+    </resultMap>
+
+        <select id="selectReceiptList" resultMap="resultReceipt">
+        SELECT
+            P.PAT_NO,
+            P.PAT_NM ,
+            R.OUTPA_RECEIPT_NO,
+            R.TRMT_DATE,
+            R.TRMT_DEPT,
+            FN_CM_CODE_DTL_NAME('GP080',R.TRMT_DEPT) AS TRMT_DEPT_NM,
+            R.TRMT_DOCT,
+            FN_HM_EMP(R.TRMT_DOCT) AS TRMT_DOCT_NM,
+            R.HOSPTLZ_YB ,
+            R.HOSPTLZ_RSVT_YB,
+            R.PAT_TYPE ,
+            R.TRMT_COST_CALCU_YB,
+            R.TRMT_YB ,
+            R.PRESC_YB ,
+            R.REG_DEPT ,
+            R.CNG_DEPT ,
+            R.RECEIPT_DATE,
+            R.DGNS_NM,
+            R.NT_TT_YB,
+            R.EXP_CD,
+            FN_CM_CODE_DTL_NAME('MD001',R.EXP_CD) AS EXP_NM,
+            R.NW_DIV,
+            R.TRMT_TIME
+        FROM
+            WS_OUTPA_RECEIPT R
+        ,   WS_PAT P
+        WHERE R.PAT_NO=P.PAT_NO
+            <if test="patNo != '' and patNo != null">
+                AND R.pat_no=#{patNo}
+            </if>
+            <if test="trmtDoct != '' and trmtDoct != null">
+                AND R.trmt_doct=#{trmtDoct}
+            </if>
+            <if test="trmtDate != '' and trmtDate != null">
+                AND R.trmt_date=#{trmtDate}
+            </if>
+        ORDER BY R.OUTPA_RECEIPT_NO 
+    </select>
+				
+    <update id="insertReceipt" parameterType="ReceiptInfoBean">
+        INSERT INTO
+        ws_outpa_receipt
+        (
+        	PAT_NO,
+            OUTPA_RECEIPT_NO,
+            TRMT_DATE ,
+            TRMT_DEPT ,
+            TRMT_DOCT ,
+            HOSPTLZ_YB , 
+            PAT_TYPE ,
+            TRMT_COST_CALCU_YB , 
+            TRMT_YB ,
+            PRESC_YB ,
+            REG_DEPT , 
+             CNG_DEPT , 
+            RECEIPT_DATE ,
+            DGNS_NM ,
+            NT_TT_YB ,
+            EXP_CD ,
+            NW_DIV ,
+             HOSPTLZ_RSVT_YB,
+             TRMT_TIME 
+        ) VALUES
+        (
+        	#{patNo},
+            OUT_PAT_RECEIPT_NO.NEXTVAL,    
+            #{trmtDate},
+            #{trmtDept},
+            #{trmtDoct},
+            #{hosptlzYb},          
+            #{patType},
+            #{trmtCostCalcuYb},
+            #{trmtYb},  
+            #{prescYb},
+            #{regDept},
+            #{cngDept},
+            #{receiptDate},
+            #{dgnsNm},
+            #{ntTtYb},
+            #{expCd},
+            #{nwDiv},
+            #{hosptlzRsvtYb},
+            #{trmtTime}
+        )
+    </update>
+    
+<update id="updateReceipt" parameterType="ReceiptInfoBean">
+        UPDATE
+        ws_outpa_receipt
+        SET
+            TRMT_DATE = #{trmtDate},
+            TRMT_DEPT = #{trmtDept},
+            TRMT_DOCT = #{trmtDoct},
+            HOSPTLZ_YB = #{hosptlzYb},
+            HOSPTLZ_RSVT_YB = #{hosptlzRsvtYb},
+            PAT_TYPE = #{patType},
+            TRMT_COST_CALCU_YB = #{trmtCostCalcuYb},
+            TRMT_YB = #{trmtYb},
+            PRESC_YB = #{prescYb},
+            REG_DEPT = #{regDept},
+            CNG_DEPT = #{cngDept},
+            RECEIPT_DATE = #{receiptDate},
+            DGNS_NM = #{dgnsNm},
+            NT_TT_YB = #{ntTtYb},
+            EXP_CD= #{expCd},
+            NW_DIV= #{nwDiv}
+        WHERE
+            PAT_NO =#{patNo}
+        and
+        OUTPA_RECEIPT_NO = #{outpaReceiptNo}
+    </update>
+
+
+    <delete id="deleteReceipt" parameterType="ReceiptInfoBean">
+        delete from
+        ws_outpa_receipt
+        where
+        OUTPA_RECEIPT_NO
+        =#{outpaReceiptNo}
+    </delete>
+
+    <update id="updateTrmtCostCalcuYb" flushCache="false">
+            UPDATE WS_OUTPA_RECEIPT SET
+                   TRMT_COST_CALCU_YB='Y'
+             WHERE PAT_NO =  #{patNo}
+               AND OUTPA_RECEIPT_NO = #{outpaReceiptNo}
+    </update>
+</mapper>

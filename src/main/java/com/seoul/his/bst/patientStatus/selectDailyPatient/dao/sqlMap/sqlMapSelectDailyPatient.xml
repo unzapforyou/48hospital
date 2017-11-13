@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.bst.patientStatus.selectDailyPatient.dao.SelectDailyPatientDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+	
+	<resultMap type="SelectDailyPatientBean" id="SelectDailyPatient">
+
+<result property="rk" column="rk" />      <!--입원접수번호   -->
+  <result property="patNo" column="pat_no" />      <!--입원접수번호   -->
+  <result property="patNm" column="pat_nm" />      <!--입원접수번호   -->
+  <result property="prescDate" column="presc_date" />      <!--입원접수번호   -->
+  <result property="dept" column="dept" />      <!--입원접수번호   -->
+  <result property="diseaseNm" column="disease_nm" />      <!--입원접수번호   -->
+  <result property="ibwon" column="ibwon" />      <!--입원접수번호   -->
+        
+
+ 	</resultMap>
+
+
+
+ 	<select id="selectSelectDailyPatientList" flushCache="false"  useCache="true" resultMap="SelectDailyPatient" >
+
+SELECT DISTINCT
+RANK() OVER (ORDER BY base2.pat_no DESC ) as rk,
+base2.pat_no,
+wp.PAT_NM,
+base2.presc_date,
+base2.dept,
+base2.disease_nm,
+base2.ibwon
+ FROM (SELECT
+base.pat_no AS pat_no,
+base.presc_date AS presc_date,
+base.dept AS dept,
+base.disease_nm AS disease_nm,
+REPLACE(NVL(REPLACE(mip.dscg_gubun,'0','입원'),'외진'),'1','퇴원') AS ibwon
+ FROM (SELECT * FROM (SELECT pat_no,presc_date, dept,disease_nm FROM MC_OUT_PAIENT mop
+UNION ALL
+SELECT pat_no, presc_date, dept, disease_nm FROM MC_IN_PAIENT mip)) base left OUTER JOIN MC_IN_PAIENT mip
+on base.pat_no=mip.PAT_NO AND base.presc_date=mip.PRESC_DATE ORDER BY base.pat_no) base2,WS_PAT wp
+WHERE base2.pat_no=wp.PAT_NO
+ ORDER BY base2.presc_date
+
+ 	</select>
+ 	
+ 	
+ 	
+ 	
+<update id="insertSelectDailyPatient">
+        INSERT INTO
+        ws_pat
+            (
+            PAT_NO ,
+            PAT_NM ,
+            RRN1 ,
+            AGE ,
+            TEL ,
+            ADDR ,
+            BARR_ASS ,
+            DTL_ADDR ,
+            ZIP ,
+            DEATH_DATE ,
+            NOTE ,
+            GENDER ,
+            SMS_RECEIVE_YB ,
+            SMS_RECEIVE_NO ,
+            SMS_RECEIVER,
+            REC_NW_DATE,
+            RRN2,
+            ESTB_GIHO,
+            CERTFCT_NO,
+            INSU_RRN,
+            INSU_RRN1,
+            INSU_NM,
+            APPLY_START_DATE,
+            APPLY_END_DATE
+            ) VALUES(
+                #{patNo},
+                #{patNm},
+                #{rrn1},
+                #{age},
+                #{tel},
+                #{addr},
+                #{barrAss},
+                #{dtlAddr},
+                #{zip},
+                #{deathDate},
+                #{note},
+                #{gender},
+                #{smsReceiveYb},
+                #{smsReceiveNo},
+                #{smsReceiver},
+                #{recNwDate},
+                FN_WS_ENCRYPT(#{rrn2}),
+                #{estbGiho},
+                #{certfctNo},
+                #{insuRrn},
+                #{insuRrn1},
+                #{insuNm},
+                #{applyStartDate},
+                #{applyEndDate}
+            )
+    </update>
+
+
+
+<update id="updateSelectDailyPatient">
+        UPDATE
+            ws_pat
+        SET
+            PAT_NM =#{patNm},
+            AGE =#{age},
+            RRN1=#{rrn1},
+            RRN2=FN_WS_ENCRYPT(#{rrn2}),
+            TEL =#{tel},
+            ADDR =#{addr},
+            BARR_ASS =#{barrAss},
+            DTL_ADDR =#{dtlAddr},
+            ZIP =#{zip},
+            DEATH_DATE =#{deathDate},
+            NOTE =#{note},
+            SMS_RECEIVE_YB =#{smsReceiveYb},
+            SMS_RECEIVE_NO =#{smsReceiveNo},
+            SMS_RECEIVER =#{smsReceiver},
+            REC_NW_DATE =#{recNwDate},
+            ESTB_GIHO =#{estbGiho},
+            CERTFCT_NO =#{certfctNo},
+            INSU_RRN =#{insuRrn},
+            INSU_RRN1 =#{insuRrn1},
+            INSU_NM =#{insuNm},
+            APPLY_START_DATE =#{applyStartDate},
+            APPLY_END_DATE =#{applyEndDate}
+        WHERE
+        PAT_NO =#{patNo}
+    </update>
+ 	
+ 	
+ 	
+ 	
+
+</mapper>

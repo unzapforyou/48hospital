@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.msv.pre.prescriptionmanagement.dao.PatientDsDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+	<resultMap id="PatientDsResult" type="PatientDsBean" >
+        <result property="code"      column="CODE" />
+        <result property="codeNm"    column="CODE_NM" />
+        <result property="surYn"     column="SUR_YN" />
+        <result property="dept"      column="DEPT" />
+        <result property="patNo"     column="PAT_NO" />
+        <result property="prescNo"   column="PRESC_NO" />
+        <result property="prescDate" column="PRESC_DATE" />
+        <result property="gubun"     column="GUBUN" />
+        <collection property="patientPrscList" select="com.seoul.his.msv.pre.prescriptionmanagement.dao.PatientPrscDAO.selectPatientPrscList" column="{patNo=PAT_NO, prescNo=PRESC_NO, gubun=GUBUN,diseaseCd=CODE}" javaType="list" />
+
+    </resultMap>
+
+    <!-- 환자별 상병내역조회 -->
+    <select id="selectPatientDsList" resultMap="PatientDsResult">
+        SELECT
+            *
+        FROM
+            MC_DISEASE
+        WHERE
+            PAT_NO = #{patNo}
+    </select>
+
+	<update id="insertPatientDs" parameterType="PatientDsBean">
+        INSERT INTO
+            MC_DISEASE
+        VALUES (
+            #{code}
+          , #{codeNm}
+          , #{surYn}
+          , #{dept}
+          , #{patNo}
+          , #{prescNo}
+          , #{prescDate}
+          , #{gubun}
+        )
+    </update>
+
+    <update id="updatePatientDs" parameterType="PatientDsBean">
+        UPDATE
+            MC_DISEASE
+        SET
+            CODE_NM     = #{codeNm}
+          , SUR_YN      = #{surYn}
+          , DEPT        = #{dept}
+          , PRESC_NO    = #{prescNo}
+          , GUBUN       = #{gubun}
+         WHERE
+             PAT_NO     = #{patNo}
+         AND CODE       = #{code}
+         AND PRESC_DATE = #{prescDate}
+     </update>
+
+     <update id="insertInpatientPrsc"  parameterType="PatientPrscBean">
+        INSERT INTO
+            MC_IN_PAIENT (
+                PAT_NO
+              , PRESC_DATE
+              , DISEASE_CD
+              , DISEASE_NM
+              , DEPT
+              , HOSPTLZ_RECEIPT_NO
+              , FEE_CD
+              , FEE_NM
+              , BIG_GRP
+              , MID_GRP
+              , SM_GRP
+              , COST
+              , UNIQUE_NTC
+              , PRESC_GUBUN
+              , DSCG_GUBUN
+              , DSCG_DATE
+              , PRESC_NO
+              , DOCT_NM
+              , SUR_YN
+            )
+        VALUES (
+            #{patNo}
+          , #{prescDate}
+          , #{diseaseCd}
+          , #{diseaseNm}
+          , #{dept}
+          , #{hosptizReceiptNo}
+          , #{feeCd}
+          , #{feeNm}
+          , #{bigGrp}
+          , #{midGrp}
+          , #{smGrp}
+          , #{cost}
+          , #{uniqueNtc}
+          , #{prescGubun}
+          , '0'
+          , #{dscgDate}
+          , #{prescNo}
+          , #{doctNm}
+          , #{surYn}
+        )
+    </update>
+
+     <update id="updateInpatientPrsc" parameterType="PatientPrscBean">
+        UPDATE
+            MC_IN_PAIENT
+        SET
+            PRESC_DATE         = #{prescDate}
+          , DISEASE_CD         = #{diseaseCd}
+          , DISEASE_NM         = #{diseaseNm}
+          , DEPT               = #{dept}
+          , HOSPTLZ_RECEIPT_NO = #{hosptizReceiptNo}
+          , FEE_CD             = #{feeCd}
+          , FEE_NM             = #{feeNm}
+          , BIG_GRP            = #{bigGrp}
+          , MID_GRP            = #{midGrp}
+          , SM_GRP             = #{smGrp}
+          , COST               = #{cost}
+          , UNIQUE_NTC         = #{uniqueNtc}
+          , PRESC_GUBUN        = #{prescGubun}
+          , DSCG_GUBUN         = #{dscgGubun}
+          , DSCG_DATE          = #{dscgDate}
+          , DOCT_NM            = #{doctNm}
+          , SUR_YN				= #{surYn}
+        WHERE
+            PAT_NO             = #{patNo}
+        AND PRESC_NO           = #{prescNo}
+    </update>
+
+    <update id="insertOutpatientPrsc">
+
+        INSERT INTO
+            MC_OUT_PAIENT (
+                PAT_NO
+              , PRESC_DATE
+              , DISEASE_CD
+              , DISEASE_NM
+              , DEPT
+              , OUTPA_RECEIPT_NO
+              , FEE_CD
+              , FEE_NM
+              , BIG_GRP
+              , MID_GRP
+              , SM_GRP
+              , COST
+              , UNIQUE_NTC
+              , PRESC_GUBUN
+              , PRESC_NO
+              , DOCT_NM
+              , SUR_YN
+            )
+        VALUES (
+            #{patNo}
+          , #{prescDate}
+          , #{diseaseCd}
+          , #{diseaseNm}
+          , #{dept}
+          , #{outpaReceiptNo}
+          , #{feeCd}
+          , #{feeNm}
+          , #{bigGrp}
+          , #{midGrp}
+          , #{smGrp}
+          , #{cost}
+          , #{uniqueNtc}
+          , #{prescGubun}
+          , #{prescNo}
+          , #{doctNm}
+          , #{surYn}
+        )
+    </update>
+
+    <update id="updateOutpatientPrsc">
+        UPDATE
+            MC_OUT_PAIENT
+        SET
+            PRESC_DATE       = #{prescDate}
+          , DISEASE_CD       = #{diseaseCd}
+          , DISEASE_NM       = #{diseaseNm}
+          , DEPT             = #{dept}
+          , OUTPA_RECEIPT_NO = #{outpaReceiptNo}
+          , FEE_CD           = #{feeCd}
+          , FEE_NM           = #{feeNm}
+          , BIG_GRP          = #{bigGrp}
+          , MID_GRP          = #{midGrp}
+          , SM_GRP           = #{smGrp}
+          , COST             = #{cost}
+          , UNIQUE_NTC       = #{uniqueNtc}
+          , PRESC_GUBUN      = #{prescGubun}
+          , DOCT_NM          = #{doctNm}
+          , SUR_YN			=#{surYn}
+        WHERE
+            PAT_NO           = #{patNo}
+        AND PRESC_NO         = #{prescNo}
+    </update>
+
+
+</mapper>

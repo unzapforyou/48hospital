@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.seoul.his.bst.HospitalStaffPersonnelStatus.dao.MilitaryDAO1">
+
+	<select id="findMilitaryList" resultType="MilitaryBean">
+		SELECT
+		EMP_NO AS empNo,					<!-- 사원번호 -->
+		PHYSIQUE_GRADE AS physiqueGrade,	<!-- 체격등위 -->
+		MGROUP ,							<!-- 군별 -->
+		BRANCH ,							<!-- 병과 -->
+		HIERARACHY ,						<!-- 계급 -->
+		MSN ,								<!-- 군번 -->
+		JOIN_ARMY_DAY AS joinArmyDay,		<!-- 입대일 -->
+		DISCHARGE_DAY AS dischargeDay,		<!-- 제대일 -->
+		MILITARY_SEQ AS militarySeq			<!-- 병역시퀀스 -->
+		FROM
+		HM_MILITARY_INFO
+		where emp_no = #{empNo}				<!-- 사원번호 -->
+	</select>
+
+
+</mapper>

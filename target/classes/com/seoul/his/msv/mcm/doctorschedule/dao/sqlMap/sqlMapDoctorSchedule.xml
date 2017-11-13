@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.msv.mcm.doctorschedule.dao.DoctorScheduleDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+	<update id="insertDoctorSchedule" parameterType="ScheduleRegisterInfoBean">
+		insert into MC_TRMT_SCHD_MAN(EMP_NO, MEDDATE, EXAMTM, TOTCNT, AMPMFLAG,RSV_YN)
+		SELECT S.EMP_NO,D.days,S.TIME,S.TOTCNT,S.AMPMFLAG,S.RSVYN
+		FROM (select days,to_char(to_date(days,'yyyymmdd'), 'd') as weekday
+		<![CDATA[
+		FROM( select to_char(months,'yyyymm') as months,
+		to_char(months,'yyyymm') || lpad(lv, 2, '0') as days,
+		day_cnt
+		from (select add_months(TO_DATE(substr(#{fromDate},0,6),'yyyymm'), lv - 1)
+		as months,
+		to_char(last_day(add_months(TO_DATE(substr(#{fromDate},0,6),'yyyymm'),
+		lv-1)), 'dd') as day_cnt
+		from dual sa,
+		(select level lv
+		from dual
+		connect by level <= months_between(to_date(substr(#{toDate},0,6),'yyyymm'),
+		to_date(substr(#{fromDate},0,6),'yyyymm'))+1)
+		) a,
+		(select level lv from dual connect by level <= 31 ) b
+		)m
+		where months||day_cnt >= days
+		and to_char(to_date(days,'yyyymmdd'), 'd') in
+		(select DAY_OF_WEEK from MC_TRMT_SCHD_TYPE_DETAIL
+		where EMP_NO=#{medDr}
+		and TRMT_TYPE_NO=#{tpSeqNo}
+		group by EMP_NO,TRMT_TYPE_NO,DAY_OF_WEEK
+		)
+		) D,
+		]]>
+		(SELECT EMP_NO,TRMT_TYPE_NO,TIME,DECODE(AM_FM_DIV,'A','오전','오후') AS AMPMFLAG,
+		DECODE(DIFF_DEPT_RESER,'true','Y','N') AS RSVYN,DAY_OF_WEEK,HANDLE AS TOTCNT
+		FROM MC_TRMT_SCHD_TYPE_DETAIL
+		WHERE EMP_NO=#{medDr}
+		and TRMT_TYPE_NO=#{tpSeqNo}) S
+		WHERE S.DAY_OF_WEEK IN (select DAY_OF_WEEK from MC_TRMT_SCHD_TYPE_DETAIL
+		where EMP_NO=#{medDr}
+		and TRMT_TYPE_NO=#{tpSeqNo}
+		group by EMP_NO,TRMT_TYPE_NO,DAY_OF_WEEK)
+		GROUP BY D.days,S.EMP_NO,S.TOTCNT,S.TIME,S.AMPMFLAG,S.RSVYN
+		 HAVING D.days BETWEEN #{fromDate} AND #{toDate}
+		ORDER BY D.days,S.TIME
+	</update>
+
+	<select id="selectLastDateList" resultType="LastDateBean" parameterType="map">
+		<![CDATA[
+		SELECT  D.DOW, S.lastDate
+    	FROM
+    	(SELECT TO_CHAR(TO_DATE(meddate,'YYYYMMDD'),'d') AS DOW,MAX(medDate) lastDate
+    	FROM MC_TRMT_SCHD_MAN
+    	WHERE EMP_NO=#{empNo}
+    	GROUP BY TO_CHAR(TO_DATE(meddate,'YYYYMMDD'),'d')) S ,
+    	(SELECT LEVEL DOW FROM DUAL CONNECT BY LEVEL<=7) D
+    	WHERE S.DOW(+)=D.DOW
+    	ORDER BY D.DOW
+    	]]>
+	</select>
+	<delete id="deleteDoctorSchedule" parameterType="map">
+		delete MC_TRMT_SCHD_MAN
+		where EMP_NO=#{medDr}
+		and MEDDATE between #{fromDate} and #{toDate}
+		<if test='amPmFlag=="Am"'>
+			AND AMPMFLAG='오전'
+		</if>
+		<if test='amPmFlag=="Pm"'>
+			AND AMPMFLAG='오후'
+		</if>
+		and TO_CHAR(TO_DATE(MEDDATE,'YYYYMMDD'),'d') in
+		<foreach collection="dow" item="item" index="index" open="(" close=")" separator="," >#{item}</foreach>
+
+	</delete>
+</mapper>

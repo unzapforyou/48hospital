@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.msv.mcm.doctorschedule.dao.ScheduleDetailDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+	<select id="selectSchduleDetailList" flushCache="false"
+		useCache="true" resultType="ScheduleDetailBean">
+		SELECT EMP_NO as medDr,
+		TRMT_TYPE_NO as
+		tpSeqNo,
+		DAY_OF_WEEK as dow,
+		TIME as examTm,
+		HANDLE as totCnt,
+		AM_FM_DIV
+		as amPmFlag,
+		DIFF_DEPT_RESER as rsvYn,
+		DAY_OF_WEEK||TIME as findKey
+		FROM
+		MC_TRMT_SCHD_TYPE_DETAIL
+		WHERE EMP_NO=#{empNo}
+		AND
+		TRMT_TYPE_NO=#{tpSeqNo}
+	</select>
+	<insert id="insertScheduleDetail" parameterType="ScheduleDetailBean">
+		<![CDATA[
+		insert into MC_TRMT_SCHD_TYPE_DETAIL(
+		EMP_NO,
+		TRMT_TYPE_NO,
+		DAY_OF_WEEK,
+		TIME,
+		HANDLE,
+		AM_FM_DIV,
+		DIFF_DEPT_RESER
+		)
+		values (
+		#{medDr},
+		#{tpSeqNo},
+		#{dow},
+		#{examTm},
+		#{totCnt},
+		#{amPmFlag},
+		#{rsvYn}
+		)
+		 ]]>
+	</insert>
+	<update id="updateScheduleDetail" parameterType="ScheduleDetailBean">
+		update
+		MC_TRMT_SCHD_TYPE_DETAIL
+		set
+		HANDLE=#{totCnt},
+		AM_FM_DIV=#{amPmFlag},
+		DIFF_DEPT_RESER=#{rsvYn}
+		where EMP_NO=#{medDr}
+		and
+		TRMT_TYPE_NO=#{tpSeqNo}
+		and DAY_OF_WEEK=#{dow}
+		and TIME=#{examTm}
+	</update>
+	<delete id="deleteScheduleDetail" parameterType="ScheduleDetailBean">
+		delete
+		MC_TRMT_SCHD_TYPE_DETAIL
+		where EMP_NO=#{medDr}
+		and
+		TRMT_TYPE_NO=#{tpSeqNo}
+		and DAY_OF_WEEK=#{dow}
+		and TIME=#{examTm}
+	</delete>
+	<delete id="deleteScheduleDetailList" parameterType="ScheduleTypeBean">
+		delete
+		MC_TRMT_SCHD_TYPE_DETAIL
+		where EMP_NO=#{medDr}
+		and
+		TRMT_TYPE_NO=#{tpSeqNo}
+	</delete>
+	<select id="selectDetailDowList" parameterType="map" resultType="DetailDowBean">
+		with SCHD_TYPE_COUNT as(
+		select EMP_NO,TRMT_TYPE_NO,DAY_OF_WEEK,AM_FM_DIV,COUNT(*) AS COUNT
+		from MC_TRMT_SCHD_TYPE_DETAIL
+		where EMP_NO=#{medDr}
+		and TRMT_TYPE_NO=#{tpSeqNo}
+		group by EMP_NO,TRMT_TYPE_NO,DAY_OF_WEEK,AM_FM_DIV)
+		select AM.EMP_NO as medDr,
+		AM.TRMT_TYPE_NO as tpSeqNo,
+		AM.DAY_OF_WEEK as dow,
+		AM.COUNT as amCnt,
+		PM.COUNT as pmCnt
+		from (select * FROM SCHD_TYPE_COUNT
+		where AM_FM_DIV='A') AM,
+		(select * FROM SCHD_TYPE_COUNT
+		where AM_FM_DIV='P') PM
+		where AM.EMP_NO=PM.EMP_NO
+		and AM.TRMT_TYPE_NO=PM.TRMT_TYPE_NO
+		and AM.DAY_OF_WEEK=PM.DAY_OF_WEEK
+	</select>
+</mapper>

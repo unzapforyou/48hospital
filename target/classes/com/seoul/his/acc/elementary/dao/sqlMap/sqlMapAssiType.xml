@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.acc.elementary.dao.AssiTypeDAO">
+<cache flushInterval="86400000" eviction="LRU" />
+    
+    <select id="selectAssiTypeList" flushCache="false"  useCache="true" resultType="AssiTypeBean">
+        SELECT  
+            ACC_YEAR
+            , ASSI_TYPE_CD
+            , ASSI_TYPE_NM
+            , USE_YN
+        FROM 
+            AE_ASSI_TYPE
+        WHERE 1=1
+        <if test="accYear != null">
+           AND ACC_YEAR = #{accYear}
+        </if>
+    </select>
+    
+    <insert id="insertAssiType" parameterType="assiTypeBean">
+        INSERT INTO
+            AE_ASSI_TYPE VALUES(
+                #{assiTypeCd},
+                #{assiTypeNm},
+                #{useYn     },
+                #{accYear   }
+            )
+    </insert>
+
+    <update id="updateAssiType" parameterType="assiTypeBean">
+        UPDATE 
+            AE_ASSI_TYPE SET
+                ASSI_TYPE_CD    =   #{assiTypeCd}, 
+                ASSI_TYPE_NM  =   #{assiTypeNm}, 
+                USE_YN        =   #{useYn     }, 
+                ACC_YEAR      =   #{accYear   }
+        WHERE 
+            ASSI_TYPE_CD=#{assiTypeCd }
+            AND ACC_YEAR=#{accYear}
+    </update>
+
+    <delete id="deleteAssiType" parameterType="assiTypeBean">
+        DELETE 
+            AE_ASSI_TYPE
+        WHERE 
+            ASSI_TYPE_CD=#{assiTypeCd }
+            AND ACC_YEAR=#{accYear}
+    </delete>
+
+    <select id="callCopyAssiCode" statementType="CALLABLE" parameterType="assiTypeBean" resultType="assiTypeBean">
+         {call PC_AE_COPY_ASSI (
+                #{accYear, mode=IN, jdbcType=VARCHAR}, 
+                #{errorCode, mode=OUT, jdbcType=VARCHAR}, 
+                #{errorMsg, mode=OUT, jdbcType=VARCHAR}
+         ) }
+    </select>
+</mapper>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.msv.mcm.patientservice.dao.AttentionalPatientDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+	<resultMap type="AttentionalPatientBean" id="AttentionalPatient">
+		<result property="attentionalRegNo" column="ATTENTIONAL_REG_NO" />
+		<result property="patNo" column="PAT_NO" />
+		<result property="patName" column="PAT_NAME" />
+		<result property="attentionalFieldName" column="ATTENTIONAL_FIELD_NAME" />
+		<result property="attentionalDiv" column="ATTENTIONAL_DIV" />
+		<result property="attentionalContent" column="ATTENTIONAL_CONTENT" />
+		<result property="startDate" column="START_DATE" />
+		<result property="endDate" column="END_DATE" />
+ 	</resultMap>
+
+ 	<select id="selectAttentionalPatientList" flushCache="false"
+ 			   useCache="true" resultMap="AttentionalPatient" parameterType="Map">
+		SELECT    ATTENTIONAL_REG_NO
+				    , PAT_NO
+				    , PAT_NAME
+				    , ATTENTIONAL_FIELD_NAME
+				    , ATTENTIONAL_DIV
+				    , ATTENTIONAL_CONTENT
+				    , START_DATE
+				    , END_DATE
+	   FROM     MB_ATTENTIONAL_PATIENT
+	   WHERE 	1=1
+  		<if test='patNo != null'>
+        AND PAT_NO = #{patNo}
+    	</if>
+ 	</select>
+    <update id="insertAttentionalPatient" parameterType="AttentionalPatientBean">
+            INSERT INTO MB_ATTENTIONAL_PATIENT (
+                ATTENTIONAL_REG_NO
+              , PAT_NO
+              , PAT_NAME
+              , ATTENTIONAL_FIELD_NAME
+              , ATTENTIONAL_DIV
+              , ATTENTIONAL_CONTENT
+              , START_DATE
+              , END_DATE
+            ) VALUES (
+                ATTENTIONAL_REG_NO_SEQ.NEXTVAL
+             , #{patNo}
+             , #{patName}
+             , #{attentionalFieldName}
+             , #{attentionalDiv}
+             , #{attentionalContent}
+             , #{startDate}
+             , #{endDate}
+            )
+    </update>
+    <update id="updateAttentionalPatient" parameterType="AttentionalPatientBean">
+            UPDATE MB_ATTENTIONAL_PATIENT
+            SET
+                PAT_NO = #{patNo}
+              , PAT_NAME =  #{patName}
+              , ATTENTIONAL_FIELD_NAME = #{attentionalFieldName}
+              , ATTENTIONAL_DIV = #{attentionalDiv}
+              , ATTENTIONAL_CONTENT = #{attentionalContent}
+              , START_DATE = #{startDate}
+              , END_DATE = #{endDate}
+            WHERE ATTENTIONAL_REG_NO = #{attentionalRegNo}
+    </update>
+	<update id="deleteAttentionalPatient" parameterType="AttentionalPatientBean">
+            DELETE
+            FROM    MB_ATTENTIONAL_PATIENT
+            WHERE   ATTENTIONAL_REG_NO = #{attentionalRegNo}
+    </update>
+</mapper>

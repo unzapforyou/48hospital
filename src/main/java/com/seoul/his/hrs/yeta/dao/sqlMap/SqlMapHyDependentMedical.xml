@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.hrs.yeta.dao.HyDependentMedicalDAO">
+	<select id="selectHyDependentMedicalList" resultType="hyDependentMedicalBean">
+		SELECT * FROM HY_DEPENDENT_MEDICAL
+	</select>
+	<insert id="insertHyDependentMedical" parameterType="hyDependentMedicalBean">
+		INSERT INTO HY_DEPENDENT_MEDICAL
+		VALUES(
+		#{empNo}
+		,#{occGubun}
+		,#{medicalProofCode}
+		,#{medicalCompanyName}
+		,#{medicalGubun}
+		,#{medicalAmt}
+		,#{regiNo}
+		,#{name}
+		)
+	</insert>
+	<update id="updateHyDependentMedical" parameterType="hyDependentMedicalBean">
+		UPDATE HY_DEPENDENT_MEDICAL SET
+		OCC_GUBUN=#{occGubun}
+		,MEDICAL_PROOF_CODE=#{medicalProofCode}
+		,MEDICAL_COMPANY_NAME=#{medicalCompanyName}
+		,MEDICAL_GUBUN=#{medicalGubun}
+		,MEDICAL_AMT=#{medicalAmt}
+		,NAME=#{name}
+		WHERE EMP_NO=#{empNo} AND REGI_NO=#{regiNo}
+	</update>
+	<delete id="deleteHyDependentMedical" parameterType="hyDependentMedicalBean">
+		DELETE FROM HY_DEPENDENT_MEDICAL
+		WHERE EMP_NO=#{empNo} AND REGI_NO=#{regiNo}
+	</delete>
+</mapper>

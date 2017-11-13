@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.hrs.salMng.dao.SalChangeDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+	
+		<select id="findSalChangeList" resultType="SalChangeBean">
+				SELECT '기준연월' 기준연월,
+				       MIN(hss.cnt) cnt,
+				       SUM(DECODE(hp.PAYM_DEDUC_NM, '기본급', SUM(hp.AMT),0)) basicSal,
+				       MIN(hss.ts) taxSum,
+				       MIN(hss.fts) freeTaxSum,
+				       SUM(DECODE(hp.PAYM_DEDUC_NM, '상여', SUM(hp.AMT),0)) bonus,
+				       MIN(hss.compShare) compShare,
+				       SUM(DECODE(hp.PAYM_DEDUC_NM, '국민연금', SUM(hp.AMT),0)) gookmin,
+				       SUM(DECODE(hp.PAYM_DEDUC_NM, '건강보험', SUM(hp.AMT),0)) gungang,
+				       SUM(DECODE(hp.PAYM_DEDUC_NM, '고용보험', SUM(hp.AMT),0)) goyong,
+				       SUM(DECODE(hp.PAYM_DEDUC_NM, '장기요양보험', SUM(hp.AMT),0)) janggi,
+				       SUM(DECODE(hp.PAYM_DEDUC_NM, '소득세', SUM(hp.AMT),0)) sodeuk,
+				       SUM(DECODE(hp.PAYM_DEDUC_NM, '주민세', SUM(hp.AMT),0)) jumin,
+				       MIN(hss.aap) chainSum
+				  FROM HS_PAY hp,
+				       HS_REGULAR_WORKS_SALARY hws,
+				       (SELECT COUNT(hws.EMP_NO) cnt,
+				       		  SUM(hws.TAXATION_TAX_SUM) ts,
+				              SUM(hws.FREE_TAX_AMT) fts,
+				              SUM(hws.AAP) aap,
+				              SUM(hws.COMP_SHARE) compShare
+				         FROM HS_REGULAR_WORKS_SALARY hws
+				         WHERE hws.BELONG_YM = #{belongYm}
+				              AND hws.PAYMENT_DATE = #{paymDate}
+				              <if test="deptNm !=null">
+				              AND hws.JOB_CLASS = #{deptNm}
+				              </if>
+				       ) hss
+				 WHERE hp.BELONG_YM = #{belongYm}
+				       AND hp.PAYMENT_DATE =#{paymDate}
+				       AND hp.EMP_NO= hws.EMP_NO
+				       AND hws.BELONG_YM = hp.BELONG_YM
+				       <if test="deptNm !=null">
+				       AND hws.JOB_CLASS = #{deptNm}
+				       </if>
+				 GROUP BY hp.PAYM_DEDUC_NM,
+				       hss.ts,
+				       hss.fts,
+				       hss.aap,
+				       hss.compShare,
+				       hss.cnt
+				    UNION ALL
+				SELECT '비교연월' 비교연월,
+				       MIN(hss.cnt),
+				       SUM(DECODE(hp.PAYM_DEDUC_NM, '기본급', SUM(hp.AMT),0)) basicSal,
+				       MIN(hss.ts) taxSum,
+				       MIN(hss.fts) freeTaxSum,
+				       SUM(DECODE(hp.PAYM_DEDUC_NM, '상여', SUM(hp.AMT),0)) bonus,
+				       MIN(hss.compShare) compShare,
+				       SUM(DECODE(hp.PAYM_DEDUC_NM, '국민연금', SUM(hp.AMT),0)) gookmin,
+				       SUM(DECODE(hp.PAYM_DEDUC_NM, '건강보험', SUM(hp.AMT),0)) gungang,
+				       SUM(DECODE(hp.PAYM_DEDUC_NM, '고용보험', SUM(hp.AMT),0)) goyong,
+				       SUM(DECODE(hp.PAYM_DEDUC_NM, '장기요양보험', SUM(hp.AMT),0)) janggi,
+				       SUM(DECODE(hp.PAYM_DEDUC_NM, '소득세', SUM(hp.AMT),0)) sodeuk,
+				       SUM(DECODE(hp.PAYM_DEDUC_NM, '주민세', SUM(hp.AMT),0)) jumin,
+				       MIN(hss.aap) chainSum
+				  FROM HS_PAY hp,
+				       HS_REGULAR_WORKS_SALARY hws,
+				       (SELECT COUNT(hws.EMP_NO) cnt,
+				       		  SUM(hws.TAXATION_TAX_SUM) ts,
+				              SUM(hws.FREE_TAX_AMT) fts,
+				              SUM(hws.AAP) aap,
+				              SUM(hws.COMP_SHARE) compShare
+				         FROM HS_REGULAR_WORKS_SALARY hws
+				         WHERE hws.BELONG_YM = #{compBelongYm}
+				              AND hws.PAYMENT_DATE =#{compPaymDate}
+				              <if test="deptNm !=null">
+				              AND hws.JOB_CLASS = #{deptNm}
+				              </if>
+				       ) hss
+				 WHERE hp.BELONG_YM = #{compBelongYm}
+				       AND hp.PAYMENT_DATE = #{compPaymDate}
+				       AND hp.EMP_NO= hws.EMP_NO
+				       AND hws.BELONG_YM = hp.BELONG_YM
+				       <if test="deptNm !=null">
+				       AND hws.JOB_CLASS = #{deptNm}
+				       </if>
+				 GROUP BY hp.PAYM_DEDUC_NM,
+				       hss.ts,
+				       hss.fts,
+				       hss.aap,
+				       hss.compShare,
+				       hss.cnt
+		</select>
+		
+		<select id="findSalEmpList" resultType="SalChangeEmpBean">
+				SELECT he.EMP_NO as empNo,
+				       he.EMP_NM as empNm,
+				       he.DEPT_CD as deptCd,
+				       he.DEPT_NM as deptNm,
+				       he.JOBCL,
+				       he.JOBRK,
+				       he.HIRE_DATE as hireDate,
+				       he.RRN
+				  FROM HS_REGULAR_WORKS_SALARY hws,
+				       HM_EMP he
+				 WHERE hws.BELONG_YM = #{belongYm}
+				       AND hws.PAYMENT_DATE = #{paymDate}
+				       <if test="deptNm !=null">
+					   AND hws.JOB_CLASS = #{deptNm}
+					   </if>
+				       AND hws.EMP_NO=he.EMP_NO
+				 ORDER BY he.EMP_NO
+		</select>
+		
+		<select id="findPayDeduList" resultType="SalChangePayDeduBean">
+				SELECT hp.PAYM_DEDUC_DIV paymDeducDiv,
+				       hp.PAYM_DEDUC_NM paymDeducNm,
+				       MAX(NVL(DECODE(hp.BELONG_YM,#{belongYm},hp.AMT),0)) basicSal,
+				       MAX(NVL(DECODE(hp.BELONG_YM,#{compBelongYm},hp.AMT),0)) compSal,
+				       MAX(NVL(DECODE(hp.BELONG_YM,#{belongYm},hws.AAP),0)) basicAap,
+				       MAX(NVL(DECODE(hp.BELONG_YM,#{compBelongYm},hws.AAP),0)) compAap
+			     FROM HS_PAY hp,
+			      	   HS_REGULAR_WORKS_SALARY hws
+			    WHERE hp.BELONG_YM IN (#{belongYm},#{compBelongYm})
+				       AND hp.PAYMENT_DATE IN (#{paymDate}, #{compPaymDate})
+				       AND hp.EMP_NO=#{empNo}
+				       AND hp.EMP_NO=hws.EMP_NO
+				       AND hp.BELONG_YM=hws.BELONG_YM
+			    GROUP BY hp.PAYM_DEDUC_DIV,
+			       	   hp.PAYM_DEDUC_NM
+		</select>
+		
+</mapper>

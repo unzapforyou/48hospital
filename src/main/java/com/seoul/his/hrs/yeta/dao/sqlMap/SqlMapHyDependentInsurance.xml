@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.hrs.yeta.dao.HyDependentInsuranceDAO">
+	<select id="selectHyDependentInsuranceList" resultType="hyDependentInsuranceBean">
+		SELECT * FROM HY_DEPENDENT_INSURANCE
+	</select>
+	<insert id="insertHyDependentInsurance" parameterType="hyDependentInsuranceBean">
+		INSERT INTO HY_DEPENDENT_INSURANCE
+		VALUES(
+		#{empNo}
+		,#{occGubun}
+		,#{insuranceName}
+		,#{guaranteedInsuranceAmt}
+		,#{handicappedInsuranceAmt}
+		,#{regiNo}
+		,#{name}
+		)
+	</insert>
+	<update id="updateHyDependentInsurance" parameterType="hyDependentInsuranceBean">
+		UPDATE HY_DEPENDENT_INSURANCE SET
+		OCC_GUBUN=#{occGubun}
+		,INSURANCE_NAME=#{insuranceName}
+		,GUARANTEED_INSURANCE_AMT=#{guaranteedInsuranceAmt}
+		,HANDICAPPED_INSURANCE_AMT=#{handicappedInsuranceAmt}
+		,NAME=#{name}
+		WHERE EMP_NO=#{empNo} AND REGI_NO=#{regiNo}
+	</update>
+	<delete id="deleteHyDependentInsurance" parameterType="hyDependentInsuranceBean">
+		DELETE FROM HY_DEPENDENT_INSURANCE
+		WHERE EMP_NO=#{empNo} AND REGI_NO=#{regiNo}
+	</delete>
+</mapper>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.seoul.his.hrs.guntae.dao.OverTimeWorkDAO">
+
+	<select id="selectOverTimeWorkList" resultType="OverTimeWorkBean">
+		select
+			START_OVERTIME
+		  , END_OVERTIME
+		  , TOTAL_OVERTIME
+		  , OVER_STATUS
+		  , REASON
+		  , APPROVAL_REASON
+		  , OVERTIME_NO
+		  , EMP_NO
+		  , EMP_NM
+		  , DEPT_CD
+		  , DEPT_NM
+		  , START_OVERTIME_DATE
+		  , END_OVERTIME_DATE
+		  , BEFORE_OVERTIME_NO
+		from HG_OVERTIME_WORK
+		where 1=1
+		<if test="empNo != '' and empNo != null and sDate != '' and sDate != null">
+			and EMP_NO = #{empNo}
+			AND START_OVERTIME_DATE BETWEEN #{sDate} AND #{eDate}
+		</if>
+		order by OVERTIME_NO
+	</select>
+
+	<select id="selectApproverOverTimeWorkList" resultType="OverTimeWorkBean">
+		select
+			START_OVERTIME
+		  , END_OVERTIME
+		  , TOTAL_OVERTIME
+		  , OVER_STATUS
+		  , REASON
+		  , APPROVAL_REASON
+		  , OVERTIME_NO
+		  , EMP_NO
+		  , EMP_NM
+		  , DEPT_CD
+		  , DEPT_NM
+		  , START_OVERTIME_DATE
+		  , END_OVERTIME_DATE
+		  , BEFORE_OVERTIME_NO
+		from HG_OVERTIME_WORK
+		where OVER_STATUS = '신청'
+	</select>
+
+
+	<update id="insertOverTimeWork">
+		insert into HG_OVERTIME_WORK
+		(
+		  START_OVERTIME          <!--시간외근무 시작시간-->
+		, END_OVERTIME            <!--시간외근무 종료시간-->
+		, TOTAL_OVERTIME          <!--총 근무시간    -->
+		, OVER_STATUS             <!--결재상태      -->
+		, REASON                  <!--요청사유      -->
+		, APPROVAL_REASON         <!--사후승인요청사유  -->
+		, OVERTIME_NO             <!--시간외근무번호   -->
+		, EMP_NO                  <!--사원번호      -->
+		, EMP_NM                  <!--사원명       -->
+		, DEPT_CD                 <!--부서코드      -->
+		, DEPT_NM                 <!--부사명       -->
+		, START_OVERTIME_DATE     <!--시간외근무 시작일 -->
+		, END_OVERTIME_DATE       <!--시간외근무 종료일 -->
+		, BEFORE_OVERTIME_NO      <!--변경신청할 시간외근무번호  -->
+		)
+		values
+		(
+		 #{startOvertime},
+		 #{endOvertime},
+		 #{totalOvertime},
+		 #{overStatus},
+		 #{reason},
+		 #{approvalReason},
+		 #{overtimeNo},
+		 #{empNo},
+		 #{empNm},
+		 #{deptCd},
+		 #{deptNm},
+		 #{startOvertimeDate},
+		 #{endOvertimeDate},
+		 #{beforeOvertimeNo}
+		)
+	</update>
+
+	<update id="updateOverTimeWork">
+		update HG_OVERTIME_WORK
+		set
+			START_OVERTIME = #{startOvertime}
+		  , END_OVERTIME = #{endOvertime}
+		  , TOTAL_OVERTIME = #{totalOvertime}
+		  , OVER_STATUS = #{overStatus}
+		  , REASON = #{reason}
+		  , APPROVAL_REASON = #{approvalReason}
+		  , EMP_NO = #{empNo}
+		  , EMP_NM = #{empNm}
+		  , DEPT_CD = #{deptCd}
+		  , DEPT_NM = #{deptNm}
+		  , START_OVERTIME_DATE = #{startOvertimeDate}
+		  , END_OVERTIME_DATE = #{endOvertimeDate}
+		  , BEFORE_OVERTIME_NO = #{beforeOvertimeNo}
+		where OVERTIME_NO = #{overtimeNo}
+	</update>
+
+	<delete id="deleteOverTimeWork">
+		delete from HG_OVERTIME_WORK
+		where OVERTIME_NO = #{overtimeNo}
+	</delete>
+
+	<delete id="deleteBeforeOverTimeWork">
+		delete from HG_OVERTIME_WORK
+		where OVERTIME_NO = #{beforeOvertimeNo}
+	</delete>
+
+
+
+
+</mapper>

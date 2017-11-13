@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.log.demd.dao.GdsReturnDAO">
+
+	<resultMap type="GdsReturnBean" id="GdsReturnResult">
+        <result property="returnDate" column="return_date" />       <!-- 반품일 1-->
+        <result property="returnSeq" column="return_seq" />         <!-- 반품번호2 -->
+        <result property="returnDeptCd" column="return_dept_cd" />  <!-- 반품부서코드3 -->
+        <result property="returnWhCd" column="return_wh_cd" />      <!-- 반품창고코드4 -->
+        <result property="returnStatCd" column="return_stat_cd" />  <!-- 반품상태코드5 -->
+        <result property="returnCau" column="return_cau" />         <!-- 반품내용6 -->
+        <result property="whsDate" column="whs_date" />             <!-- 입고일7 -->
+        <result property="whsSeq" column="whs_seq" />               <!-- 입고순번8 -->
+        <result property="regdsDept" column="regds_dept" />         <!-- 반품부서9 -->
+        <result property="regdsAnspName" column="regds_ansp_name" /><!-- 반품물품명10 -->
+        <result property="vaildPrid" column="vaild_prid" />         <!-- 유효기간11 -->
+        <result property="regdsUnit" column="re_gds_unit" />        <!-- 반품단위12 -->
+        <result property="regdsQnt" column="re_gds_qnt" />          <!-- 반품수량13 -->
+        <result property="regdsPrice" column="re_gds_price" />      <!-- 반품단가14 -->
+        <result property="regdsCau" column="re_gds_cau" />          <!-- 반품내용15 -->
+        <result property="aprvYn" column="aprv_yn" />               <!-- 승인상태16 -->
+        <result property="aprvWorker" column="aprv_worker" />       <!-- 승인자17 -->
+    </resultMap>
+	
+	<select id="selectGdsReturnList" resultMap="GdsReturnResult">
+        SELECT * FROM LR_GDS_RETURN
+	</select>
+	<insert id="insertGdsReturn" parameterType="GdsReturnBean">
+		INSERT INTO LR_GDS_RETURN
+		VALUES(
+		#{returnSeq}
+		,#{returnDate}
+		,#{returnWhCd}
+		,#{regdsDept}
+		,#{regdsAnspName}
+		,#{returnCau}
+		,#{whsSeq}
+		,#{whsDate}
+		,#{vaildPrid}
+		,#{returnDeptCd}
+		,#{returnStatCd}
+		,#{regdsUnit}
+		,#{regdsQnt}
+		,#{regdsPrice}
+		,#{regdsCau}
+		,#{aprvYn}
+		,#{aprvWorker}
+		)
+	</insert>
+	<update id="updateGdsReturn" parameterType="GdsReturnBean">
+		UPDATE LR_GDS_RETURN SET
+		RETURN_DEPT_CD=#{returnDeptCd}
+		,RETURN_WH_CD=#{returnWhCd}
+		,RETURN_STAT_CD=#{returnStatCd}
+		,RETURN_CAU=#{returnCau}
+		,WHS_DATE=#{whsDate}
+		,WHS_SEQ=#{whsSeq}
+		,REGDS_DEPT=#{regdsDept}
+		,REGDS_ANSP_NAME=#{regdsAnspName}
+		,VAILD_PRID=#{vaildPrid}
+		,RE_GDS_UNIT=#{regdsUnit}
+		,RE_GDS_QNT=#{regdsQnt}
+		,RE_GDS_PRICE=#{regdsPrice}
+		,RE_GDS_CAU=#{regdsCau}
+		,APRV_YN=#{aprvYn}
+		,APRV_WORKER=#{aprvWorker}
+		WHERE RETURN_DATE=#{returnDate} AND RETURN_SEQ=#{returnSeq}
+	</update>
+	<delete id="deleteGdsReturn" parameterType="GdsReturnBean">
+		DELETE FROM LR_GDS_RETURN
+		WHERE RETURN_DATE=#{returnDate} AND RETURN_SEQ=#{returnSeq}
+	</delete>
+</mapper>

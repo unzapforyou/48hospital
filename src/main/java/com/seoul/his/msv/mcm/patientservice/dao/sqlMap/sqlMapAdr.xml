@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.msv.mcm.patientservice.dao.AdrDAO">
+
+    <select id="selectAdrList" parameterType="map" resultType="AdrBean">
+        SELECT
+            *
+        FROM
+            MC_ADR
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="doctNoEd != null">
+                AND WRITER_NO = #{doctNoEd}
+            </if>
+            <if test="writeDateCal != null">
+                AND WRITE_DATE  = #{writeDateCal}
+            </if>
+        </trim>
+        ORDER BY
+            ADR_NO
+    </select>
+
+    <update id="upsertAdr" parameterType="AdrBean">
+        MERGE INTO
+            MC_ADR
+        USING DUAL ON (ADR_NO = #{adrNo})
+        WHEN MATCHED THEN
+            UPDATE SET
+                USAGE           = #{usage}
+              , CAPCT           = #{capct}
+              , INJC_START_DATE = #{injcStartDate}
+              , INJC_END_DATE   = #{injcEndDate}
+              , INJC_PURP       = #{injcPurp}
+              , RVL_START_DATE  = #{rvlStartDate}
+              , RVL_END_DATE    = #{rvlEndDate}
+              , RVL_RECOG_DATE  = #{rvlRecogDate}
+              , AFTER_INJC_RVL  = #{afterInjcRvl}
+              , SYMPTOM         = #{symptom}
+              , PROG            = #{prog}
+              , RLTN_EXMNT_NM   = #{rltnExmntNm}
+              , RLTN_EXMNT_VAL  = #{rltnExmntVal}
+              , ACTION          = #{action}
+              , REINJC_REACT    = #{reinjcReact}
+              , OPINION         = #{opinion}
+              , REPORT_YN       = #{reportYn}
+        WHEN NOT MATCHED THEN
+            INSERT (
+                ADR_NO
+              , PAT_NO
+              , PAT_NM
+              , PAT_AGE
+              , PAT_GENDER
+              , PRESC_NO
+              , DISEASE_NM
+              , WRITER_NO
+              , WRITER_NM
+              , WRITER_JOB
+              , WRITE_DATE
+              , DRUG_NO
+              , DRUG_NM
+              , MANIFACTURE
+              , USAGE
+              , CAPCT
+              , INJC_START_DATE
+              , INJC_END_DATE
+              , INJC_PURP
+              , RVL_START_DATE
+              , RVL_END_DATE
+              , RVL_RECOG_DATE
+              , AFTER_INJC_RVL
+              , SYMPTOM
+              , PROG
+              , RLTN_EXMNT_NM
+              , RLTN_EXMNT_VAL
+              , ACTION
+              , REINJC_REACT
+              , OPINION
+              , REPORT_YN
+            ) VALUES (
+               ADR_NO_SEQ.NEXTVAL
+             , #{patNo}
+             , #{patNm}
+             , #{patAge}
+             , #{patGender}
+             , #{prescNo}
+             , #{diseaseNm}
+             , #{writerNo}
+             , #{writerNm}
+             , #{writerJob}
+             , #{writeDate}
+             , #{drugNo}
+             , #{drugNm}
+             , #{manifacture}
+             , #{usage}
+             , #{capct}
+             , #{injcStartDate}
+             , #{injcEndDate}
+             , #{injcPurp}
+             , #{rvlStartDate}
+             , #{rvlEndDate}
+             , #{rvlRecogDate}
+             , #{afterInjcRvl}
+             , #{symptom}
+             , #{prog}
+             , #{rltnExmntNm}
+             , #{rltnExmntVal}
+             , #{action}
+             , #{reinjcReact}
+             , #{opinion}
+             , 'N'
+            )
+    </update>
+
+
+    <delete id="deleteAdr" parameterType="AdrBean">
+        DELETE FROM
+            MC_ADR
+        WHERE
+            ADR_NO = #{adrNo}
+    </delete>
+
+</mapper>

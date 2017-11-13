@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.seoul.his.hrs.guntae.dao.GuntaeDAO">
+
+<select id="callDayGuntae" statementType="CALLABLE" parameterType="map">
+
+		{ CALL PC_HG_DAYGUNTAE_CREATE(
+               #{date, mode=IN, jdbcType=VARCHAR, javaType=string},
+               #{guntaeEmpNo, mode=IN, jdbcType=VARCHAR, javaType=string},
+			   #{errorCode, mode=OUT, jdbcType=VARCHAR, javaType=string},
+			   #{errorMsg, mode=OUT, jdbcType=VARCHAR, javaType=string}
+			)
+		}
+	</select>
+
+
+	<select id="selectDayGuntaeList" resultType="dayGuntaeBean">
+		select
+			BELONG_DAY            <!-- 기준일 -->
+			,EMP_NO               <!--사원번호-->
+			,GUNTAE_DAY           <!--요일  -->
+			,IN_TIME              <!--출근시간-->
+			,OUT_TIME             <!--퇴근시간-->
+			,BASIC_TIME           <!--기본시간-->
+			,OVER_TIME            <!--연장시간-->
+			,GUNTAE_CD            <!--근태코드-->
+			,GUNTAE_OUT_CD        <!--근태외코드-->
+			,CLOSE_YN             <!--마감여부-->
+			,GO_OUT_TIME          <!--외출시간-->
+			,RETURN_TIME          <!--귀사시간-->
+			,ALERY_OUT_TIME       <!--조퇴시간-->
+			,GO_OUT_HOUR          <!--외출시각-->
+			,LATELESS_TIME        <!--지각시간-->
+		from HG_DAY_GUNTAE
+		where 1=1
+			<if test="empNo != null">
+			AND EMP_NO = #{empNo}
+			</if>
+			<if test="startDate != null and endDate !=null">
+				AND BELONG_DAY between #{startDate} and #{endDate}
+			</if>
+			order by BELONG_DAY
+	</select>
+
+	<select id="selectMonGuntaeList" resultType="monGuntaeBean">
+		select
+			BELONG_YEAR_MON
+			,EMP_NO
+			,BASIC_TIME
+			,OVER_TIME
+			,BASIC_DAY
+			,ABSENTEEISM_DAY
+			,PAID_DAY
+			,ABSENCE_DAY
+			,YEONCHA_DAY
+			,ALERY_DAY
+			,LATELESS_DAY
+			,GO_OUT_DAY
+			,CLOSE_YN
+		from HG_MON_GUNTAE
+		where 1=1
+			<if test="empNo != null">
+				AND EMP_NO = #{empNo}
+			</if>
+			<if test="belongYearMon != null and belongYearMon !='' ">
+				AND BELONG_YEAR_MON = #{belongYearMon}
+			</if>
+	</select>
+
+	<select id="callMonGuntae" statementType="CALLABLE" parameterType="map">
+
+		{ CALL SEOUL.PC_HG_MONGUNTAE_CREATE(
+               #{yearMon, mode=IN, jdbcType=VARCHAR, javaType=string},
+               #{monEmpNo, mode=IN, jdbcType=VARCHAR, javaType=string},
+			   #{errorCode, mode=OUT, jdbcType=VARCHAR, javaType=string},
+			   #{errorMsg, mode=OUT, jdbcType=VARCHAR, javaType=string}
+			)
+		}
+    </select>
+
+    <select id="callCloseMonGuntae" statementType="CALLABLE" parameterType="map">
+
+		{ CALL PC_HG_DAY_MON_GUNTAE_CLOSE(
+			   #{belongYearMon, mode=IN, jdbcType=VARCHAR, javaType=string},
+			   #{errorCode, mode=OUT, jdbcType=VARCHAR, javaType=string},
+			   #{errorMsg, mode=OUT, jdbcType=VARCHAR, javaType=string}
+			)
+		}
+	</select>
+
+	<select id="selectMonGuntaeCloseList" resultType="monGuntaeCloseBean">
+		SELECT MON_GUNTAE_NO
+			 , BELONG_YEAR_MON
+			 , CLOSE_YN
+		FROM HG_MON_GUNTAE_CLOSE
+		WHERE BELONG_YEAR_MON = #{belongYearMon}
+	</select>
+
+
+
+
+</mapper>

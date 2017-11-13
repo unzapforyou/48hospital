@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.hrs.yeta.dao.HsPayDAO">
+	<select id="selectHsPayList" resultType="hsPayBean">
+		SELECT * FROM HS_PAY
+	</select>
+	<insert id="insertHsPay" parameterType="hsPayBean">
+		INSERT INTO HS_PAY
+		VALUES(
+		#{belongYm}
+		,#{paymDeducDiv}
+		,#{paymDeducCd}
+		,#{paymDeducNm}
+		,#{amt}
+		,#{compShare}
+		,#{empNo}
+		)
+	</insert>
+</mapper>

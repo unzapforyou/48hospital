@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.seoul.his.bst.HospitalStaffPersonnelStatus.dao.FamilyDAO1">
+
+	<select id="findFamilyList" resultType="FamilyBean">
+		SELECT
+		FAM_SEQ AS famSeq,	  <!-- 가족시퀀스 -->
+		EMP_NO AS empNo,	  <!-- 사원번호 -->
+		NAME ,				  <!-- 이름 -->
+		RELT ,				  <!-- 관계 -->
+		SPPT_YN AS spptYn,	  <!-- 부양여부 -->
+		RRN					  <!-- 주민번호 -->
+		FROM HM_FAMILY_INFO
+		where emp_no=#{empNo} <!-- 사원번호 -->
+	</select>
+
+
+</mapper>

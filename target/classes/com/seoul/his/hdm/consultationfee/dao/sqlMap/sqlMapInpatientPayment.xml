@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.hdm.consultationfee.dao.InpatientPaymentDAO">
+
+ <cache flushInterval="86400000" eviction="LRU" />
+
+ 	<resultMap type="HosptlzPatBean" id="HosptlzPatResultMap">
+	    <result property="hosptlzReceiptNo" column="HOSPTLZ_RECEIPT_NO"/>
+	    <result property="patNo" column="PAT_NO"/>
+	    <result property="patNm" column="PAT_NM"/>
+	    <result property="rrn1" column="RRN1"/>
+	    <result property="rrn2" column="RRN2"/>
+	    <result property="gender" column="GENDER"/>
+	    <result property="age" column="AGE"/>
+	    <result property="trmtDept" column="TRMT_DEPT"/>
+	    <result property="ward" column="WARD"/>
+	    <result property="hroom" column="HROOM"/>
+	    <result property="tel" column="TEL"/>
+	    <result property="note" column="NOTE"/>
+	    <result property="grtorNm" column="GRTOR_NM"/>
+	    <result property="grtorRrn" column="GRTOR_RRN"/>
+	    <result property="grtorTel" column="GRTOR_TEL"/>
+	    <result property="rship" column="RSHIP"/>
+	    <result property="hosptlzRoute" column="HOSPTLZ_ROUTE"/>
+	    <result property="dscgDate" column="DSCG_DATE"/>
+	    <result property="patType" column="PAT_TYPE"/>
+	    <result property="hosptlzYb" column="HOSPTLZ_YB"/>
+	    <result property="hosptlzDate" column="HOSPTLZ_DATE"/>
+	    <result property="trmtDoct" column="TRMT_DOCT"/>
+	    <result property="receState" column="RECE_STATE"/>
+	    <result property="dscgGubun" column="DSCG_GUBUN"/>
+	    <collection property="hosptlzTrmtCostList" select="selectHosptlzTrmtCostList" column="HOSPTLZ_RECEIPT_NO" javaType="list"/>
+	</resultMap>
+
+	<select id="selectInpatientPayment" resultMap="HosptlzPatResultMap">
+		 SELECT DISTINCT(h.HOSPTLZ_RECEIPT_NO)
+		  	  , p.PAT_NO
+		      ,	p.PAT_NM
+		      ,	p.RRN1
+		      ,	p.RRN2
+		      ,	p.GENDER
+		      ,	p.AGE
+		      , p.TEL
+		      , p.note
+		      , o.TRMT_DEPT
+		      , o.HOSPTLZ_YB
+		      , o.PAT_TYPE
+     		  , h.WARD
+     		  , h.HROOM
+     		  , h.HOSPTLZ_ROUTE
+       		  , h.DSCG_DATE
+     		  , h.HOSPTLZ_DATE
+     		  , h.GRTOR_NM
+     		  , h.GRTOR_RRN
+     		  , h.GRTOR_TEL
+     		  , h.RSHIP
+     		  , o.TRMT_DOCT
+     		  , r.RECE_STATE
+     		  , i.DSCG_GUBUN
+           FROM WH_HOSPTLZ_RECEIPT h
+  	 		  , (SELECT PAT_NO
+     	 	  		  , TRMT_DEPT
+              		  , OUTPA_RECEIPT_NO
+              		  , TRMT_DOCT
+              		  , HOSPTLZ_YB
+              		  , PAT_TYPE
+  			  	   FROM WS_OUTPA_RECEIPT) o
+     		  , (SELECT PAT_NO
+     				  , PAT_NM
+             		  , RRN1
+             		  , RRN2
+             		  , GENDER
+             		  , AGE
+             		  , TEL
+             		  , NOTE
+          		   FROM WS_PAT) p
+     		  , (SELECT HOSPTLZ_RECEIPT_NO
+     			   FROM WD_HOSPTLZ_TRMT_COST) c
+     		  , (SELECT RECE_STATE
+     				  , HOSPTLZ_RECEIPT_NO
+          		   FROM WD_RECE) r
+     		  , (SELECT HOSPTLZ_RECEIPT_NO
+     				  , DSCG_GUBUN
+     		  	   FROM MC_IN_PAIENT) i
+		WHERE h.OUTPA_RECEIPT_NO = o.OUTPA_RECEIPT_NO
+   		  AND p.PAT_NO = o.PAT_NO
+   		  AND i.HOSPTLZ_RECEIPT_NO = c.HOSPTLZ_RECEIPT_NO
+   		  AND c.HOSPTLZ_RECEIPT_NO = r.HOSPTLZ_RECEIPT_NO
+   		  AND o.OUTPA_RECEIPT_NO = #{outpaReceiptNo}
+	</select>
+
+	<resultMap type="HosptlzTrmtCostBean" id="HosptlzTrmtCostResultMap">
+	    <result property="hosptlzTrmtCostSeq" column="HOSPTLZ_TRMT_COST_SEQ"/>
+		<result property="hosptlzReceiptNo" column="HOSPTLZ_RECEIPT_NO"/>
+		<result property="patNo" column="PAT_NO"/>
+		<result property="exmntAtc" column="EXMNT_ATC"/>
+		<result property="sal" column="SAL"/>
+		<result property="nonSal" column="NON_SAL"/>
+	</resultMap>
+
+	<select id="selectHosptlzTrmtCostList" resultMap="HosptlzTrmtCostResultMap">
+	    SELECT HOSPTLZ_TRMT_COST_SEQ
+	    	 , HOSPTLZ_RECEIPT_NO
+	    	 , PAT_NO
+	    	 , EXMNT_ATC
+	    	 , SAL
+	    	 , NON_SAL
+	      FROM WD_HOSPTLZ_TRMT_COST
+	     WHERE HOSPTLZ_RECEIPT_NO = #{hosptlzReceiptNo}
+	</select>
+
+ 	<select id="calcuInpatientPayment" parameterType="map" statementType="CALLABLE">
+ 	    CALL PC_WD_CALCU_HOSPTLZ_TRMT_COST(
+			#{hosptlzReceiptNo,mode=IN,jdbcType=VARCHAR},
+			#{outpaReceiptNo,mode=IN,jdbcType=VARCHAR},
+			#{patNo,mode=IN,jdbcType=VARCHAR},
+			#{errorCode,mode=OUT,jdbcType=VARCHAR},
+			#{errorMsg,mode=OUT,jdbcType=VARCHAR})
+ 	</select>
+ </mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.acc.resol.dao.ResolDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+
+    <select id="selectResolLetList" flushCache="false"  useCache="true" resultType="ResolLetBean">
+			SELECT RESOL_NO ,RESOL_DIV ,RESOL_DATE ,RESOLER ,RESOL_DEPT_CD ,PROG_STAT_DIV ,SAK_NO ,RECEIPT_NO ,CUST_CD ,OPER_NO ,RESOL_AMT ,BR_CAU ,ABS ,DEMD_DEPT_CD ,AUTO_JOUR_YB ,MOD_WORKER ,MOD_DATE ,DAN_DIV ,ACNT_CD ,ASSI_SUB_CD ,CTRT_NO ,SURTAX_YB ,RESOL_DEPT_EXTSN ,CLOS_YB ,ACC_PRID ,RESOLER_NM ,ACNT_CD_NM ,ASSI_SUB_CD_NM FROM AR_RESOL_LET WHERE 1=1
+		<if test="resolNo != null"> AND RESOL_NO = #{resolNo} </if>
+
+		<if test="accPrid != null"> AND ACC_PRID = #{accPrid} </if>
+
+		<if test="resolDiv != null"> AND RESOL_DIV = #{resolDiv} </if>
+
+
+		<if test="startDate != null">
+		<![CDATA[
+		AND to_number(RESOL_DATE) >= #{startDate} AND to_number(RESOL_DATE) <= #{endDate}
+		]]>
+		</if>
+
+		<if test="startResolNo != null">
+		<![CDATA[
+		AND to_number(RESOL_NO) >= #{startResolNo} AND to_number(RESOL_NO) <= #{endResolNo}
+		]]>
+		</if>
+
+		<if test="resolDeptCd != null"> AND RESOL_DEPT_CD = #{resolDeptCd} </if>
+
+		<if test="budgCause != null"> AND RESOL_DIV IN ('1','2') AND PROG_STAT_DIV = '36' </if>
+
+		<!-- <if test="resolutionReceipt != null"> AND PROG_STAT_DIV IN ('89','53') </if> -->
+		ORDER BY RESOL_NO DESC
+
+ 	</select>
+
+
+ </mapper>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.acc.elementary.dao.CorpCardDAO">
+<cache flushInterval="8600000" eviction="LRU" />
+
+    <select id="selectCorpCardList" flushCache="false"  useCache="true" resultType="CorpCardBean">
+        SELECT
+            a.CARD_NO           as  cardNo, 
+            a.CARD_KND          as  cardKnd, 
+            a.CARD_DIV          as  cardDiv, 
+            b.EMP_NO            as  empNo, 
+            b.EMP_NM            as  empNm, 
+            a.SIGN_BANK         as  signBank, 
+            a.SIGN_ACCNT_NO     as  signAccntNo, 
+            c.DEPT_NM           as  deptNm, 
+            c.DEPT_CD           as  deptCd, 
+            a.CCARD_MNGNT_DIV   as  ccardMngntDiv, 
+            a.RECEIVE_DATE      as  receiveDate, 
+            a.USE_YN            as  useYn, 
+            a.NOTE              as  note
+        FROM 
+            AE_CORP_CARD a
+        LEFT OUTER JOIN 
+            HM_EMP b
+            ON  
+            A.EMP_NO = B.EMP_NO
+        LEFT OUTER JOIN 
+            HM_DEPT c
+            ON 
+            A.DEPT_CD = C.DEPT_CD
+        WHERE 
+            1=1
+        <if test="cardKnd != null">
+            AND A.CARD_KND = #{cardKnd}
+        </if>
+        <if test="cardNo != null">
+            AND A.CARD_NO  LIKE '%' || #{cardNo} || '%'
+        </if>
+        <if test="Sday!=null">
+            AND a.RECEIVE_DATE  >= #{Sday}
+        </if>
+        <if test="Eday!=null">
+            AND a.RECEIVE_DATE  &lt;= #{Eday}
+        </if>
+        <if test="useYn!=null">
+            AND a.USE_YN = #{useYn}
+        </if>
+    </select>
+ 
+ 	<insert id="insertCorpCard" parameterType="corpCardBean">
+ 		INSERT INTO AE_CORP_CARD(
+ 			CARD_KND
+ 			, CARD_DIV
+ 			, CARD_NO
+ 			, EMP_NO
+ 			, SIGN_BANK
+ 			, SIGN_ACCNT_NO
+ 			, DEPT_CD
+ 			, CCARD_MNGNT_DIV
+ 			, RECEIVE_DATE
+ 			, USE_YN
+ 			, NOTE
+ 		)
+ 		VALUES(
+ 			#{cardKnd      }
+			, #{cardDiv      }
+			, #{cardNo       }
+			, #{empNo        }
+			, #{signBank     }
+			, #{signAccntNo  }
+			, #{deptCd       }
+			, #{ccardMngntDiv}
+			, #{receiveDate  }
+			, #{useYn        }
+			, #{note         }
+		)
+    </insert>
+
+    <delete id="deleteCorpCard" parameterType="corpCardBean">
+        DELETE 
+            AE_CORP_CARD
+        WHERE 
+            CARD_NO = #{cardNo}
+    </delete>
+
+    <update id="updateCorpCard" parameterType="corpCardBean">
+        UPDATE 
+            AE_CORP_CARD SET
+                CARD_NO			=#{cardNo       },
+                CARD_KND		=#{cardKnd      },
+                CARD_DIV		=#{cardDiv      },
+                EMP_NO			=#{empNo        },
+                SIGN_BANK		=#{signBank     },
+                SIGN_ACCNT_NO	=#{signAccntNo  },
+                DEPT_CD			=#{deptCd       },
+                CCARD_MNGNT_DIV	=#{ccardMngntDiv},
+                RECEIVE_DATE	=#{receiveDate  },
+                USE_YN			=#{useYn        },
+                NOTE			=#{note         }
+        WHERE 
+            sCARD_NO=#{cardNo}
+	</update>
+</mapper>

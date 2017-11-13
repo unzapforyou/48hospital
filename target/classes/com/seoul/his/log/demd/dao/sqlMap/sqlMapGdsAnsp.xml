@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.log.demd.dao.GdsAnspDAO">
+
+    <resultMap type="GdsAnspBean" id="GdsAnspResult">
+        <result property="gdsAnspNo" column="gds_ansp_no" />    <!-- 물품청구번호 -->
+        <result property="anspDate" column="ansp_date" />       <!-- 청구일자 -->
+        <result property="anspDept" column="ansp_dept" />       <!-- 청구부서 -->
+        <result property="progStat" column="prog_stat" />       <!-- 진행상태 -->
+        <result property="anspDiv" column="ansp_div" />         <!-- 청구구분 -->
+        <result property="mngntDept" column="mngnt_dept" />     <!-- 관리부서 -->
+        <result property="danDiv" column="dan_div" />           <!-- 단구분 -->
+        <result property="rlsWh" column="rls_wh" />             <!-- 출고창고 -->
+        <result property="anspQnt" column="ansp_qnt" />         <!--  -->
+        <result property="rlsDate" column="rls_date" />         <!-- 출고일자 -->
+        <result property="respoWorker" column="respo_worker" /> <!--  -->
+        <result property="anspCon" column="ansp_con" />         <!-- 청구사유 -->
+        <result property="anspDeptNm" column="ansp_dept_nm" />       <!-- 청구부서 -->
+
+        <collection property="gdsAnspHistList" select="selectGdsAnspHistList" column="GDS_ANSP_NO" javaType="list"/>
+    </resultMap>
+
+    <resultMap type="GdsAnspHistBean" id="GdsAnspHistResult">
+      <result property="gdsAnspNo" column="gds_ansp_no" />              <!-- 물품청구번호 -->
+      <result property="anspHistNo" column="ansp_hist_no" />            <!-- 청구내역번호 -->
+      <result property="gdsCd" column="gds_cd" />                       <!-- 물품코드 -->
+      <result property="gdsNm" column="gds_nm" />                       <!-- 물품명 -->
+      <result property="unit" column="unit" />                          <!-- 단위 -->
+      <result property="price" column="price" />                        <!-- 단가 -->
+      <result property="amt" column="amt" />                            <!-- 청구금액 -->
+      <result property="histAnspQnt" column="hist_ansp_qnt" />          <!-- 수량 -->
+      <result property="histAnspDiv" column="hist_ansp_div" />          <!--  -->
+      <result property="histRlsWh" column="hist_rls_wh" />              <!--  -->
+      <result property="histAnspCon" column="hist_ansp_con" />          <!--  -->
+      <result property="histRespoWoker" column="hist_respo_woker" />    <!--  -->
+    </resultMap>
+
+
+   <select id="selectGdsAnspList" parameterType="GdsAnspBean" resultMap="GdsAnspResult">
+        SELECT * FROM LW_GDS_ANSP
+          <trim prefix="WHERE" prefixOverrides="AND">
+       <if test="anspDept != null">
+          AND ANSP_DEPT = ${anspDept}
+       </if>
+       <if test="startDay != null or endDay != null">
+          AND ANSP_DATE BETWEEN ${startDay} AND ${endDay}
+       </if>
+       </trim>
+        ORDER BY GDS_ANSP_NO
+    </select>
+
+    <insert id="insertGdsAnsp" parameterType="GdsAnspBean">
+        INSERT INTO LW_GDS_ANSP
+        VALUES(
+        	 #{gdsAnspNo}
+        	, #{anspDate}
+        	, #{anspDept}
+        	, #{progStat}
+        	, #{anspDiv}
+        	, #{mngntDept}
+        	, #{danDiv}
+        	, #{rlsWh}
+        	, #{anspQnt}
+        	, #{rlsDate}
+        	, #{respoWorker}
+        	, #{anspCon}
+        	, #{anspDeptNm}
+        )
+    </insert>
+    <update id="updateGdsAnsp" parameterType="GdsAnspBean">
+        UPDATE LW_GDS_ANSP SET
+        	 ANSP_DATE=#{anspDate}
+        	,ANSP_DEPT=#{anspDept}
+        	,PROG_STAT=#{progStat}
+        	,ANSP_DIV=#{anspDiv}
+        	,MNGNT_DEPT=#{mngntDept}
+        	,DAN_DIV=#{danDiv}
+        	,RLS_WH=#{rlsWh}
+        	,ANSP_QNT=#{anspQnt}
+        	,RLS_DATE=#{rlsDate}
+        	,RESPO_WORKER=#{respoWorker}
+        	,ANSP_CON=#{anspCon}
+        	,ANSP_DEPT_NM=#{anspDeptNm}
+        WHERE
+            GDS_ANSP_NO=#{gdsAnspNo}
+
+    </update>
+    <delete id="deleteGdsAnsp" parameterType="GdsAnspBean">
+        DELETE FROM LW_GDS_ANSP
+        WHERE
+        GDS_ANSP_NO = #{gdsAnspNo}
+    </delete>
+
+    <!-- 상세 -->
+    <select id="selectGdsAnspHistList" parameterType="GdsAnspHistBean" resultMap="GdsAnspHistResult">
+        SELECT * FROM LW_GDS_ANSP LGA
+        JOIN
+                      LW_GDS_ANSP_HIST LGAH
+        ON LGA.GDS_ANSP_NO = LGAH.GDS_ANSP_NO
+        WHERE LGA.GDS_ANSP_NO = #{gdsAnspNo}
+        ORDER BY
+            LGAH.GDS_ANSP_NO
+            ,LGAH.ANSP_HIST_NO
+    </select>
+    <insert id="insertGdsAnspHist" parameterType="GdsAnspHistBean">
+        INSERT INTO LW_GDS_ANSP_HIST
+        VALUES(
+        #{gdsAnspNo}
+        ,#{anspHistNo}
+        ,#{gdsCd}
+        ,#{gdsNm}
+        ,#{unit}
+        ,#{price}
+        ,#{amt}
+        ,#{histAnspQnt}
+        ,#{histAnspDiv}
+        ,#{histRlsWh}
+        ,#{histAnspCon}
+        ,#{histRespoWorker}
+        )
+    </insert>
+    <update id="updateGdsAnspHist" parameterType="GdsAnspHistBean">
+        UPDATE LW_GDS_ANSP_HIST SET
+        GDS_CD=#{gdsCd}
+        ,GDS_NM=#{gdsNm}
+        ,HIST_RESPO_WORKER=#{histRespoWorker}
+        ,UNIT=#{unit}
+        ,PRICE=#{price}
+        ,AMT=#{amt}
+        ,HIST_ANSP_QNT=#{histAnspQnt}
+        ,HIST_ANSP_DIV=#{histAnspDiv}
+        ,HIST_RLS_WH=#{histRlsWh}
+        ,HIST_ANSP_CON=#{histAnspCon}
+        WHERE
+            GDS_ANSP_NO = #{gdsAnspNo}
+        AND
+            ANSP_HIST_NO=#{anspHistNo}
+
+    </update>
+    <delete id="deleteGdsAnspHist" parameterType="GdsAnspHistBean">
+        DELETE FROM LW_GDS_ANSP_HIST
+        WHERE
+            GDS_ANSP_NO = #{gdsAnspNo}
+        AND
+            ANSP_HIST_NO=#{anspHistNo}
+    </delete>
+</mapper>

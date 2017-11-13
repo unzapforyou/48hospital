@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.seoul.his.hrs.guntae.dao.YeonchaDAO">
+
+	<select id="selectYeonchaList" resultType="YeonchaBean">
+		select
+			y.BELONG_YEAR
+			,y.STANDARD_YEONCHA
+			,y.YEONCHA_DAYS
+			,y.GUNSOK_DAYS
+			,y.JOJEONG_DAYS
+			,y.TOTAL_HOLIDAYS
+			,y.COMPS_YEONCHA
+			,y.COMPS_BOJEON_DAYS
+			,y.YEONWOLCHA_BOJEON_DAYS
+			,y.EMP_NO
+			,e.EMP_NM
+     		,e.DEPT_CD
+     		,e.DEPT_NM
+		from hg_yeoncha y,
+			 hm_emp e
+		where y.emp_no = e.emp_no
+		<if test="belongYear != '' and belongYear != null">
+			AND y.BELONG_YEAR = #{belongYear}
+		</if>
+		<if test="empNo != '' and empNo != null">
+			AND e.emp_no = #{empNo}
+		</if>
+	</select>
+
+	<select id="callYeoncha" statementType="CALLABLE" parameterType="map">
+
+		{ CALL PC_HG_YEONCHA_CREATE(
+			   #{empNo, mode=IN, jdbcType=VARCHAR},
+			   #{belongYear, mode=IN, jdbcType=VARCHAR},
+			   #{errorCode, mode=OUT, jdbcType=VARCHAR},
+			   #{errorMsg, mode=OUT, jdbcType=VARCHAR}
+			)
+		}
+	</select>
+
+</mapper>

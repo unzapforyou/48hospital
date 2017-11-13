@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.acc.fixedasset.dao.FixedAssetDisposalDAO">
+    
+    <cache flushInterval="86400000" eviction="LRU" />
+    
+      <select id="selectDisposalPlnFixedAssetNo" flushCache="false"  useCache="true" resultType="FixedAssetSequenceBean">
+		 SELECT ASSET_NO
+		  FROM AF_DISPOSAL_PLN_FIXED_ASSET  
+    </select>
+    
+    <select id="selectDisposalPlnFixedAssetList" flushCache="false"  useCache="true" resultType="DisposalPlnFixedAssetBean">
+		 SELECT * 
+		  FROM AF_DISPOSAL_PLN_FIXED_ASSET 
+		 WHERE DISPOSAL_APP_DATE BETWEEN #{disposalStartDate} AND #{disposalEndDate}  
+    </select>
+    
+    <insert id="insertDisposalPlnFixedAsset" parameterType="DisposalPlnFixedAssetBean">
+		INSERT INTO AF_DISPOSAL_PLN_FIXED_ASSET
+		VALUES(
+		#{assetNo}
+		,#{disposalAppDate}
+		,#{disposalCd}
+		,#{comYn}
+		,#{mngntCd}
+		,#{ownDept}
+		,#{pstLoc}
+		,#{respoWorker}
+		,#{acquDate}
+		,#{acquAmt}
+		,#{residAmt}
+		,#{assetNm}
+		,#{disposalDate}
+		)
+	</insert>
+	
+	<update id="updateDisposalPlnFixedAsset" parameterType="DisposalPlnFixedAssetBean">
+		UPDATE AF_DISPOSAL_PLN_FIXED_ASSET SET
+			 COM_YN=#{comYn}
+			,DISPOSAL_DATE =#{disposalDate}
+		<if test="disposalAppDate != null">
+		    ,DISPOSAL_APP_DATE =#{disposalAppDate}
+		</if>
+		<if test="disposalCd != null">
+		    ,DISPOSAL_CD =#{disposalCd}
+		</if>
+		WHERE ASSET_NO=#{assetNo}
+	</update>
+	
+	<delete id="deleteDisposalPlnFixedAsset" parameterType="DisposalPlnFixedAssetBean">
+		DELETE FROM AF_DISPOSAL_PLN_FIXED_ASSET
+		WHERE ASSET_NO=#{assetNo}
+	</delete>
+    
+     <select id="selectDisposalFixedAssetList" flushCache="false"  parameterType="map" useCache="true" resultType="DisposalRegBean">
+				SELECT R.ASSET_NO 
+			       ,P.ASSET_NM 
+			       ,P.DISPOSAL_DATE 
+			       ,R.SELL_AMT 
+			       ,R.SELL_COST 
+			       ,R.SELL_PROFIT 
+			       ,R.SELL_LOSS 
+			       ,R.SELL_COMP
+			       ,P.ACQU_DATE 
+			  FROM AF_DISPOSAL_REG R 
+			       ,AF_DISPOSAL_PLN_FIXED_ASSET P 
+			 WHERE R.ASSET_NO = P.ASSET_NO 
+			       AND P.DISPOSAL_DATE BETWEEN #{disposalStartDate} AND #{disposalEndDate}  
+    </select>
+    
+  <select id="callDisposalSellValue" statementType="CALLABLE" flushCache="false">
+		{ CALL PC_AF_DISPOSAL_SELL_VALUE(
+			 #{assetNo, mode=IN, jdbcType=VARCHAR}
+			,#{sellAmt, mode=IN, jdbcType=VARCHAR}
+			,#{disposalDate, mode=IN, jdbcType=VARCHAR}
+			,#{disposalSellValue, mode=OUT, jdbcType=VARCHAR}
+			,#{disposalResult, mode=OUT, jdbcType=VARCHAR}
+			,#{errorCode, mode=OUT, jdbcType=VARCHAR}
+			,#{errorMsg, mode=OUT, jdbcType=VARCHAR}) 
+		} 
+    </select>
+      
+     <insert id="insertDisposalFixedAsset" parameterType="DisposalRegBean">
+		INSERT INTO AF_DISPOSAL_REG
+		VALUES(
+		#{assetNo}
+		,#{sellAmt}
+		,#{sellCost}
+		,#{sellProfit}
+		,#{sellLoss}
+		,#{sellComp}
+		)
+	</insert>
+	
+	<update id="updateDisposalFixedAsset" parameterType="DisposalRegBean">
+		UPDATE AF_DISPOSAL_REG SET
+		SELL_AMT=#{sellAmt}
+		,SELL_COST=#{sellCost}
+		,SELL_PROFIT=#{sellProfit}
+		,SELL_LOSS=#{sellLoss}
+		,SELL_COMP=#{sellComp}
+		WHERE ASSET_NO=#{assetNo}
+	</update>
+	
+	<delete id="deleteDisposalFixedAsset" parameterType="DisposalRegBean">
+		DELETE FROM AF_DISPOSAL_REG
+		WHERE ASSET_NO=#{assetNo}
+	</delete>
+</mapper>

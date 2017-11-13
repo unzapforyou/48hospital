@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.log.inven.dao.InvenSilsaDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+	<resultMap type="InvenSilsaBean" id="InvenSilsaResultMap">
+		<result property="silsaDate" column="SILSA_DATE" />
+		<result property="whCd" column="WH_CD" />
+		<result property="ioTypeCd" column="IO_TYPE_CD" />
+		<result property="invenRflt" column="INVEN_RFLT" />
+		<result property="ioCfmtCd" column="IO_CFMT_CD" />
+		<result property="whNm" column="WH_NM" />
+		<result property="silsaNo" column="SILSA_NO" />
+		<collection property="InvenSilsaDtlInfoList" select="selectInvenSilsaDtlInfoList" column="SILSA_NO" javaType="list"/>
+	</resultMap>
+
+	<resultMap type="InvenSilsaDtlInfoBean" id="InvenSilsaDtlInfoResultMap">
+		<result property="whCd" column="WH_CD"/>
+		<result property="whNm" column="WH_NM"/>
+		<result property="diffQnt" column="DIFF_QNT"/>
+		<result property="midGrpCd" column="MID_GRP_CD"/>
+		<result property="dproQnt" column="DPRO_QNT"/>
+		<result property="invenRflt" column="INVEN_RFLT"/>
+		<result property="invenDlineYb" column="INVEN_DLINE_YB"/>
+		<result property="silsaDate" column="SILSA_DATE"/>
+		<result property="silsaQnt" column="SILSA_QNT"/>
+		<result property="subulUnit" column="SUBUL_UNIT"/>
+		<result property="smGrpCd" column="SM_GRP_CD"/>
+		<result property="gdsCd" column="GDS_CD"/>
+		<result property="bigGrpCd" column="BIG_GRP_CD"/>
+		<result property="price" column="PRICE"/>
+		<result property="amt" column="AMT"/>
+		<result property="priceCtrt" column="PRICE_CTRT"/>
+		<result property="gdsNm" column="GDS_NM"/>
+		<result property="silsaNo" column="SILSA_NO"/>
+		<result property="silsaDetailNo" column="SILSA_DETAIL_NO"/>
+	</resultMap>
+
+
+	<select id="selectInvenSilsaList" resultMap="InvenSilsaResultMap">
+	  SELECT WH_CD               <!--창고코드-->
+           , WH_NM               <!--창고명-->
+           , INVEN_RFLT          <!--재고반영-->
+           , IO_CFMT_CD          <!--입출형태코드-->
+           , IO_TYPE_CD          <!--입출유형코드-->
+           , SILSA_DATE          <!--실사일자-->
+           , SILSA_NO			 <!-- 실사번호 -->
+		FROM LS_INVEN_SILSA
+		<trim prefix="WHERE" prefixOverrides="AND">
+            <if test="whCd != '' and whCd != null">
+                        AND WH_CD = #{whCd}
+                </if>
+		<if test="startSilsaDate != null or endSilsaDate != null">
+			AND SILSA_DATE BETWEEN #{startSilsaDate} AND #{endSilsaDate}
+		</if>
+		<if test="invenRflt != null">
+			AND INVEN_RFLT = #{invenRflt} or INVEN_RFLT = '0'
+		</if>
+		</trim>
+		ORDER BY SILSA_DATE
+	</select>
+
+	<insert id="insertInvenSilsaList">
+	    INSERT INTO LS_INVEN_SILSA(
+	    	    WH_CD
+                  , WH_NM
+                  , INVEN_RFLT
+                  , IO_CFMT_CD
+                  , IO_TYPE_CD
+                  , SILSA_DATE
+                  , SILSA_NO
+	    )VALUES (#{whCd}
+                  , #{whNm}
+                  , #{invenRflt}
+                  , '1'
+                  , '02'
+                  , #{silsaDate}
+                  , #{silsaNo}
+                  )
+	</insert>
+
+	<update id="updateInvenSilsaList">
+	    UPDATE LS_INVEN_SILSA SET
+                  WH_NM=#{whNm}
+                 , INVEN_RFLT=#{invenRflt}
+                 , IO_CFMT_CD=#{ioCfmtCd}
+                 , IO_TYPE_CD=#{ioTypeCd}
+                 , SILSA_DATE=#{silsaDate}
+             WHERE WH_CD=#{whCd}
+             AND SILSA_NO=#{silsaNo}
+	</update>
+
+	<delete id="deleteInvenSilsaList">
+	    DELETE FROM LS_INVEN_SILSA
+	     WHERE WH_CD=#{whCd}
+         AND SILSA_NO=#{silsaNo}
+	</delete>
+
+
+	<select id="selectInvenSilsaDtlInfoList" resultType="InvenSilsaDtlInfoBean">
+	    SELECT WH_CD               	   <!--창고코드-->
+                 , DIFF_QNT            <!--차이수량-->
+                 , MID_GRP_CD          <!--중분류코드-->
+                 , DPRO_QNT            <!--전산수량-->
+                 , INVEN_RFLT          <!--재고반영-->
+                 , INVEN_DLINE_YB      <!--재고마감여부-->
+                 , SILSA_QNT           <!--실사수량-->
+                 , SUBUL_UNIT          <!--수불단위-->
+                 , SM_GRP_CD           <!--소분류코드-->
+                 , GDS_CD              <!--물품코드-->
+                 , BIG_GRP_CD          <!--대분류코드-->
+                 , PRICE               <!--단가-->
+                 , AMT                 <!--금액-->
+                 , PRICE_CTRT          <!--계약단가-->
+                 , GDS_NM              <!--물품코드-->
+                 , SILSA_NO			   <!--실사코드-->
+                 , SILSA_DETAIL_NO     <!-- 실사상세번호 -->
+           FROM LS_INVEN_SILSA_DTL_INFO
+		  WHERE SILSA_NO = #{silsaNo}
+	      ORDER BY SILSA_NO
+	</select>
+
+	<insert id="insertInvenSilsaDtlInfoList" parameterType="InvenSilsaDtlInfoBean">
+    insert into LS_INVEN_SILSA_DTL_INFO
+    		VALUES(
+		           #{invenRflt}
+		          , #{invenDlineYb}
+		          , #{subulUnit}
+		          , #{priceCtrt}
+		          , #{dproQnt}
+		          , #{silsaQnt}
+		          , #{diffQnt}
+		          , #{price}
+		          , #{amt}
+		          , #{whCd}
+		          , #{gdsCd}
+		          , #{midGrpCd}
+		          , #{smGrpCd}
+		          , #{bigGrpCd}
+		          , #{gdsNm}
+		          , #{silsaNo}
+		          , #{silsaDetailNo}
+		    	  )
+
+	</insert>
+
+	<update id="updateInvenSilsaDtlInfoList">
+	    UPDATE LS_INVEN_SILSA_DTL_INFO SET
+                   DIFF_QNT=#{diffQnt}
+                 , DPRO_QNT=#{dproQnt}
+                 , INVEN_RFLT=#{invenRflt}
+                 , INVEN_DLINE_YB=#{invenDlineYb}
+                 , SILSA_QNT=#{silsaQnt}
+                 , SUBUL_UNIT=#{subulUnit}
+                 , PRICE=#{price}
+                 , AMT=#{amt}
+                 , PRICE_CTRT=#{priceCtrt}
+                 , GDS_NM=#{gdsNm}
+   	       WHERE WH_CD = #{whCd}
+           AND MID_GRP_CD = #{midGrpCd}
+           AND GDS_CD = #{gdsCd}
+           AND SM_GRP_CD = #{smGrpCd}
+           AND BIG_GRP_CD = #{bigGrpCd}
+           AND SILSA_NO=#{silsaNo}
+           AND SILSA_DETAIL_NO=#{silsaDetailNo}
+	</update>
+
+
+	<delete id="deleteInvenSilsaDtlInfoList">
+	    DELETE FROM LS_INVEN_SILSA_DTL_INFO
+              WHERE MID_GRP_CD = #{midGrpCd}
+          	    AND GDS_CD = #{gdsCd}
+           		AND SM_GRP_CD = #{smGrpCd}
+           		AND BIG_GRP_CD = #{bigGrpCd}
+           		AND SILSA_NO=#{silsaNo}
+           		AND SILSA_DETAIL_NO=#{silsaDetailNo}
+	</delete>
+
+   <!--재고실사 재고조정: 재고실사수량만큼 현재고 수량수정-->
+	<update id="adjustPstInven" parameterType="InvenSilsaDtlInfoBean">
+
+		       UPDATE LS_PST_INVEN
+			SET PST_INVEN_QNT =
+			(SELECT LISDI.SILSA_QNT
+		FROM LS_INVEN_SILSA LIS, LS_INVEN_SILSA_DTL_INFO LISDI
+		WHERE LIS.WH_CD=LISDI.WH_CD
+		AND LIS.SILSA_NO=LISDI.SILSA_NO
+		AND LISDI.GDS_CD= #{gdsCd}
+		AND LISDI.SILSA_NO=#{silsaNo}
+			)
+		WHERE GDS_CD= #{gdsCd}
+
+	</update>
+
+
+
+</mapper>

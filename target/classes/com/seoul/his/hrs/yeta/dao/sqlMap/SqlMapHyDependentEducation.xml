@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.hrs.yeta.dao.HyDependentEducationDAO">
+	<select id="selectHyDependentEducationList" resultType="hyDependentEducationBean">
+		SELECT * FROM HY_DEPENDENT_EDUCATION
+	</select>
+	<insert id="insertHyDependentEducation" parameterType="hyDependentEducationBean">
+		INSERT INTO HY_DEPENDENT_EDUCATION
+		VALUES(
+		#{empNo}
+		,#{occGubun}
+		,#{eduGubun}
+		,#{eduAmt}
+		,#{regiNo}
+		,#{name}
+		)
+	</insert>
+	<update id="updateHyDependentEducation" parameterType="hyDependentEducationBean">
+		UPDATE HY_DEPENDENT_EDUCATION SET
+		OCC_GUBUN=#{occGubun}
+		,EDU_GUBUN=#{eduGubun}
+		,EDU_AMT=#{eduAmt}
+		,NAME=#{name}
+		WHERE EMP_NO=#{empNo} AND REGI_NO=#{regiNo}
+	</update>
+	<delete id="deleteHyDependentEducation" parameterType="hyDependentEducationBean">
+		DELETE FROM HY_DEPENDENT_EDUCATION
+		WHERE EMP_NO=#{empNo} AND REGI_NO=#{regiNo}
+	</delete>
+</mapper>

@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.msv.sup.hosptaldiet.dao.IngredDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+ <!-- 식재료 코드 리스트 -->
+ 	<select id="selectCodeList" flushCache="false"  useCache="true" resultType="HosptalDietCodeBean" >
+     select
+            a.SMALL_CODE as SMALL_CODE1,
+            a.FULL_NAME   as FULL_NAME1,
+            b.SMALL_CODE as SMALL_CODE2,
+            b.FULL_NAME   as FULL_NAME2,
+            'B'||b.SMALL_CODE as SMALL_CODE
+         from (
+            select
+              SMALL_CODE,
+              FULL_NAME
+            from
+                SN_CODE
+            where
+                LARGE_CODE  = 'S'
+            and
+                MID_CODE   = 'SF068'
+            and
+                nvl(USE_YN,'N') = 'Y'
+        ) a ,
+        (
+            select
+                SMALL_CODE,
+                FULL_NAME
+            from
+                SN_CODE
+            where
+                LARGE_CODE  = 'S'
+            and
+                MID_CODE   = 'SF067'
+            and
+                nvl(USE_YN,'N') = 'Y'
+        ) b
+         where substr(b.SMALL_CODE,1,1) = a.SMALL_CODE
+         order by a.SMALL_CODE
+    </select>
+
+<!-- 식품조회 -->
+ <select id="selectIngredList" flushCache="false"  useCache="true"  resultType="IngredBean">
+ SELECT
+            i.INGRED_GRP_CD as ingredGrpCd,
+            i.INGRED_CD as ingredCd,
+            i.INGRED_NM,
+            i.SPEC,
+            i.UNIT,
+            i.CHNG_QTY,
+            i.CHNG_QTY2,
+            nvl(i.CHNG_QTY3,1) as CHNG_QTY3,
+            i.INGRED_FLAG,
+            i.MIN_ORD_QTY,
+            i.SAFTY_STK_QTY,
+            i.ITEM_MCLAS_CD,
+            i.AUTO_ORDER_YN,
+            i.AUTO_OUT_YN,
+            i.STOCK_YN,
+            i.ADD_YN,
+            i.MEAT_YN,
+            i.USE_YN,
+            i.RATE,
+            i.ROUND_FLAG,
+            i.ROUND_DEC,
+            i.ROUND_NUM,
+            i.NOTES,
+            i.NUTRIT1,
+            i.NUTRIT2,
+            i.NUTRIT3,
+            i.NUTRIT4,
+            i.NUTRIT5,
+            i.NUTRIT7,
+            i.NUTRIT8,
+            i.NUTRIT9,
+            i.NUTRIT11,
+            i.NUTRIT16,
+            i.NUTRIT17,
+            i.NUTRIT18,
+            i.NUTRIT22,
+            i.NUTRIT23,
+            I.NUTRIT24,
+            i.NUTRIT25,
+            g.SPLIES_DIV,
+            g.CTRT_PRICE,
+            g.GDS_CD,
+            g.SUBUL_UNIT,
+            g.ORD_UNIT,
+            i.HOSPCLS
+        FROM
+            LC_GDS g,
+            SN_INGRED i
+        WHERE
+            G.GDS_CD=I.INGRED_CD
+      <if test="ingredGrpCd != null">
+            AND i.INGRED_GRP_CD = #{ingredGrpCd}
+        </if>
+
+        <if test="ingredCd != null">
+            AND i.INGRED_CD LIKE '%'||#{ingredCd}||'%'
+        </if>
+
+        <if test="ingredNm != null">
+            AND i.INGRED_NM LIKE '%'||#{ingredNm}||'%'
+        </if>
+    </select>
+
+	<update id="insertIngred">
+	insert into sn_ingred (
+INGRED_GRP_CD
+,INGRED_CD
+,INGRED_NM
+,SPEC
+,UNIT
+,CHNG_QTY
+,CHNG_QTY2
+,CHNG_QTY3
+,INGRED_FLAG
+,MIN_ORD_QTY
+,SAFTY_STK_QTY
+,ITEM_MCLAS_CD
+,AUTO_ORDER_YN
+,AUTO_OUT_YN
+,STOCK_YN
+,MEAT_YN
+,USE_YN
+,RATE
+,ROUND_FLAG
+,ROUND_DEC
+,ROUND_NUM
+,NOTES
+,NUTRIT1
+,NUTRIT2
+,NUTRIT3
+,NUTRIT4
+,NUTRIT5
+,NUTRIT7
+,NUTRIT8
+,NUTRIT9
+,NUTRIT11
+,NUTRIT16
+,NUTRIT17
+,NUTRIT18
+,NUTRIT22
+,NUTRIT24
+,NUTRIT23
+,NUTRIT25
+,HOSPCLS
+,ADD_YN)
+		values(
+		#{ingredGrpCd},
+		#{ingredCd},
+		#{ingredNm},
+		#{spec},
+		#{unit},
+		#{chngQty},
+		#{chngQty2},
+		#{chngQty3},
+		#{ingredFlag},
+		#{minOrdQty},
+		#{saftyStkQty},
+		#{itemMclasCd},
+		#{autoOrderYn},
+		#{autoOutYn},
+		#{stockYn},
+		#{meatYn},
+		#{useYn},
+		#{rate},
+		#{roundFlag},
+		#{roundDec},
+		#{roundNum},
+		#{notes},
+		#{nutrit1},
+		#{nutrit2},
+		#{nutrit3},
+		#{nutrit4},
+		#{nutrit5},
+		#{nutrit7},
+		#{nutrit8},
+		#{nutrit9},
+		#{nutrit11},
+		#{nutrit16},
+		#{nutrit17},
+		#{nutrit18},
+		#{nutrit22},
+		#{nutrit24},
+		#{nutrit23},
+		#{nutrit25},
+		#{hospcls},
+		#{addYn})
+	</update>
+
+	<update id="updateIngred">
+		update sn_ingred set
+		INGRED_GRP_CD=#{ingredGrpCd},
+		INGRED_NM=#{ingredNm},
+		SPEC=#{spec},
+		UNIT=#{unit},
+		CHNG_QTY=#{chngQty},
+		CHNG_QTY2=#{chngQty2},
+		CHNG_QTY3=#{chngQty3},
+		INGRED_FLAG=#{ingredFlag},
+		MIN_ORD_QTY=#{minOrdQty},
+		SAFTY_STK_QTY=#{saftyStkQty},
+		ITEM_MCLAS_CD=#{itemMclasCd},
+		AUTO_ORDER_YN=#{autoOrderYn},
+		AUTO_OUT_YN=#{autoOutYn},
+		STOCK_YN=#{stockYn},
+		MEAT_YN=#{meatYn},
+		USE_YN=#{useYn},
+		RATE=#{rate},
+		ROUND_FLAG=#{roundFlag},
+		ROUND_DEC=#{roundDec},
+		ROUND_NUM=#{roundNum},
+		NOTES=#{notes},
+		NUTRIT1=#{nutrit1},
+		NUTRIT2=#{nutrit2},
+		NUTRIT3=#{nutrit3},
+		NUTRIT4=#{nutrit4},
+		NUTRIT5=#{nutrit5},
+		NUTRIT7=#{nutrit7},
+		NUTRIT8=#{nutrit8},
+		NUTRIT9=#{nutrit9},
+		NUTRIT11=#{nutrit11},
+		NUTRIT16=#{nutrit16},
+		NUTRIT17=#{nutrit17},
+		NUTRIT18=#{nutrit18},
+		NUTRIT22=#{nutrit22},
+		NUTRIT24=#{nutrit24},
+		NUTRIT23=#{nutrit23},
+		NUTRIT25=#{nutrit25},
+		HOSPCLS=#{hospcls},
+		ADD_YN=#{addYn}
+		where INGRED_CD=#{ingredCd}
+	</update>
+
+	<delete id="deleteIngred">
+		delete from sn_ingred where ingred_cd=#{ingredCd}
+	</delete>
+</mapper>

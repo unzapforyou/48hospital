@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.hdm.admission.dao.HospitalRoomDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+	<select id="selectHospitalRoomList" flushCache="false" useCache="true"
+		parameterType="map" resultType="HospitalRoomBean">
+		SELECT *
+		FROM WB_HROOM
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="ward != null and !ward.equals('undefined') and !ward.equals('') ">
+				AND WARD = #{ward}
+			</if>
+			<if test="hroom != null and !hroom.equals('undefined') and !hroom.equals('')">
+				AND HROOM = #{hroom}
+			</if>
+			<if test="gender != null and !gender.equals('undefined') and !gender.equals('')">
+				AND GENDER = #{gender}
+			</if>
+		</trim>
+	</select>
+
+	<update id="insertHospitalRoom" parameterType="HospitalRoomBean">
+		INSERT INTO WB_HROOM
+		VALUES(
+			#{hroomNo},
+			#{ward},
+			#{hroom},
+			#{applyPridStartDate},
+			#{applyPridEndDate},
+			#{trmtDept},
+			#{hroomGrade},
+			#{hroomDiffAmt},
+			#{sibdCnt},
+			#{pmsnSibd},
+			#{gender},
+			#{sibdTel},
+			#{finanCnt},
+			#{feeCd}
+		)
+	</update>
+
+	<update id="updateHospitalRoom" parameterType="HospitalRoomBean">
+		UPDATE WB_HROOM
+		SET
+			WARD=#{ward},
+			HROOM=#{hroom},
+			APPLY_PRID_START_DATE=#{applyPridStartDate},
+			APPLY_PRID_END_DATE=#{applyPridEndDate},
+			TRMT_DEPT=#{trmtDept},
+			HROOM_GRADE=#{hroomGrade},
+			HROOM_DIFF_AMT=#{hroomDiffAmt},
+			SIBD_CNT=#{sibdCnt},
+			PMSN_SIBD=#{pmsnSibd},
+			GENDER=#{gender},
+			SIBD_TEL=#{sibdTel},
+			FINAN_CNT=#{finanCnt},
+			FEE_CD=#{feeCd}
+		WHERE HROOM_NO=#{hroomNo}
+	</update>
+
+	<update id="deleteHospitalRoom" parameterType="HospitalRoomBean">
+		DELETE FROM WB_HROOM
+		WHERE HROOM_NO=#{hroomNo}
+	</update>
+
+
+	<!-- 입원등록번호 구하기 -->
+	<select id="selectHospitalRoomSeq" flushCache="false"
+		useCache="true" resultType="java.lang.String">
+		SELECT ERP48.HOSPITAL_ROOM_SEQ.NEXTVAL
+		FROM DUAL
+	</select>
+
+</mapper>

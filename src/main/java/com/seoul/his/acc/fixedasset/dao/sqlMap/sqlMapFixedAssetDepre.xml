@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.acc.fixedasset.dao.FixedAssetDepreDAO">
+    
+    <cache flushInterval="86400000" eviction="LRU" />
+ 
+    <select id="selectDepreRateList" flushCache="false"  useCache="true" resultType="DepreRateBean">
+        SELECT 
+            *
+        FROM 
+            AF_DEPRE_RATE
+    </select>
+    
+    <select id="selectFixedAssetYearDepreList" flushCache="false"  useCache="true" resultType="YearDepreBean">
+        SELECT 
+            *
+        FROM 
+            AF_YEAR_DEPRE
+        WHERE 
+            ASSET_NO = #{assetNo}
+            AND YEAR_DEPRE_DLINE_YN = '1'
+        ORDER BY 
+            DEPRE_YEAR
+    </select>
+
+    <select id="callFixedAssetDepre" statementType="CALLABLE" flushCache="false">
+        { CALL PC_AF_FIXED_ASSET_DEPRE(
+             #{assetNo, mode=IN, jdbcType=VARCHAR}
+            ,#{acquDate, mode=IN, jdbcType=DATE}
+            ,#{acquAmt, mode=IN, jdbcType=NUMERIC}
+            ,#{depreYears, mode=IN, jdbcType=NUMERIC}
+            ,#{depreMthd, mode=IN, jdbcType=VARCHAR}
+            ,#{errorCode, mode=OUT, jdbcType=VARCHAR}
+            ,#{errorMsg, mode=OUT, jdbcType=VARCHAR}) 
+        }
+    </select>
+    
+    
+	 
+    
+   
+
+   <select id="selectFixedAssetMonthDepreList" flushCache="false"  useCache="true" resultType="MonthDepreBean">
+			SELECT M.ASSET_NO, 
+		       F.ASSET_NM, 
+		       F.ACQU_DATE, 
+		       F.ACQU_AMT,
+		       F.MNGNT_CD, 
+		       F.OWN_DEPT, 
+		       F.PST_LOC, 
+		       F.RESPO_WORKER, 
+		       F.DEPRE_MTHD, 
+		       M.DEPRE_YM, 
+		       M.BEF_YEAR_RESID_AMT, 
+		       M.THATMONTH_DEPRE_AMT, 
+		       M.THATYEAR_DEPRE_AMT, 
+		       M.THATMONTH_DEPRE_RUN_YN 
+		  FROM AF_FIXED_ASSET F, 
+		       AF_MONTH_DEPRE M 
+		 WHERE M.DEPRE_YM BETWEEN #{startDate} AND #{endDate}
+		       AND M.ASSET_NO = F.ASSET_NO 
+		ORDER BY M.ASSET_NO
+    </select>
+    
+    <select id="selectFixedAssetMonthDepreYmList" flushCache="false"  useCache="true" resultType="FixedAssetDepreYmBean">
+			 SELECT DEPRE_YM, COUNT(DEPRE_YM) AS CNT
+			  FROM AF_MONTH_DEPRE
+			 WHERE DEPRE_YM BETWEEN #{startDate} AND #{endDate}
+			 GROUP BY DEPRE_YM 
+			 ORDER BY DEPRE_YM
+    </select>
+    
+     <select id="callFixedAssetMonthDepreDline" statementType="CALLABLE" flushCache="false">
+		{ CALL PC_AF_ASSET_MONTH_DEPRE_DLINE(
+			 #{assetNo, mode=IN, jdbcType=VARCHAR}
+			,#{depreYm, mode=IN, jdbcType=VARCHAR}
+			,#{thatmonthDepreRunYn, mode=IN, jdbcType=VARCHAR}
+			,#{errorCode, mode=OUT, jdbcType=VARCHAR}
+			,#{errorMsg, mode=OUT, jdbcType=VARCHAR}) 
+		}
+    </select>
+    
+     <select id="selectFixedAssetYearDepreDtlList" flushCache="false"  useCache="true" resultType="YearDepreBean">
+		SELECT Y.ASSET_NO
+		      ,Y.DEPRE_YEAR
+		      ,F.ASSET_NM
+		      ,F.ACQU_DATE
+		      ,Y.BASIC_ASSET_AMT
+		      ,Y.DEPRE_SUM
+		      ,Y.RESID_DEPRE_AMT
+		      ,Y.THATYEAR_DEPRE_AMT
+		      ,Y.RESID_AMT
+		      ,Y.YEAR_DEPRE_DLINE_YN
+			FROM AF_FIXED_ASSET F,
+			     AF_YEAR_DEPRE Y
+	    WHERE Y.DEPRE_YEAR BETWEEN #{startDate} AND #{endDate}
+	     AND  F.ASSET_NO = Y.ASSET_NO
+	     ORDER BY Y.ASSET_NO
+    </select>
+    
+     <select id="selectFixedAssetYearDepreYearList" flushCache="false"  useCache="true" resultType="FixedAssetDepreYmBean">			 
+		SELECT DEPRE_YEAR, COUNT(DEPRE_YEAR) AS CNT, SUM(THATYEAR_DEPRE_AMT) as depreAmt
+		 FROM AF_YEAR_DEPRE 
+		 WHERE DEPRE_YEAR BETWEEN #{startDate} AND #{endDate}
+		 GROUP BY DEPRE_YEAR
+		 ORDER BY DEPRE_YEAR
+    </select>
+    
+       <select id="callFixedAssetYearDepreDline" statementType="CALLABLE" flushCache="false">
+		{ CALL PC_AF_ASSET_YEAR_DEPRE_DLINE(
+			 #{assetNo, mode=IN, jdbcType=VARCHAR}
+			,#{depreYear, mode=IN, jdbcType=VARCHAR}
+			,#{yearDepreDlineYn, mode=IN, jdbcType=VARCHAR}
+			,#{errorCode, mode=OUT, jdbcType=VARCHAR}
+			,#{errorMsg, mode=OUT, jdbcType=VARCHAR}) 
+		}
+    </select>
+</mapper>

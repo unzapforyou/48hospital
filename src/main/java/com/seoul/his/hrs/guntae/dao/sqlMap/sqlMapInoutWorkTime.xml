@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.seoul.his.hrs.guntae.dao.InoutWorkTimeDAO">
+
+	<select id="selectInoutWorkTimeList" resultType="InoutWorkTimeBean">
+		select
+			IN_OUT_TIME
+		  , REASON
+		  , INOUT_GUBUN
+		  , INOUT_TIME_NO
+		  , START_DATE
+		  , END_DATE
+		  , EMP_NO
+		  , EMP_NM
+		  , OVER_TIME
+		  , BELONG_DAY
+		from HG_INOUT_TIME
+		where 1=1
+		<if test="empNo != '' and empNo != null and sDate != '' and sDate != null and eDate != '' and eDate != null">
+			and EMP_NO = #{empNo}
+			and BELONG_DAY BETWEEN #{sDate} and #{eDate}
+		</if>
+		order by INOUT_TIME_NO
+	</select>
+
+	<update id="insertInoutWorkTime" parameterType="InoutWorkTimeBean">
+		INSERT INTO HG_INOUT_TIME
+		(
+		  IN_OUT_TIME
+		, REASON
+		, INOUT_GUBUN
+		, INOUT_TIME_NO
+		, START_DATE
+		, END_DATE
+		, EMP_NO
+		, EMP_NM
+		, OVER_TIME
+		, BELONG_DAY
+		)
+		VALUES
+		(
+		  #{inOutTime}
+		, #{reason}
+		, #{inoutGubun}
+		, #{inoutTimeNo}
+		, #{startDate}
+		, #{endDate}
+		, #{empNo}
+		, #{empNm}
+		, #{overTime}
+		, #{belongDay}
+		)
+	</update>
+
+	<update id="updateInoutWorkTime" parameterType="InoutWorkTimeBean">
+		UPDATE HG_INOUT_TIME SET
+			IN_OUT_TIME = #{inOutTime}
+		  , BELONG_DAY = #{belongDay}
+		  , REASON = #{reason}
+		  , INOUT_GUBUN = #{inoutGubun}
+          , OVER_TIME = #{overTime}
+		WHERE INOUT_TIME_NO = #{inoutTimeNo}
+	</update>
+
+
+
+</mapper>

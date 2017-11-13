@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.hrs.salBase.dao.SocialInsureDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+ 
+	<select id="findsocialInsureList" resultType="SocialInsureBean">
+		SELECT
+			BELONG_YEAR AS belongYear,
+			HIT,
+			LTCIR,
+			NPIRR,
+			NPBBR,
+			HIRE_INSUR_RATE AS hireInsurRate,
+			SAF_INSUR_RATE AS safInsurRate
+		FROM HS_SOCIAL_INSURANCE
+		WHERE BELONG_YEAR = #{year}
+	</select>
+
+	<insert id="insertSocialInsure">
+		INSERT INTO HS_SOCIAL_INSURANCE
+		VALUES(
+			#{belongYear},
+			#{hit},
+			#{ltcir},
+			#{npirr},
+			#{npbbr},
+			#{hireInsurRate},
+			#{safInsurRate}
+		)
+	</insert>
+	 
+</mapper>

@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.log.base.dao.GdsGrpCdDAO">
+    <cache flushInterval="86400000" eviction="LRU" />
+    <resultMap type="BigGrpCdBean" id="selectBigGrpCdBeanResultMap">
+        <result property="bigGrpCd"         column="BIG_GRP_CD" />
+        <result property="bigGrpNm"         column="BIG_GRP_NM" />
+        <result property="grpDiv"           column="GRP_DIV" />
+        <result property="useYb"            column="USE_YB" />
+        <result property="userRegPossYb"    column="USER_REG_POSS_YB" />
+        <result property="regWorkerId"      column="REG_WORKER_ID" />
+        <result property="regWorkerIp"      column="REG_WORKER_IP" />
+        <result property="regDate"          column="REG_DATE" />
+        <result property="modWorkerId"      column="MOD_WORKER_ID" />
+        <result property="modWorkerIp"      column="MOD_WORKER_IP" />
+        <result property="modDate"          column="MOD_DATE" />
+        <collection property="midGrpCdList" select="selectMidGrpCdList" column="BIG_GRP_CD" />
+    </resultMap>
+
+    <resultMap type="MidGrpCdBean" id="selectMidGrpCdBeanResultMap">
+        <result property="midGrpCd"         column="MID_GRP_CD" />
+        <result property="midGrpCdNm"       column="MID_GRP_CD_NM" />
+        <result property="useYb"            column="USE_YB" />
+        <result property="userRegPossYb"    column="USER_REG_POSS_YB" />
+        <result property="regWorkerId"      column="REG_WORKER_ID" />
+        <result property="regWorkerIp"      column="REG_WORKER_IP" />
+        <result property="regDate"          column="REG_DATE" />
+        <result property="modWorkerId"      column="MOD_WORKER_ID" />
+        <result property="modWorkerIp"      column="MOD_WORKER_IP" />
+        <result property="modDate"          column="MOD_DATE" />
+        <result property="bigGrpCd"         column="BIG_GRP_CD" />
+        <collection property="smGrpCdList"  select="selectSmGrpList" column="{midCd=MID_GRP_CD,bigCd=BIG_GRP_CD}" />
+    </resultMap>
+
+    <resultMap type="SmGrpCdBean" id="selectSmGrpCdBeanResultMap">
+        <result property="smGrpCd"          column="SM_GRP_CD" />
+        <result property="smGrpCdNm"        column="SM_GRP_CD_NM" />
+        <result property="useYb"            column="USE_YB" />
+        <result property="userRegPossYb"    column="USER_REG_POSS_YB" />
+        <result property="regWorkerId"      column="REG_WORKER_ID" />
+        <result property="regWorkerIp"      column="REG_WORKER_IP" />
+        <result property="regDate"          column="REG_DATE" />
+        <result property="modWorkerId"      column="MOD_WORKER_ID" />
+        <result property="modWorkerIp"      column="MOD_WORKER_IP" />
+        <result property="modDate"          column="MOD_DATE" />
+        <result property="bigGrpCd"         column="BIG_GRP_CD" />
+        <result property="midGrpCd"         column="MID_GRP_CD" />
+    </resultMap>
+
+    <select id="selectBindBgrpCdList" flushCache="false" useCache="true" resultType="OutLogCdBean">
+        SELECT 
+            BIG_GRP_CD  AS code
+          , BIG_GRP_NM  AS value
+        FROM
+            LC_BIG_GRP_CD
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="_parameter != null">
+                AND BIG_GRP_CD = #{code}
+            </if>
+        </trim>
+        ORDER BY
+            BIG_GRP_CD
+    </select>
+
+    <select id="selectBindMgrpCdList" flushCache="false" useCache="true" resultType="OutLogCdBean">
+        SELECT 
+            MID_GRP_CD AS code
+          , MID_GRP_CD_NM AS value
+        FROM
+            LC_MID_GRP_CD
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="code != null and code !=''">
+                AND MID_GRP_CD = #{code}
+            </if>
+            <if test="secCode != null">
+                AND BIG_GRP_CD = #{secCode}
+            </if>
+        </trim>
+        ORDER BY
+            MID_GRP_CD
+    </select>
+
+    <select id="selectBindSgrpCdList" flushCache="false" useCache="true" resultType="OutLogCdBean">
+        SELECT 
+            SM_GRP_CD AS code
+          , SM_GRP_CD_NM AS value
+        FROM
+            LC_SM_GRP_CD
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="code != null and code !=''">
+                AND SM_GRP_CD = #{code}
+            </if>
+            <if test="secCode != null">
+                AND MID_GRP_CD = #{secCode}
+            </if>
+            <if test="thrCode != null">
+                AND BIG_GRP_CD = #{thrCode}
+            </if>
+        </trim>
+        ORDER BY
+            SM_GRP_CD
+    </select>
+
+    <select id="selectGrpList" flushCache="false" useCache="true" resultMap="selectBigGrpCdBeanResultMap">
+        SELECT 
+            *
+        FROM
+            LC_BIG_GRP_CD
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="bigGrpCd != null">
+                AND BIG_GRP_CD = #{bigGrpCd}
+            </if>
+            <if test="bigGrpNm != null">
+                AND BIG_GRP_NM LIKE '%'||#{bigGrpNm}||'%'
+            </if>
+        </trim>
+        ORDER BY
+            BIG_GRP_CD
+    </select>
+
+    <select id="selectMidGrpCdList" flushCache="false" useCache="true" resultMap="selectMidGrpCdBeanResultMap">
+        SELECT
+            *
+        FROM
+            LC_MID_GRP_CD
+        WHERE 
+            BIG_GRP_CD = #{BIG_GRP_CD}
+        ORDER BY
+            MID_GRP_CD
+    </select>
+
+    <select id="selectSmGrpList" flushCache="false" useCache="true" resultMap="selectSmGrpCdBeanResultMap">
+        SELECT
+            *
+        FROM
+            LC_SM_GRP_CD
+        WHERE
+            MID_GRP_CD = #{midCd}
+        AND BIG_GRP_CD = #{bigCd}
+        ORDER BY 
+            SM_GRP_CD
+    </select>
+
+    <insert id="insertBigGrpCd" flushCache="false">
+        INSERT INTO
+            LC_BIG_GRP_CD (
+                USE_YB
+              , REG_DATE
+              , MOD_WORKER_ID
+              , REG_WORKER_ID
+              , GRP_DIV
+              , MOD_DATE
+              , REG_WORKER_IP
+              , MOD_WORKER_IP
+              , BIG_GRP_NM
+              , BIG_GRP_CD
+              , USER_REG_POSS_YB
+           )
+        VALUES (
+            #{useYb}
+          , #{regDate}
+          , #{modWorkerId}
+          , #{regWorkerId}
+          , #{grpDiv}
+          , #{modDate}
+          , #{regWorkerIp}
+          , #{modWorkerIp}
+          , #{bigGrpNm}
+          , #{bigGrpCd}
+          , #{userRegPossYb}
+        )
+    </insert>
+
+    <update id="updateBigGrpCd" flushCache="false">
+        UPDATE
+            LC_BIG_GRP_CD
+        SET
+            USE_YB           = #{useYb}
+          , REG_DATE         = #{regDate}
+          , MOD_WORKER_ID    = #{modWorkerId}
+          , REG_WORKER_ID    = #{regWorkerId}
+          , GRP_DIV          = #{grpDiv}
+          , MOD_DATE         = #{modDate}
+          , REG_WORKER_IP    = #{regWorkerIp}
+          , MOD_WORKER_IP    = #{modWorkerIp}
+          , BIG_GRP_NM       = #{bigGrpNm}
+          , BIG_GRP_CD       = #{bigGrpCd}
+          , USER_REG_POSS_YB = #{userRegPossYb}
+        WHERE
+            BIG_GRP_CD       = #{bigGrpCd}
+    </update>
+
+    <insert id="insertMidGrpCd" flushCache="false">
+        INSERT INTO
+            LC_MID_GRP_CD (
+                BIG_GRP_CD
+              , USER_REG_POSS_YB
+              , MID_GRP_CD
+              , USE_YB
+              , REG_WORKER_IP
+              , REG_WORKER_ID
+              , REG_DATE
+              , MID_GRP_CD_NM
+              , MOD_WORKER_IP
+              , MOD_DATE
+              , MOD_WORKER_ID
+            )
+        VALUES (
+            #{bigGrpCd}
+          , #{userRegPossYb}
+          , #{midGrpCd}
+          , #{useYb}
+          , #{regWorkerIp}
+          , #{regWorkerId}
+          , #{regDate}
+          , #{midGrpCdNm}
+          , #{modWorkerIp}
+          , #{modDate}
+          , #{modWorkerId}
+        )
+    </insert>
+
+    <update id="updateMidGrpCd" flushCache="false">
+        UPDATE
+            LC_MID_GRP_CD
+        SET
+            BIG_GRP_CD          = #{bigGrpCd}
+          , USER_REG_POSS_YB    = #{userRegPossYb}
+          , MID_GRP_CD          = #{midGrpCd}
+          , USE_YB              = #{useYb}
+          , REG_WORKER_IP       = #{regWorkerIp}
+          , REG_WORKER_ID       = #{regWorkerId}
+          , REG_DATE            = #{regDate}
+          , MID_GRP_CD_NM       = #{midGrpCdNm}
+          , MOD_WORKER_IP       = #{modWorkerIp}
+          , MOD_DATE            = #{modDate}
+          , MOD_WORKER_ID       = #{modWorkerId}
+        WHERE
+            BIG_GRP_CD          = #{bigGrpCd}
+        AND MID_GRP_CD          = #{midGrpCd}
+    </update>
+
+    <insert id="insertSmGrpCd" flushCache="false">
+        INSERT INTO
+            LC_SM_GRP_CD (
+                REG_DATE
+              , MID_GRP_CD
+              , SM_GRP_CD_NM
+              , REG_WORKER_IP
+              , USE_YB
+              , MOD_WORKER_ID
+              , BIG_GRP_CD
+              , USER_REG_POSS_YB
+              , MOD_DATE
+              , MOD_WORKER_IP
+              , SM_GRP_CD
+              , REG_WORKER_ID
+        )
+        VALUES (
+            #{regDate}
+          , #{midGrpCd}
+          , #{smGrpCdNm}
+          , #{regWorkerIp}
+          , #{useYb}
+          , #{modWorkerId}
+          , #{bigGrpCd}
+          , #{userRegPossYb}
+          , #{modDate}
+          , #{modWorkerIp}
+          , #{smGrpCd}
+          , #{regWorkerId}
+        )
+    </insert>
+
+    <update id="updateSmGrpCd" flushCache="false">
+        UPDATE
+            LC_SM_GRP_CD
+        SET
+            REG_DATE        = #{regDate}
+         , MID_GRP_CD       = #{midGrpCd}
+         , SM_GRP_CD_NM     = #{smGrpCdNm}
+         , REG_WORKER_IP    = #{regWorkerIp}
+         , USE_YB           = #{useYb}
+         , MOD_WORKER_ID    = #{modWorkerId}
+         , BIG_GRP_CD       = #{bigGrpCd}
+         , USER_REG_POSS_YB = #{userRegPossYb}
+         , MOD_DATE         = #{modDate}
+         , MOD_WORKER_IP    = #{modWorkerIp}
+         , SM_GRP_CD        = #{smGrpCd}
+         , REG_WORKER_ID    = #{regWorkerId}
+        WHERE
+            MID_GRP_CD      = #{midGrpCd}
+        AND BIG_GRP_CD      = #{bigGrpCd}
+        AND SM_GRP_CD       = #{smGrpCd}
+    </update>
+    
+    
+    <delete id="deleteBigGrpCd">
+        DELETE FROM
+            LC_BIG_GRP_CD
+        WHERE
+            BIG_GRP_CD      = #{bigGrpCd}
+    </delete>
+    
+    <delete id="deleteMidGrpCd">
+        DELETE FROM
+            LC_MID_GRP_CD
+        WHERE
+            BIG_GRP_CD      = #{bigGrpCd}
+        AND MID_GRP_CD      = #{midGrpCd}
+    </delete>
+    
+    <delete id="deleteSmGrpCd">
+        DELETE FROM
+            LC_SM_GRP_CD
+        WHERE
+            BIG_GRP_CD      = #{bigGrpCd}
+        AND MID_GRP_CD      = #{midGrpCd}
+        AND SM_GRP_CD       = #{smGrpCd}
+    </delete>
+
+</mapper>

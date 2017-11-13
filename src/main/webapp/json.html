@@ -1,0 +1,12 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script type="text/javascript" src="js/sockjs-0.3.min.js"></script>
+</head>
+<body>  
+    <script type="text/javascript">
+        var webSocket = new SockJS("http://localhost:8282/his/echo.sockjs");
+        webSocket.onmessage = function(message){document.write(message.data);};
+    </script>
+</body>
+</html>

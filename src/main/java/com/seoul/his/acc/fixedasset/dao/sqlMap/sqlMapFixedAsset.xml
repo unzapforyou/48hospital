@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.acc.fixedasset.dao.FixedAssetDAO">
+<cache flushInterval="86400000" eviction="LRU" />
+    
+    <select id="selectMaxAssetNo" flushCache="false"  useCache="true" resultType="FixedAssetSequenceBean">
+            SELECT 
+                MAX(ASSET_NO) AS assetNo
+            FROM 
+                AF_FIXED_ASSET
+    </select>
+    
+    <select id="selectFixedAssetList" parameterType="map" flushCache="false"  useCache="true" resultType="FixedAssetBean">
+        SELECT 
+            *
+        FROM 
+            AF_FIXED_ASSET
+        WHERE 
+            ACQU_DATE BETWEEN #{acquStartDate} AND #{acquEndDate}
+        <trim prefix="AND" prefixOverrides="AND">
+            <if test="assetCd != undefined">
+                ASSET_CD = #{assetCd}
+            </if>
+            <if test="equipCd != undefined">
+                AND EQUIP_CD = #{equipCd}
+            </if>
+            <if test="mngntCd != undefined">
+                AND MNGNT_CD = #{mngntCd}
+            </if>
+            <if test="depreMthd != undefined">
+                AND DEPRE_MTHD = #{depreMthd}
+            </if>
+            <if test="ownDept != undefined">
+                AND OWN_DEPT = #{ownDept}
+            </if>
+        </trim>
+        ORDER BY 
+            ASSET_NO
+    </select>
+    
+    <select id="selectFixedAsset" flushCache="false"  useCache="true" resultType="FixedAssetBean">
+            SELECT 
+                *
+            FROM 
+                AF_FIXED_ASSET
+            WHERE 
+                ASSET_NO = #{assetNo}
+    </select>
+    
+    <insert id="insertFixedAsset" parameterType="FixedAssetBean">
+        INSERT INTO 
+            AF_FIXED_ASSET
+        VALUES(
+            #{assetNo}
+           ,#{assetCd}
+           ,#{equipCd}
+           ,#{mngntCd}
+           ,#{acquFinanCd}
+           ,#{acquDate}
+           ,#{dproDate}
+           ,#{inOutCapitalCd}
+           ,#{acntCd}
+           ,#{acquCd}
+           ,#{profitCd}
+           ,#{assetNm}
+           ,#{acnt}
+           ,#{asstAcnt}
+           ,#{assetGrp}
+           ,#{disposalDate}
+           ,#{disposalCd}
+           ,#{acquAmt}
+           ,#{monUnitCd}
+           ,#{splyComp}
+           ,#{cashBuyYn}
+           ,#{prodComp}
+           ,#{modelNm}
+           ,#{prodNo}
+           ,#{prodCtry}
+           ,#{receiver}
+           ,#{ownDept}
+           ,#{pstLoc}
+           ,#{respoWorker}
+           ,#{grade}
+           ,#{fixedAssetPhoto}
+           ,#{depreMthd}
+           ,#{depreYears}
+           ,#{depreRate}
+        )
+    </insert>
+    
+    <update id="updateFixedAsset" parameterType="FixedAssetBean">
+        UPDATE 
+            AF_FIXED_ASSET 
+        SET
+            ASSET_CD=#{assetCd}
+           ,EQUIP_CD=#{equipCd}
+           ,MNGNT_CD=#{mngntCd}
+           ,ACQU_FINAN_CD=#{acquFinanCd}
+           ,ACQU_DATE=#{acquDate}
+           ,DPRO_DATE=#{dproDate}
+           ,IN_OUT_CAPITAL_CD=#{inOutCapitalCd}
+           ,ACNT_CD=#{acntCd}
+           ,ACQU_CD=#{acquCd}
+           ,PROFIT_CD=#{profitCd}
+           ,ASSET_NM=#{assetNm}
+           ,ACNT=#{acnt}
+           ,ASST_ACNT=#{asstAcnt}
+           ,ASSET_GRP=#{assetGrp}
+           ,DISPOSAL_DATE=#{disposalDate}
+           ,DISPOSAL_CD=#{disposalCd}
+           ,ACQU_AMT=#{acquAmt}
+           ,MON_UNIT_CD=#{monUnitCd}
+           ,SPLY_COMP=#{splyComp}
+           ,CASH_BUY_YN=#{cashBuyYn}
+           ,PROD_COMP=#{prodComp}
+           ,MODEL_NM=#{modelNm}
+           ,PROD_NO=#{prodNo}
+           ,PROD_CTRY=#{prodCtry}
+           ,RECEIVER=#{receiver}
+           ,OWN_DEPT=#{ownDept}
+           ,PST_LOC=#{pstLoc}
+           ,RESPO_WORKER=#{respoWorker}
+           ,GRADE=#{grade}
+           ,FIXED_ASSET_PHOTO=#{fixedAssetPhoto}
+           ,DEPRE_MTHD=#{depreMthd}
+           ,DEPRE_YEARS=#{depreYears}
+           ,DEPRE_RATE=#{depreRate}
+        WHERE 
+            ASSET_NO=#{assetNo}
+    </update>
+    
+    <delete id="deleteFixedAsset" parameterType="FixedAssetBean">
+        DELETE FROM AF_FIXED_ASSET
+        WHERE ASSET_NO=#{assetNo}
+    </delete>
+    
+	<update id="updateFixedAssetForDisposal" parameterType="FixedAssetBean">
+	   UPDATE AF_FIXED_ASSET SET
+		 DISPOSAL_CD=#{disposalCd}
+		,DISPOSAL_DATE=#{disposalDate}
+		WHERE ASSET_NO=#{assetNo}
+	</update>
+	
+	<update id="updateFixedAssetForMov" parameterType="FixedAssetBean">
+		UPDATE AF_FIXED_ASSET SET
+		MNGNT_CD=#{mngntCd}
+		,OWN_DEPT=#{ownDept}
+		,PST_LOC=#{pstLoc}
+		,RESPO_WORKER=#{respoWorker}
+		WHERE ASSET_NO=#{assetNo}
+	</update>
+	
+</mapper>

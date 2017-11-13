@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.acc.budget.dao.BudgBimokDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+	
+	<resultMap type="BudgBimokBean" id="BudgBimok">
+		<result column="bimokCd" property="bimokCd"/>
+		<result column="bimokNm" property="bimokNm"/>
+		<result column="accYear" property="accYear"/>
+	    <result column="parentBimok" property="parentBimok"/>
+	    <result column="acntCd" property="acntCd"/>
+	    <result column="assiSubCd" property="assiSubCd"/>
+	    <result column="bimokLevel" property="bimokLevel"/>
+	    <result column="finYn" property="finYn"/>
+	    <result column="useYn" property="useYn"/>
+	    <result column="goveAprcYn" property="goveAprcYn"/>
+	    <result column="budgGuide" property="budgGuide"/>
+	    <result column="acntNm" property="acntNm"/>
+	    <result column="creDebDiv" property="creDebDiv"/>
+	    <result column="assiSubNm" property="assiSubNm"/>
+	    <result column="deptCount" property="deptCount"/>
+<!-- 	    <collection property="budgUseDeptBeanList" column="{accYear=accYear,bimokCd=bimokCd}" select="com.erp45.acc.budget.dao.BudgUseDeptDAO.selectBudgUseDept"  javaType="list"/> -->
+ 	</resultMap>
+
+ 	<select id="selectBimokList" flushCache="false"  useCache="true" resultMap="BudgBimok" >
+        SELECT DISTINCT A.BIMOK_CD AS bimokCd, 
+               A.ACC_YEAR AS accYear, 
+               A.BIMOK_NM AS bimokNm, 
+               A.PARENT_BIMOK AS parentBimok, 
+               A.ACNT_CD AS acntCd, 
+               A.ASSI_SUB_CD AS assiSubCd, 
+               A.BIMOK_LEVEL AS bimokLevel, 
+               A.FIN_YN AS finYn, 
+               A.USE_YN AS useYn, 
+               A.GOVE_APRC_YN AS goveAprcYn, 
+               A.BUDG_GUIDE AS budgGuide, 
+               B.ACNT_NM AS acntNm, 
+               B.CRE_DEB_DIV AS creDebDiv, 
+               C.ASSI_SUB_NM AS assiSubNm, 
+               D.DEPT_COUNT AS deptCount 
+          FROM AB_BUDG_BIMOK A 
+           LEFT OUTER JOIN AE_ACC_ACNT B 
+               ON A.ACNT_CD = B.ACNT_CD 
+           LEFT OUTER JOIN AE_ASSI_SUB C 
+               ON A.ASSI_SUB_CD = C.ASSI_SUB_CD 
+           LEFT OUTER JOIN 
+               (SELECT BIMOK_CD, 
+                      COUNT(*) AS DEPT_COUNT 
+                 FROM AB_BUDG_USE_DEPT 
+                WHERE ACC_YEAR = #{accYear} 
+                GROUP BY bimok_cd 
+               ) D 
+               ON A.BIMOK_CD = D.BIMOK_CD 
+         WHERE 1=1
+	  	<if test="accYear != null">
+		   AND A.ACC_YEAR = #{accYear}
+		</if>
+		<if test="bimokNm != null">
+		   AND A.BIMOK_NM LIKE '%' || #{bimokNm} || '%'
+		</if>
+		<if test="acntNm != null">
+		   AND B.ACNT_NM LIKE '%' || #{acntNm} || '%'
+		</if>
+		<if test="useYn != null and useYn != 0">
+		   AND A.USE_YN = CASE #{useYn} WHEN '1' THEN 'Y'
+	                                    WHEN '2' THEN 'N'
+	                      END
+		</if>
+		<if test="finYn != null">
+		   AND A.FIN_YN = #{finYn}
+		</if>
+		<if test="deptCd != null">
+		   AND A.BIMOK_CD IN (	SELECT	BIMOK_CD
+	                       		FROM	AB_BUDG_USE_DEPT
+	                     		WHERE  	USE_DEPT_CD = #{deptCd}
+	                         )
+		</if>
+		ORDER BY A.BIMOK_CD
+ 	</select>
+
+ 	<insert id="insertBimok">
+        INSERT 
+          INTO AB_BUDG_BIMOK
+               ( 
+                   USE_YN, 
+                   PARENT_BIMOK, 
+                   ACC_YEAR, 
+                   BIMOK_CD, 
+                   ACNT_CD, 
+                   BIMOK_NM, 
+                   FIN_YN, 
+                   BIMOK_LEVEL, 
+                   ASSI_SUB_CD, 
+                   GOVE_APRC_YN 
+               ) 
+               VALUES
+               ( 
+                   #{useYn}, 
+                   #{parentBimok}, 
+                   #{accYear}, 
+                   #{bimokCd}, 
+                   #{acntCd}, 
+                   #{bimokNm}, 
+                   #{finYn}, 
+                   #{bimokLevel}, 
+                   #{assiSubCd}, 
+                   #{goveAprcYn} 
+               )
+ 	</insert>
+
+ 	<update id="updateBimok">
+        UPDATE AB_BUDG_BIMOK 
+               SET USE_YN=#{useYn}, 
+               PARENT_BIMOK=#{parentBimok}, 
+               ACC_YEAR=#{accYear}, 
+               BUDG_GUIDE=#{budgGuide}, 
+               ACNT_CD=#{acntCd}, 
+               BIMOK_NM=#{bimokNm}, 
+               FIN_YN=#{finYn}, 
+               BIMOK_LEVEL=#{bimokLevel}, 
+               ASSI_SUB_CD=#{assiSubCd}, 
+               GOVE_APRC_YN=#{goveAprcYn} 
+         WHERE ACC_YEAR = #{accYear} 
+               AND BIMOK_CD = #{bimokCd}
+ 	</update>
+
+ 	<delete id="deleteBimok">
+        DELETE 
+          FROM AB_BUDG_BIMOK 
+         WHERE ACC_YEAR = #{accYear} 
+               AND BIMOK_CD = #{bimokCd}
+ 	</delete>
+ 	
+ 	<select id="callCopyBimok" statementType="CALLABLE" parameterType="BudgBimokBean" resultType="BudgBimokBean">
+     	{call PC_AB_COPY_BIMOK (
+	      		#{accYear, mode=IN, jdbcType=VARCHAR}
+				, #{errorCode, mode=OUT, jdbcType=VARCHAR}
+		      	, #{errorMsg, mode=OUT, jdbcType=VARCHAR}
+     	) }
+ 	</select>
+</mapper>

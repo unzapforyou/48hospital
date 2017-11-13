@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.seoul.his.bst.HospitalStaffPersonnelStatus.dao.LicenseDAO1">
+
+	<select id="findLicenseList" resultType="LicenseBean">
+		SELECT
+		LICENSE_SEQ AS licenseSeq,	<!-- 면허시퀀스  -->
+		EMP_NO AS empNo,			<!-- 사원번호  -->
+		ACQ_DAY AS acqDay,			<!-- 취득일  -->
+		LICENSE_TYPE AS licenseType,<!-- 면허종류  -->
+		LICENSE_NO licenseNo,		<!-- 자격번호  -->
+		ISSUE						<!-- 발행처  -->
+		FROM HM_LICENSE_INFO
+		where emp_no = #{empNo}		<!-- 사원번호  -->
+
+	</select>
+
+
+
+</mapper>

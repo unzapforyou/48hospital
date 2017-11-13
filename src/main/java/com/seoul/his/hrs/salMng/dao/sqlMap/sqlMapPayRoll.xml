@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.hrs.salMng.dao.PayRollDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+	
+	<!-- 개인별 -->
+	<select id="findEmpPayRollList" resultType="PayRollBean">
+		SELECT hws.EMP_NO AS title1,
+		       hws.EMP_NM AS title2,
+		       hws.JOB_CLASS AS title3,
+		       SUM(DECODE(hp.PAYM_DEDUC_DIV,'지급',hp.AMT)) AS paymAmt,
+		       SUM(DECODE(hp.PAYM_DEDUC_DIV,'공제',hp.AMT)) AS deducAmt
+ 		 FROM HS_REGULAR_WORKS_SALARY hws,
+      			HS_PAY hp
+ 		WHERE hws.BELONG_YM=#{belongYm}
+		       AND hws.PAYMENT_DATE= #{paymDate}
+		       AND hws.EMP_NO = hp.EMP_NO
+		 GROUP BY hws.EMP_NO,
+		       hws.EMP_NM,
+		       hws.JOB_CLASS
+		 ORDER BY hws.EMP_NO
+	</select>
+	
+	<!-- 부서별 -->
+	<select id="findDeptPayRollList" resultType="PayRollBean">
+		SELECT he.DEPT_CD AS title1,
+		       he.DEPT_NM AS title2,
+		       c.cnt AS title3,
+		       SUM(DECODE(hp.PAYM_DEDUC_DIV,'지급',hp.AMT)) AS paymAmt,
+		       SUM(DECODE(hp.PAYM_DEDUC_DIV,'공제',hp.AMT)) AS deducAmt
+		  FROM HS_REGULAR_WORKS_SALARY hws,
+		       HM_EMP he,
+		       HS_PAY hp,
+		       (SELECT he.DEPT_NM dn,
+		              count(*) cnt
+		         FROM HS_REGULAR_WORKS_SALARY hws,
+		              HM_EMP he
+		        WHERE hws.EMP_NO=he.EMP_NO
+		              AND hws.BELONG_YM=#{belongYm}
+		              AND hws.PAYMENT_DATE=#{paymDate}
+		        GROUP BY he.DEPT_NM
+		       ) c
+		 WHERE hws.EMP_NO=he.EMP_NO
+		       AND c.dn=he.DEPT_NM
+		       AND hws.EMP_NO=hp.EMP_NO
+		       AND hws.BELONG_YM=#{belongYm}
+		       AND hws.PAYMENT_DATE=#{paymDate}
+		       AND hp.BELONG_YM=#{belongYm}
+		       AND hp.PAYMENT_DATE=#{paymDate}
+		 GROUP BY he.DEPT_NM,
+		       he.DEPT_CD,
+		       c.cnt
+		 ORDER BY c.cnt
+	</select>
+	
+	<!-- 직종별 -->
+	<select id="findJobPayRollList" resultType="PayRollBean">
+		SELECT info.DETAIL_CODE AS title1, 
+		       info.JOB_CLASS AS title2, 
+		       cnt.c AS title3, 
+		       info.paym AS paymAmt, 
+		       info.deduc AS deducAmt 
+		  FROM 
+		       (SELECT JOB_CLASS, 
+		              DETAIL_CODE, 
+		              SUM(DECODE(div,'지급',amt)) AS paym, 
+		              SUM(DECODE(div,'공제',amt)) AS deduc 
+		         FROM 
+		              (SELECT hws.JOB_CLASS, 
+		                     hp.PAYM_DEDUC_DIV div, 
+		                     SUM(hp.AMT) amt, 
+		                     cd.DETAIL_CODE 
+		                FROM HS_REGULAR_WORKS_SALARY hws, 
+		                     HS_PAY hp, 
+		                     CM_CODE cd 
+		               WHERE hws.EMP_NO = hp.EMP_NO 
+		                     AND hws.BELONG_YM = hp.BELONG_YM 
+		                     AND hws.PAYMENT_DATE = hp.PAYMENT_DATE 
+		                     AND hws.BELONG_YM = #{belongYm} 
+		                     AND hws.PAYMENT_DATE = #{paymDate}
+		                     AND cd.CODE = 'GP070' 
+		                     AND cd.DETAIL_CODE_NAME = hws.JOB_CLASS 
+		               GROUP BY hws.JOB_CLASS, 
+		                     hp.PAYM_DEDUC_DIV, 
+		                     cd.DETAIL_CODE 
+		              ) 
+		        GROUP BY JOB_CLASS,
+		        DETAIL_CODE
+		       ) info , 
+		       (SELECT job_class, 
+		              COUNT(*) c 
+		         FROM HS_REGULAR_WORKS_SALARY 
+		        WHERE BELONG_YM = #{belongYm}
+		              AND PAYMENT_DATE = #{paymDate}
+		        GROUP BY job_class 
+		       ) cnt 
+		 WHERE info.JOB_CLASS = cnt.job_class 
+		ORDER BY cnt.c
+	</select>
+	
+	<!-- 사업장별 -->
+	<select id="findCompPayRollList" resultType="PayRollBean">
+		SELECT '450401' AS title1,
+		       '서울병원' AS title2,
+		       c.cnt AS title3,
+		       SUM(DECODE(hp.PAYM_DEDUC_DIV,'지급',hp.AMT)) AS paymAmt,
+		       SUM(DECODE(hp.PAYM_DEDUC_DIV,'공제',hp.AMT)) AS deducAmt
+		  FROM HS_REGULAR_WORKS_SALARY hws,
+		       HS_PAY hp,
+		       (SELECT COUNT(*) cnt
+		         FROM HS_REGULAR_WORKS_SALARY hws
+		        WHERE hws.BELONG_YM=#{belongYm}
+		              AND hws.PAYMENT_DATE= #{paymDate}
+		       ) c
+		 WHERE hws.EMP_NO = hp.EMP_NO
+		       AND hws.BELONG_YM=#{belongYm}
+		       AND hws.PAYMENT_DATE= #{paymDate}
+		       AND hp.BELONG_YM=#{belongYm}
+		       AND hp.PAYMENT_DATE= #{paymDate}
+		 GROUP BY c.cnt
+		 ORDER BY c.cnt
+	</select>
+
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.acc.resol.dao.PayRecDAO">
+<cache flushInterval="86400000" eviction="LRU" />
+
+<!-- 지불내역 상세 조회 -->
+    <select id="selectPayRecDetail" flushCache="false"  useCache="true" resultType="PayRecBean">
+        SELECT
+            SEQ
+            ,CARD_NO
+            ,PAY_DIV
+            ,STD_TASK
+            ,STD_BIMOK
+            ,CARD_USE_DATE
+            ,APRV_NO
+            ,CUST_CD
+            ,OPER_NO
+            ,ADDR
+            ,DEPO_OWNER
+            ,TRANS_DATE
+            ,TRANS_BANK
+            ,ACCOUNT_NO
+            ,PRICE
+            ,ATT
+            ,CTT_INWON
+            ,USERS
+            ,FOOD_COST_YB
+            ,TAXINV_YB
+            ,NOTE
+            ,ACC_PRID
+            ,RESOL_NO
+            ,SLIP_NO
+            ,EXE_PURP
+        FROM
+            AR_PAY_REC
+        WHERE
+           RESOL_NO = #{resolNo}
+    </select>
+
+</mapper>

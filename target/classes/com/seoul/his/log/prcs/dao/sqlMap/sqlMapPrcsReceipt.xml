@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.log.prcs.dao.PrcsReceiptDAO">
+
+
+
+
+    <select id="selectAnspList" flushCache="false" resultType="GdsAnspBean">
+        SELECT
+            *
+        FROM
+            LW_GDS_ANSP
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="prcsStartCal != null and prcsEndCal != null and prcsStartCal != '' and prcsEndCal != ''">
+                AND ANSP_DATE BETWEEN #{prcsStartCal} AND #{prcsEndCal}
+            </if>
+            AND PROG_STAT = 6
+        </trim>        	
+        ORDER BY
+            GDS_ANSP_NO
+    </select>
+
+    <select id="selectAnspHistList" flushCache="false" resultType="GdsAnspHistBean">
+        SELECT
+            *
+        FROM
+            LW_GDS_ANSP_HIST
+        WHERE
+            GDS_ANSP_NO = #{gdsAnspNo}
+        ORDER BY
+            GDS_ANSP_NO,
+            ANSP_HIST_NO
+    </select>
+
+    <select id="selectPrcsReceiptList" flushCache="false" resultType="PrcsReceiptBean">
+        SELECT
+            *
+        FROM
+            LG_BUY_RECEIPT
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="buyReceiptStartCal != null and buyReceiptEndCal != null and buyReceiptStartCal != '' and buyReceiptEndCal != ''">
+                AND BUY_RECEIPT_DATE BETWEEN #{buyReceiptStartCal} AND #{buyReceiptEndCal}
+            </if>
+            <if test="gdsAnspNo != null and anspHistNo != null and gdsAnspNo != '' and anspHistNo != ''">
+                AND GDS_ANSP_NO = #{gdsAnspNo} AND
+                ANSP_HIST_NO = #{anspHistNo}
+            </if>
+        </trim>
+        ORDER BY
+            GDS_ANSP_NO,
+            ANSP_HIST_NO
+    </select>
+
+    <insert id="insertPrcsReceipt" flushCache="false" parameterType="PrcsReceiptBean">
+        INSERT INTO 
+            LG_BUY_RECEIPT
+        VALUES(
+            #{gdsAnspNo}
+            ,#{anspHistNo}
+            ,#{buyReceiptNo}
+            ,#{buyReceiptDate}
+            ,#{buyReceiptRespoWorker}
+            ,#{cust}
+            ,#{custCd}
+            ,#{buyKind}
+            ,#{inptYn}
+            ,#{buyReceiptYb}
+            ,#{buyDemdDeptCd}
+            ,#{acntCd}
+            ,#{danDiv}
+            ,#{receiptDiv}
+            ,#{skillExamTargetYb}
+            ,#{skillExamDate}
+            ,#{ctrtKind}
+            ,#{signStat}
+            ,#{buyDemdNo}
+            ,#{buyDemdDate}
+            ,#{ctrtYb}
+            ,#{ctrtDiv}
+            ,#{aprvYn}
+            ,#{aprvWorker}
+            ,#{prcsQnt}
+            ,#{gdsCd}
+            ,#{gdsNm}
+        )
+    </insert>
+
+    <update id="updatePrcsReceipt" flushCache="false" parameterType="PrcsReceiptBean">
+        UPDATE LG_BUY_RECEIPT SET
+            GDS_ANSP_NO = #{gdsAnspNo},
+            ANSP_HIST_NO = #{anspHistNo},
+            BUY_RECEIPT_NO = #{buyReceiptNo},
+            BUY_RECEIPT_DATE = #{buyReceiptDate},
+            BUY_RECEIPT_RESPO_WORKER = #{buyReceiptRespoWorker},
+            CUST = #{cust},
+            CUST_CD = #{custCd},
+            BUY_KIND = #{buyKind},
+            PRCS_QNT = #{prcsQnt},
+            GDS_CD = #{gdsCd},
+            GDS_NM = #{gdsNm}
+        WHERE
+            GDS_ANSP_NO = #{gdsAnspNo}
+            AND
+            BUY_RECEIPT_NO = #{buyReceiptNo}
+            AND
+            ANSP_HIST_NO = #{anspHistNo}
+            AND
+            BUY_RECEIPT_DATE = #{buyReceiptDate}
+    </update>
+
+    <delete id="deletePrcsReceipt" flushCache="false" parameterType="PrcsReceiptBean">
+        DELETE FROM
+            LG_BUY_RECEIPT
+        WHERE
+            GDS_ANSP_NO = #{gdsAnspNo}
+            AND
+            BUY_RECEIPT_NO=#{buyReceiptNo}
+            AND
+            ANSP_HIST_NO = #{anspHistNo}
+            AND
+            BUY_RECEIPT_DATE = #{buyReceiptDate}
+    </delete>
+
+</mapper>

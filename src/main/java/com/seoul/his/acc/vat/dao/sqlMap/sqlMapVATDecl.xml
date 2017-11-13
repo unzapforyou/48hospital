@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.acc.vat.dao.VATDeclDAO">
+<cache flushInterval="86400000" eviction="LRU" />
+
+    <select id="selectVATDeclList" flushCache="false"  useCache="true" resultType="VATDeclBean">
+        SELECT 
+            DECL_YEAR
+            ,DECL_PRID
+            ,SALES_TAXINV
+            ,SALES_BUYER_TAXINV
+            ,SALES_ZTR_TAXINV
+            ,SALES_ZTR_ETC
+            ,PURCH_TAXINV
+            ,PURCH_FIXED_ASSET_TAXINV
+            ,PURCH_PLN_DECL_OMI
+            ,SALES_PLN_DECL_OMI
+            ,VAT_SALES_BDTC
+            ,BUYER_TAXINV
+            ,VAT_PURCH_ETC_DEDUCT
+            ,VAT_PURCH_NON_DEDUCT
+            ,VAT_ETC_DEDUCT_REDUCT
+            ,VAT_SALES_CCARD_DEDUCT
+            ,VAT_PLN_DECL_NON_REFUND
+            ,VAT_PLN_NOTI
+            ,VAT_SUM_TAXDEF
+            ,SALES_CCARD_CRECEIPT
+            ,SALES_ETC
+            ,VAT_SALES_PLN_DECL_OMI
+            ,SALES_CCARD_DEDUCT
+            ,VAT_PURCH_TAXINV
+            ,VAT_PURCH_FIXED_ASSET_TAXINV
+            ,VAT_PURCH_PLN_DECL_OMI
+            ,VAT_BUYER_TAXINV
+            ,PURCH_ETC_DEDUCT
+            ,PURCH_NON_DEDUCT
+            ,VAT_SALES_TAXINV
+            ,VAT_SALES_BUYER_TAXINV
+            ,VAT_SALES_CCARD_CRECEIPT
+            ,VAT_SALES_ETC
+        FROM
+            AT_VAT_DECL
+        WHERE  1 = 1
+        <if test="DECL_YEAR != null">
+           AND  DECL_YEAR = #{DECL_YEAR}
+        </if>
+        <if test="DECL_PRID != null">
+           AND  DECL_PRID = #{DECL_PRID}
+        </if>
+        
+    </select>
+    
+    <insert id="insertAtVatDecl" flushCache="false" parameterType="VATDeclBean">
+        INSERT INTO AT_VAT_DECL
+        VALUES(
+        #{declYear}
+        ,#{declPrid}
+        ,#{salesTaxinv}
+        ,#{salesBuyerTaxinv}
+        ,#{salesZtrTaxinv}
+        ,#{salesZtrEtc}
+        ,#{purchTaxinv}
+        ,#{purchFixedAssetTaxinv}
+        ,#{purchPlnDeclOmi}
+        ,#{salesPlnDeclOmi}
+        ,#{vatSalesBdtc}
+        ,#{buyerTaxinv}
+        ,#{vatPurchEtcDeduct}
+        ,#{vatPurchNonDeduct}
+        ,#{vatEtcDeductReduct}
+        ,#{vatSalesCcardDeduct}
+        ,#{vatPlnDeclNonRefund}
+        ,#{vatPlnNoti}
+        ,#{vatSumTaxdef}
+        ,#{salesCcardCreceipt}
+        ,#{salesEtc}
+        ,#{vatSalesPlnDeclOmi}
+        ,#{salesCcardDeduct}
+        ,#{vatPurchTaxinv}
+        ,#{vatPurchFixedAssetTaxinv}
+        ,#{vatPurchPlnDeclOmi}
+        ,#{vatBuyerTaxinv}
+        ,#{purchEtcDeduct}
+        ,#{purchNonDeduct}
+        ,#{vatSalesTaxinv}
+        ,#{vatSalesBuyerTaxinv}
+        ,#{vatSalesCcardCreceipt}
+        ,#{vatSalesEtc}
+        )
+    </insert>
+    
+    <update id="updateAtVatDecl" flushCache="false" parameterType="VATDeclBean">
+        UPDATE AT_VAT_DECL SET
+        SALES_TAXINV=#{salesTaxinv}
+        ,SALES_BUYER_TAXINV=#{salesBuyerTaxinv}
+        ,SALES_ZTR_TAXINV=#{salesZtrTaxinv}
+        ,SALES_ZTR_ETC=#{salesZtrEtc}
+        ,PURCH_TAXINV=#{purchTaxinv}
+        ,PURCH_FIXED_ASSET_TAXINV=#{purchFixedAssetTaxinv}
+        ,PURCH_PLN_DECL_OMI=#{purchPlnDeclOmi}
+        ,SALES_PLN_DECL_OMI=#{salesPlnDeclOmi}
+        ,VAT_SALES_BDTC=#{vatSalesBdtc}
+        ,BUYER_TAXINV=#{buyerTaxinv}
+        ,VAT_PURCH_ETC_DEDUCT=#{vatPurchEtcDeduct}
+        ,VAT_PURCH_NON_DEDUCT=#{vatPurchNonDeduct}
+        ,VAT_ETC_DEDUCT_REDUCT=#{vatEtcDeductReduct}
+        ,VAT_SALES_CCARD_DEDUCT=#{vatSalesCcardDeduct}
+        ,VAT_PLN_DECL_NON_REFUND=#{vatPlnDeclNonRefund}
+        ,VAT_PLN_NOTI=#{vatPlnNoti}
+        ,VAT_SUM_TAXDEF=#{vatSumTaxdef}
+        ,SALES_CCARD_CRECEIPT=#{salesCcardCreceipt}
+        ,SALES_ETC=#{salesEtc}
+        ,VAT_SALES_PLN_DECL_OMI=#{vatSalesPlnDeclOmi}
+        ,SALES_CCARD_DEDUCT=#{salesCcardDeduct}
+        ,VAT_PURCH_TAXINV=#{vatPurchTaxinv}
+        ,VAT_PURCH_FIXED_ASSET_TAXINV=#{vatPurchFixedAssetTaxinv}
+        ,VAT_PURCH_PLN_DECL_OMI=#{vatPurchPlnDeclOmi}
+        ,VAT_BUYER_TAXINV=#{vatBuyerTaxinv}
+        ,PURCH_ETC_DEDUCT=#{purchEtcDeduct}
+        ,PURCH_NON_DEDUCT=#{purchNonDeduct}
+        ,VAT_SALES_TAXINV=#{vatSalesTaxinv}
+        ,VAT_SALES_BUYER_TAXINV=#{vatSalesBuyerTaxinv}
+        ,VAT_SALES_CCARD_CRECEIPT=#{vatSalesCcardCreceipt}
+        ,VAT_SALES_ETC=#{vatSalesEtc}
+        WHERE DECL_YEAR=#{declYear} AND DECL_PRID=#{declPrid}
+    </update>
+    
+    <delete id="deleteAtVatDecl" flushCache="false" parameterType="VATDeclBean">
+        DELETE FROM AT_VAT_DECL
+        WHERE DECL_YEAR=#{declYear} AND DECL_PRID=#{declPrid}
+    </delete>
+</mapper>

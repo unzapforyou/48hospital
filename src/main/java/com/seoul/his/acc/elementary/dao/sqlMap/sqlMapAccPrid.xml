@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.acc.elementary.dao.AccPridDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+<select id= "selectAccPridList" flushCache="false"  useCache="true" resultType="AccPridBean">
+	select * from ae_acc_prid
+</select>
+ </mapper>

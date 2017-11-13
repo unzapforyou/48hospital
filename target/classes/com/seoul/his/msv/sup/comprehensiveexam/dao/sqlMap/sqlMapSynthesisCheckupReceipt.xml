@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.msv.sup.comprehensiveexam.dao.SynthesisCheckupReceiptDAO">
+    <cache flushInterval="86400000" eviction="LRU" />
+	<resultMap id="rsvtRresult" type="SynthesisCheckupReservationBean">
+		<result column="RSVT_NO" property="rsvtNo"/>
+		<result column="PCK_CD" property="pckCd"/>
+		<collection column="PCK_CD" property="pckInspList" javaType="list" select="com.seoul.his.msv.sup.comprehensiveexam.dao.PackgeDAO.selectPckInspList"/>
+		<collection column="RSVT_NO" property="choInspList" javaType="list" select="com.seoul.his.msv.sup.comprehensiveexam.dao.SynthesisCheckupReceiptDAO.selectChoInspList"/>
+	</resultMap>
+	
+	
+	<!-- 종합검진 접수 - 접수조회 -->
+	<select resultType="SynthesisCheckupReceiptBean" flushCache="false" id="selectReceiptList" useCache="true">
+		SELECT R.RSVT_NO, R.PAT_NO, P.PAT_NM, P.RRN1, FN_WS_DECRYPT(P.RRN2) AS RRN2, P.AGE, P.GENDER, P.SMS_RECEIVE_NO AS SMS, R.RSVT_DATE, TO_CHAR(TO_DATE(R.INSP_PLN_DATE,'YYYY-MM-DD'),'YYYYMMDD') AS INSP_PLN_DATE, R.INSP_PLN_TIME, R.APL_MAN, R.APL_MAN_TEL, R.RSHIP, R.PCK_CD, PCK.PCK_NM, R.BASIC_INSP_AMT, R.REDUC_CD, RD.REDUC_NM, R.REDUC_AMT, R.RSVT_AMT, R.BASIC_INSP_SUM_AMT, R.PAY_MAN, R.RSVT_RESP, R.MEMO, R.CHO_INSP_AMT, R.INSP_SUM_AMT, RD.REDUC_NM, RC.APL_DATE, RC.APL_TIME, NVL(RC.CANCEL_YN,'N') AS CANCEL_YN 
+		FROM SC_RSVT R, SC_REDUC RD, SC_PCK PCK, WS_PAT P, SC_RECEIPT RC 
+		WHERE NVL(RC.CANCEL_YN,'N') = 'N' AND R.PAT_NO = P.PAT_NO AND R.REDUC_CD = RD.REDUC_CD(+) AND R.PCK_CD = PCK.PCK_CD(+) AND RC.RSVT_NO = R.RSVT_NO 
+		<if test="patNo != null"> 
+		AND R.PAT_NO = #{patNo} 
+		</if>
+		<if test="inspPlnDate != null"> 
+		AND TO_DATE(INSP_PLN_DATE,'YYYY-MM-DD') >= TO_DATE(#{inspPlnDate},'YYYY-MM-DD') 
+		</if>
+	</select>
+	
+	<!-- 종합검진 접수 - 예약조회 -->
+	<select resultType="SynthesisCheckupReservationBean" flushCache="false" id="selectRsvtList" useCache="true">
+		SELECT R.RSVT_NO, R.PAT_NO, P.PAT_NM, P.RRN1, FN_WS_DECRYPT(P.RRN2) AS RRN2, P.AGE, P.GENDER, P.SMS_RECEIVE_NO AS SMS, R.RSVT_DATE, R.RSVT_TIME, TO_CHAR(TO_DATE(R.INSP_PLN_DATE,'YYYY-MM-DD'),'YYYYMMDD') AS INSP_PLN_DATE, R.INSP_PLN_TIME, R.APL_MAN, R.APL_MAN_TEL, R.RSHIP, R.PCK_CD, PCK.PCK_NM, R.BASIC_INSP_AMT, R.REDUC_CD, RD.REDUC_NM, R.REDUC_AMT, R.RSVT_AMT, R.BASIC_INSP_SUM_AMT, R.PAY_MAN, R.MEMO, NVL(R.CANCEL_YN,'N') AS CANCEL_YN, R.CHO_INSP_AMT, R.INSP_SUM_AMT 
+		FROM SC_RSVT R, SC_REDUC RD, SC_PCK PCK, WS_PAT P 
+		<if test="receiptFlag != Y">
+			,SC_RECEIPT RC 
+		</if>
+		WHERE R.PAT_NO = P.PAT_NO AND R.REDUC_CD = RD.REDUC_CD(+) AND R.PCK_CD = PCK.PCK_CD(+) 
+		<if test="inspPlnDate != null"> 
+		AND TO_DATE(INSP_PLN_DATE,'YYYY-MM-DD') >=TO_DATE(#{inspPlnDate},'YYYY-MM-DD') 
+		</if>
+		<if test="receiptFlag != Y">
+		AND NVL(R.CANCEL_YN,'N') = 'N' AND RC.RSVT_NO(+) = R.RSVT_NO AND (RC.CANCEL_YN = 'Y' OR APL_DATE IS NULL) 
+		</if>
+	</select>
+	
+    
+	
+	<!-- 종합검진 접수 - 예약검사 조회 -->
+	<select flushCache="false" id="selectRsvtInspList" resultMap="rsvtRresult"> 
+		SELECT RSVT_NO, PCK_CD FROM SC_RSVT WHERE RSVT_NO = #{rsvtNo} 
+	</select>
+	
+	<!-- 종합검진 접수 - 선택검사 조회 -->
+	<select id="selectChoInspList" resultType="ChoiceCheckBean" flushCache="false"> 
+		SELECT RSVT_NO, CHO.INSP_CD, INSP_NM, QNT, CHO.AMT, INSP_PLN_DATE 
+		FROM SC_CHO_INSP CHO, SC_INSP I 
+		WHERE RSVT_NO = #{rsvtNo} AND CHO.INSP_CD = I.INSP_CD 
+	</select>
+	
+	<!-- 종합검진 접수 - 접수 취소 여부 -->
+	<update id="updateCancelYN"> 
+		UPDATE SC_RECEIPT SET CANCEL_YN=#{cancelYn}, MOD_ID=#{userId}, MOD_IP=#{userIp}, MOD_DATE=TO_CHAR(SYSDATE,'YYYY-MM-DD') 
+		WHERE RSVT_NO = #{rsvtNo} 
+	</update>
+	
+	<!-- 종합검진 접수 - 접수 등록 -->
+	<update id="insertReceipt"> 
+		MERGE INTO SC_RECEIPT 
+		USING DUAL ON (RSVT_NO = #{rsvtNo}) 
+		WHEN NOT MATCHED THEN 
+		INSERT (PAT_NO, RSVT_NO, APL_DATE, APL_TIME, REG_ID, REG_IP, REG_DATE ) values( #{patNo}, #{rsvtNo}, #{aplDate}, #{aplTime}, #{userId}, #{userIp}, TO_CHAR(SYSDATE,'YYYY-MM-DD') )
+	</update>
+	
+	<!-- 종합검진 접수 - 접수 취소 -->
+	<delete id="deleteReceipt">
+		DELETE FROM SC_RECEIPT
+		WHERE RSVT_NO = #{rsvtNo}
+		AND INSP_PLN_DATE = #{inspPlnDate}
+	</delete>
+	
+	<!-- 종합검진 접수 - 선택검사 일괄처리 추가 -->
+	<update id="insertPckInsp"> 
+		MERGE INTO SC_PCK_INSP USING DUAL ON (PCK_CD = #{pckCd} AND INSP_CD = #{inspCd}) WHEN NOT MATCHED THEN INSERT ( PCK_CD, INSP_CD, REG_ID, REG_IP, REG_DATE ) VALUES ( #{pckCd}, #{inspCd}, #{userId}, #{userIp}, TO_CHAR(SYSDATE,'YYYY-MM-DD')) 
+	</update>
+
+	<!-- 종합검진 접수 - 선택검사 일괄처리 삭제 -->
+	<delete id="deletePckInsp"> 
+	DELETE FROM SC_PCK_INSP WHERE PCK_CD = #{pckCd} AND INSP_CD = #{inspCd} 
+	</delete>
+</mapper>

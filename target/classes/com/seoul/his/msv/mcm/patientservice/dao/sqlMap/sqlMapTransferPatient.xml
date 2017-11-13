@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.msv.mcm.patientservice.dao.TransferPatientDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+	<resultMap type="TransferPatientBean" id="TransferPatient">
+		<result property="transferNo" column="TRANSFER_NO" />
+		<result property="patNo" column="PAT_NO" />
+		<result property="receiptDate" column="RECEIPT_DATE" />
+		<result property="recodeDate" column="RECODE_DATE" />
+		<result property="transferDate" column="TRANSFER_DATE" />
+		<result property="trmtDept" column="TRMT_DEPT" />
+		<result property="trmtDoct" column="TRMT_DOCT" />
+		<result property="dgnsNm" column="DGNS_NM" />
+		<result property="dischargeDate" column="DISCHARGE_DATE" />
+		<result property="transferHosNm" column="TRANSFER_HOS_NM" />
+		<result property="transferHosDept" column="TRANSFER_HOS_DEPT" />
+		<result property="transferHosDoct" column="TRANSFER_HOS_DOCT" />
+		<result property="transferHosTel" column="TRANSFER_HOS_TEL" />
+		<result property="transferReason" column="TRANSFER_REASON" />
+		<result property="providingMedInfo" column="PROVIDING_MED_INFO" />
+		<result property="recodeYn" column="RECODE_YN" />
+		<result property="adviceResult" column="ADVICE_RESULT" />
+		<result property="note" column="NOTE" />
+
+ 	</resultMap>
+
+<select id="selectTransferPatientList" resultType="TransferPatientBean">
+        SELECT
+            *
+        FROM
+            MC_TRANSFER_PATIENT
+
+         <trim prefix="WHERE" prefixOverrides="AND">
+           <if test="patNo != null">
+                AND PAT_NO      = #{patNo}
+            </if>
+            <if test="adviceResult != null">
+                AND ADVICE_RESULT = #{adviceResult}
+            </if>
+            <if test="transStartDate != null and transEndDate != null">
+                AND TRANSFER_DATE BETWEEN = #{transStartDate} AND #{transEndDate}
+            </if>
+        </trim>
+
+ </select>
+
+ <update id="insertTransferPatient">
+
+        INSERT INTO
+            MC_TRANSFER_PATIENT(
+                TRANSFER_NO
+				, PAT_NO
+				, RECEIPT_DATE
+				, RECODE_DATE
+				, TRANSFER_DATE
+				, TRMT_DEPT
+				, TRMT_DOCT
+				, DGNS_NM
+				, DISCHARGE_DATE
+				, TRANSFER_HOS_NM
+				, TRANSFER_HOS_DEPT
+				, TRANSFER_HOS_DOCT
+				, TRANSFER_HOS_TEL
+				, TRANSFER_REASON
+				, PROVIDING_MED_INFO
+				, RECODE_YN
+				, ADVICE_RESULT
+				, NOTE
+            )
+        VALUES (
+            #{transferNo}
+          , #{patNo}
+          , #{receiptDate}
+          , #{recodeDate}
+          , #{transferDate}
+          , #{trmtDept}
+          , #{trmtDoct}
+          , #{dgnsNm}
+          , #{dischargeDate}
+          , #{transferHosNm}
+          , #{transferHosDept}
+          , #{transferHosDoct}
+          , #{transferHosTel}
+          , #{transferReason}
+          , #{providingMedInfo}
+          , 'Y'
+          , #{adviceResult}
+          , #{note}
+        )
+    </update>
+
+    <update id="updateTransferPatient">
+        UPDATE
+            MC_TRANSFER_PATIENT
+        SET
+            TRANSFER_NO       = #{transferNo}
+            , RECEIPT_DATE       = #{receiptDate}
+            , RECODE_DATE       = #{recodeDate}
+            , TRANSFER_DATE       = #{transferDate}
+            , TRMT_DEPT       = #{trmtDept}
+            , TRMT_DOCT       = #{trmtDoct}
+            , DGNS_NM       = #{dgnsNm}
+            , DISCHARGE_DATE       = #{dischargeDate}
+            , TRANSFER_HOS_NM       = #{transferHosNm}
+            , TRANSFER_HOS_DEPT       = #{transferHosDept}
+            , TRANSFER_HOS_DOCT       = #{transferHosDoct}
+            , TRANSFER_HOS_TEL       = #{transferHosTel}
+            , TRANSFER_REASON       = #{transferReason}
+            , PROVIDING_MED_INFO       = #{providingMedInfo}
+            , RECODE_YN       = 'Y'
+            , ADVICE_RESULT       = #{adviceResult}
+            , NOTE       = #{note}
+        WHERE
+            PAT_NO           = #{patNo}
+    </update>
+
+     <delete id="deleteTransferPatient" parameterType="TransferPatientBean">
+        DELETE FROM
+            MC_TRANSFER_PATIENT
+        WHERE
+            PAT_NO = #{patNo}
+    </delete>
+
+
+
+</mapper>

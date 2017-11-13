@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.acc.elementary.dao.AssiSubDAO">
+<cache flushInterval="86400000" eviction="LRU" />
+    <select id="selectAssiSubList" flushCache="false"  useCache="true" resultType="AssiSubBean">
+        SELECT
+            A.ASSI_TYPE_CD
+            , A.ASSI_SUB_CD
+            , A.ASSI_SUB_NM
+            , A.ACC_YEAR
+            , A.USE_YN
+        <if test="acntCd != null">
+            , B.ACNT_CD
+        </if>
+        FROM
+            AE_ASSI_SUB A
+        <if test="acntCd != null">
+        LEFT OUTER JOIN
+            (SELECT 
+                ASSI_TYPE_CD, 
+                ACNT_CD 
+             FROM 
+                AE_ACC_ACNT
+              WHERE 
+                ACC_YEAR = #{accYear}) B
+        ON 
+            A.ASSI_TYPE_CD = B.ASSI_TYPE_CD
+        </if>
+            WHERE 1=1
+        <if test="acntCd != null">
+            AND B.ACNT_CD = #{acntCd}
+        </if>
+        <if test="accYear != null">
+            AND A.ACC_YEAR = #{accYear}
+        </if>
+        <if test="assiSubNm != null">
+            AND A.ASSI_SUB_NM = #{assiSubNm}
+        </if>
+    </select>
+
+    <insert id="insertAssiSub" parameterType="assiSubBean">
+        INSERT INTO 
+            AE_ASSI_SUB VALUES(
+                #{accYear   },
+                #{assiTypeCd},
+                #{assiSubCd },
+                #{assiSubNm },
+                #{useYn     }
+            )
+    </insert>
+
+    <update id="updateAssiSub" parameterType="assiSubBean">
+        UPDATE 
+            AE_ASSI_SUB SET
+                ACC_YEAR        #{accYear   },
+                ASSI_TYPE_CD  #{assiTypeCd},
+                ASSI_SUB_CD   #{assiSubCd },
+                ASSI_SUB_NM   #{assiSubNm },
+                USE_YN        #{useYn     }
+        WHERE 
+            ACC_YEAR   = #{accYear   }
+            AND ASSI_TYPE_CD = #{assiTypeCd}
+            AND ASSI_SUB_CD  = #{assiSubCd }
+    </update>
+
+    <delete id="deleteAssiSub" parameterType="assiSubBean">
+        DELETE 
+            AE_ASSI_SUB
+        WHERE 
+            ACC_YEAR   = #{accYear   }
+            AND ASSI_TYPE_CD = #{assiTypeCd}
+            AND ASSI_SUB_CD  = #{assiSubCd }
+    </delete>
+
+</mapper>

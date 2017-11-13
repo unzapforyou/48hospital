@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.hrs.yeta.dao.HyFormerCompanyDAO">
+	<select id="selectHyFormerCompanyList" resultType="hyFormerCompanyBean">
+		SELECT * FROM HY_FORMER_COMPANY
+	</select>
+	<insert id="insertHyFormerCompany" parameterType="hyFormerCompanyBean">
+		INSERT INTO HY_FORMER_COMPANY
+		VALUES(
+		#{empNo}
+		,#{crNumber}
+		,#{companyName}
+		,#{totalSalary}
+		,#{bonus}
+		,#{deemedBonus}
+		,#{etcTaxFree}
+		,#{nationalPension}
+		,#{healthInsurance}
+		,#{empInsurance}
+		,#{totalDonation}
+		,#{desDonation}
+		,#{workingIncomeTax}
+		,#{incomeTax}
+		,#{residenceTax}
+		,#{totalIncome}
+		,#{totalDdt}
+		,#{totalTax}
+		)
+	</insert>
+	<update id="updateHyFormerCompany" parameterType="hyFormerCompanyBean">
+		UPDATE HY_FORMER_COMPANY SET
+		COMPANY_NAME=#{companyName}
+		,TOTAL_SALARY=#{totalSalary}
+		,BONUS=#{bonus}
+		,DEEMED_BONUS=#{deemedBonus}
+		,ETC_TAX_FREE=#{etcTaxFree}
+		,NATIONAL_PENSION=#{nationalPension}
+		,HEALTH_INSURANCE=#{healthInsurance}
+		,EMP_INSURANCE=#{empInsurance}
+		,TOTAL_DONATION=#{totalDonation}
+		,DES_DONATION=#{desDonation}
+		,WORKING_INCOME_TAX=#{workingIncomeTax}
+		,INCOME_TAX=#{incomeTax}
+		,RESIDENCE_TAX=#{residenceTax}
+		,TOTAL_INCOME=#{totalIncome}
+		,TOTAL_DDT=#{totalDdt}
+		,TOTAL_TAX=#{totalTax}
+		WHERE EMP_NO=#{empNo} AND CR_NUMBER=#{crNumber}
+	</update>
+	<delete id="deleteHyFormerCompany" parameterType="hyFormerCompanyBean">
+		DELETE FROM HY_FORMER_COMPANY
+		WHERE EMP_NO=#{empNo} AND CR_NUMBER=#{crNumber}
+	</delete>
+</mapper>

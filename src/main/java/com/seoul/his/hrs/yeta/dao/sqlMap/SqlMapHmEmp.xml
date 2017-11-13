@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.hrs.yeta.dao.HmEmpDAO">
+	<select id="selectHmEmpList" resultType="hmEmpBean">
+		SELECT * FROM HM_EMP
+	</select>
+	<insert id="insertHmEmp" parameterType="hmEmpBean">
+		INSERT INTO HM_EMP
+		VALUES(
+		#{empNo}
+		,#{empNm}
+		,#{jobcl}
+		,#{jobtt}
+		,#{jobrk}
+		,#{rrn}
+		,#{birthday}
+		,#{gender}
+		,#{mateYn}
+		,#{addr}
+		,#{zipCd}
+		,#{permaddr}
+		,#{tel}
+		,#{phone}
+		,#{extsn}
+		,#{fax}
+		,#{password}
+		,#{image}
+		,#{natnt}
+		,#{localYn}
+		,#{forinNum}
+		,#{deptCd}
+		,#{hireDiv}
+		,#{workStatus}
+		,#{retMonthWorkingdays}
+		,#{payStep}
+		,#{hireDate}
+		,#{pms}
+		,#{detailAddr}
+		,#{email}
+		,#{bankNm}
+		,#{accountNm}
+		,#{retDate}
+		,#{payDate}
+		,#{workPeriod}
+		,#{deptNm}
+		,#{frignSingleTxrate}
+		,#{sts}
+		,#{loginIp}
+		,#{loginTime}
+		)
+	</insert>
+	<update id="updateHmEmp" parameterType="hmEmpBean">
+		UPDATE HM_EMP SET
+		EMP_NM=#{empNm}
+		,JOBCL=#{jobcl}
+		,JOBTT=#{jobtt}
+		,JOBRK=#{jobrk}
+		,RRN=#{rrn}
+		,BIRTHDAY=#{birthday}
+		,GENDER=#{gender}
+		,MATE_YN=#{mateYn}
+		,ADDR=#{addr}
+		,ZIP_CD=#{zipCd}
+		,PERMADDR=#{permaddr}
+		,TEL=#{tel}
+		,PHONE=#{phone}
+		,EXTSN=#{extsn}
+		,FAX=#{fax}
+		,PASSWORD=#{password}
+		,IMAGE=#{image}
+		,NATNT=#{natnt}
+		,LOCAL_YN=#{localYn}
+		,FORIN_NUM=#{forinNum}
+		,DEPT_CD=#{deptCd}
+		,HIRE_DIV=#{hireDiv}
+		,WORK_STATUS=#{workStatus}
+		,RET_MONTH_WORKINGDAYS=#{retMonthWorkingdays}
+		,PAY_STEP=#{payStep}
+		,HIRE_DATE=#{hireDate}
+		,PMS=#{pms}
+		,DETAIL_ADDR=#{detailAddr}
+		,EMAIL=#{email}
+		,BANK_NM=#{bankNm}
+		,ACCOUNT_NM=#{accountNm}
+		,RET_DATE=#{retDate}
+		,PAY_DATE=#{payDate}
+		,WORK_PERIOD=#{workPeriod}
+		,DEPT_NM=#{deptNm}
+		,FRIGN_SINGLE_TXRATE=#{frignSingleTxrate}
+		,STS=#{sts}
+		,LOGIN_IP=#{loginIp}
+		,LOGIN_TIME=#{loginTime}
+		WHERE EMP_NO=#{empNo}
+	</update>
+	<delete id="deleteHmEmp" parameterType="hmEmpBean">
+		DELETE FROM HM_EMP
+		WHERE EMP_NO=#{empNo}
+	</delete>
+</mapper>

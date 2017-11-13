@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.hrs.ret.dao.ReturnItemDAO">
+
+	<cache flushInterval="86400000" eviction="LRU" />
+
+	<select id="selectReturnItemList" flushCache="false" useCache="true"
+		resultType="ReturnItemBean">
+		SELECT
+		RETURN_ITEM_NO
+		,RETURN_YN
+		,NOTE
+		,RETURN_ITEM_NM
+		,RESPONSIVILITY_DEPT
+		,CONFIRMOR
+		,EMP_NO
+		FROM HT_RETURN_ITEM
+		ORDER BY RETURN_ITEM_NO ASC
+
+	</select>
+	<insert id="insertReturnItem" parameterType="ReturnItemBean">
+		INSERT INTO
+		HT_RETURN_ITEM
+		VALUES(
+		#{returnItemNo},
+		#{returnYn},
+		#{note},
+		#{returnItemNm},
+		#{responsivilityDept},
+		#{confirmor},
+		#{empNo}
+		)
+	</insert>
+
+	<update id="updateReturnItem" parameterType="ReturnItemBean">
+		UPDATE
+		HT_RETURN_ITEM SET
+		RETURN_YN=#{returnYn},
+		NOTE=#{note},
+		RETURN_ITEM_NM=#{returnItemNm},
+		RESPONSIVILITY_DEPT=#{responsivilityDept},
+		CONFIRMOR=#{confirmor}
+		WHERE
+		EMP_NO=#{empNo} and
+		RETURN_ITEM_NO=#{returnItemNo}
+	</update>
+
+	<delete id="deleteReturnItem" parameterType="ReturnItemBean">
+		DELETE
+		HT_RETURN_ITEM
+		WHERE EMP_NO=#{empNo}
+	</delete>
+
+</mapper>

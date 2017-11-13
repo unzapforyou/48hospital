@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.hdm.admission.dao.HospitalizationScheduleDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+	<!-- 입원예약자 번호 구하기 -->
+	<select id="selectHosptlzRsvtSeq" flushCache="false" useCache="true" resultType="java.lang.String">
+		SELECT HOSPTLZ_RSVT_SEQ.NEXTVAL
+		FROM DUAL
+	</select>
+
+	<!-- 입원예약등록 -->
+	<update id="insertHospitalizationSchedule" parameterType="HospitalizationScheduleBean">
+			INSERT INTO WH_HOSPTLZ_RSVT(
+				HOSPTLZ_PLN_DATE
+				,HOSPTLZ_RSVT_NO
+				,HOPE_ROOM
+				,OUTPA_RECEIPT_NO
+				,PAT_NO
+				,PRDT_FINAN_DATE
+				,RESP_DOCT_CD
+				,TRMT_DEPT_CD
+				,UNIQUE_NTC
+				,HOPE_WARD
+			)
+			VALUES(
+					#{hosptlzPlnDate}
+					,#{hosptlzRsvtNo}
+					,#{hopeRoom}
+					,#{outpaReceiptNo}
+					,#{patNo}
+					,#{prdtFinanDate}
+					,#{respDoctCd}
+					,#{trmtDeptCd}
+					,#{uniqueNtc}
+					,#{hopeWard}
+			)
+	</update>
+
+	<!-- 입원예약자 조회 -->
+	<select id="selectHospitalizationSchedule" resultType="HospitalizationScheduleBean">
+		SELECT *
+		  FROM WH_HOSPTLZ_RSVT
+		  	<where>
+				<if test="rsvtNo != null">
+					HOSPTLZ_RSVT_NO = #{rsvtNo}
+				</if>
+				<if test="patNo != null">
+					PAT_NO = #{patNo}
+				</if>
+			</where>
+	</select>
+
+	<!-- 입원예약 상태 변경(N-Y) -->
+	<update id="updataHosptalizationScheduleInfo">
+	    UPDATE WS_OUTPA_RECEIPT
+		       SET HOSPTLZ_RSVT_YB='Y'
+		 WHERE OUTPA_RECEIPT_NO =#{outpaReceiptNo}
+		 AND PAT_NO=#{patNo}
+	</update>
+
+	    <!-- 입원예정자 조회 -->
+    <select id="selectHospitalizationScheduleManageList" resultType="HospitalizationScheduleManageBean">
+		 SELECT o.TRMT_DOCT as trmtDoct
+		       ,o.TRMT_DEPT as trmtDept
+		       ,o.TRMT_DATE AS trmtDate
+		       ,o.HOSPTLZ_RSVT_YB AS hosptlzRsvtYb
+		       ,maxNO.OUTPA_RECEIPT_NO as outpaReceiptNo
+		       ,maxNO.PAT_NO as patNo
+		       ,p.AGE as age
+		       ,p.PAT_NM as patNm
+		       ,p.GENDER as gender
+		       ,h.HOSPTLZ_PLN_DATE as hosptlzPlnDate
+		       ,h.HOSPTLZ_RSVT_NO as hosptlzRsvtNo
+		       ,h.HOPE_ROOM as hopeRoom
+		       ,h.UNIQUE_NTC as uniqueNtc
+		       ,h.HOPE_WARD as hopeWard
+		  FROM WS_OUTPA_RECEIPT o
+		       ,WH_HOSPTLZ_RSVT h
+		       ,(SELECT MAX(OUTPA_RECEIPT_NO)OUTPA_RECEIPT_NO
+		              ,PAT_NO
+		         FROM WS_OUTPA_RECEIPT
+		        WHERE HOSPTLZ_YB='Y'
+		              AND HOSPTLZ_RSVT_YB='Y'
+		        GROUP BY PAT_NO
+		     ORDER BY PAT_NO
+		       )maxNo
+		       ,WS_PAT p
+		 WHERE o.PAT_NO=maxNo.PAT_NO
+		       AND o.OUTPA_RECEIPT_NO=maxNO.OUTPA_RECEIPT_NO
+		       AND p.PAT_NO=o.PAT_NO
+		       AND h.PAT_NO=p.PAT_NO
+		      <if test="patNo!=null">
+		       	AND h.PAT_NO=#{patNo}
+		      </if>
+		      <if test="startDate!=null or endDate!=null">
+		      	AND h.HOSPTLZ_PLN_DATE BETWEEN #{startDate} AND #{endDate}
+		      </if>
+    </select>
+
+	<!-- 입원예약 상태 변경(Y->N). -->
+	<update id="updateHospitalizationScheduleYb">
+	    UPDATE WS_OUTPA_RECEIPT
+		       SET HOSPTLZ_RSVT_YB='N'
+		 WHERE OUTPA_RECEIPT_NO =#{outpaReceiptNo}
+		 AND PAT_NO=#{patNo}
+	</update>
+
+	<update id="updateHospitalizationScheduleManage" parameterType="HosptlzPrdstorBean">
+		UPDATE WH_HOSPTLZ_RSVT
+		       SET HOSPTLZ_PLN_DATE=#{hosptlzPlnDate}
+		       		,HOPE_WARD=#{hopeWard}
+		       		,HOPE_ROOM=#{hopeRoom}
+		 WHERE HOSPTLZ_RSVT_NO=#{hosptlzRsvtNo}
+		       AND PAT_NO=#{patNo}
+	</update>
+
+	<!-- 입원예약 삭제. -->
+	<update id="deleteHospitalizationScheduleManage">
+		DELETE
+		  FROM WH_HOSPTLZ_RSVT
+		 WHERE HOSPTLZ_RSVT_NO=#{hosptlzRsvtNo}
+	</update>
+
+
+
+</mapper>

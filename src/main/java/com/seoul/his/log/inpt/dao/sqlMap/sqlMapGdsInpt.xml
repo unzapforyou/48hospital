@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.log.inpt.dao.InptDAO">
+
+    <resultMap type="CtrtInfoBean" id="findCtrtListResultMap">
+        <result property="ctrtNo" column="CTRT_NO" />                        <!-- 계약번호 -->
+        <result property="ctrtDate" column="CTRT_DATE" />                    <!-- 계약일자 -->
+        <result property="ctrtDiv" column="CTRT_DIV" />                      <!-- 계약구분 -->
+        <result property="ctrtStart" column="CTRT_START" />                  <!-- 계약시작 -->
+        <result property="ctrtEnd" column="CTRT_END" />                      <!-- 계약종료 -->
+        <result property="ctrtRespoWorker" column="CTRT_RESPO_WORKER" />     <!-- 계약담당자 -->
+        <result property="ctrtSeq" column="CTRT_SEQ" />                      <!-- 계약순번 -->
+        <result property="cust" column="CUST" />                             <!-- 거래처 -->
+        <result property="ctrtStat" column="CTRT_START" />                   <!-- 계약상태 -->
+        <result property="buyAprvYb" column="BUY_APRV_YB" />                 <!-- 구매승인여부 -->
+        <result property="signSsYb" column="SIGN_SS_YB" />                   <!-- 결재상신여부 -->
+        <result property="ctrtCon" column="CTRT_CON" />                      <!-- 계약내용 -->
+        <result property="ctrtStand" column="CTRT_STAND" />                  <!-- 계약규격 -->
+        <result property="ctrtQnt" column="CTRT_QNT" />                      <!-- 계약수량 -->
+        <result property="ctrtPrice" column="CTRT_PRICE" />                  <!-- 계약단가 -->
+        <result property="ctrtAmt" column="CTRT_AMT" />                      <!-- 계약금액 -->
+        <result property="buyReceiptNo" column="BUY_RECEIPT_NO" />           <!-- 구매접수번호 -->
+        <result property="inptYb" column="INPT_YB" />                        <!-- 검수여부 -->
+        <result property="fm" column="FM" />                                 <!-- 품목 -->
+        <result property="gdsCd" column="GDS_CD" />                          <!-- 물품코드 -->
+        <result property="ctrtGds" column="CTRT_GDS" />                      <!-- 계약물품 -->
+    </resultMap>
+
+    <resultMap type="CtrtInfoDetailBean" id="findCtrtInfoDetailListResultMap">
+        <result property="accYear" column="ACC_YEAR" />             <!-- 회계년도 -->
+        <result property="acntSeq" column="ACNT_SEQ" />             <!-- 계정순번 -->
+        <result property="asstSubCd" column="ASST_SUB_CD" />        <!-- 계정과목코드 -->
+        <result property="cngQnt" column="CNG_QNT" />               <!-- 환산수량 -->
+        <result property="ctrtAmt" column="CTRT_AMT" />             <!-- 계약금액 -->
+        <result property="ctrtDate" column="CTRT_DATE" />           <!-- 계약일자 -->
+        <result property="ctrtNo" column="CTRT_NO" />               <!-- 계약번호 -->
+        <result property="ctrtPrice" column="CTRT_PRICE" />         <!-- 계약단가 -->
+        <result property="ctrtQnt" column="CTRT_QNT" />             <!-- 계약수량 -->
+        <result property="ctrtSeq" column="CTRT_SEQ" />             <!-- 요구순번 -->
+        <result property="demdDate" column="DEMD_DATE" />           <!-- 요구일자 -->
+        <result property="demdSeq" column="DEMD_SEQ" />             <!-- 요구순번 -->
+        <result property="deptCd" column="DEPT_CD" />               <!-- 요구부서코드 -->
+        <result property="gdsCd" column="GDS_CD" />                 <!-- 물품코드 -->
+        <result property="gdsNm" column="GDS_NM" />                 <!-- 물품명 -->
+        <result property="gdsStand" column="GDS_STAND" />           <!-- 물품규격 -->
+        <result property="mngntAtcCode" column="MNGNT_ATC_CODE" />  <!--괸라항목코드 -->
+        <result property="nsNo" column="NS_NO" />                   <!-- 내선번호 -->
+        <result property="ordUnit" column="ORD_UNIT" />             <!-- 발주단위 -->
+        <result property="receiptNo" column="RECEIPT_NO" />         <!-- 접수번호 -->
+        <result property="respoWorker" column="RESPO_WORKER" />     <!-- 요구담당자 -->
+        <result property="subul" column="SUBUL" />                  <!-- 수불 -->
+    </resultMap>
+
+    <resultMap type="GdsInptBean" id="findGdsInptListResultMap">
+        <result property="amt" column="AMT" />           <!-- 계약금액 -->
+        <result property="ctrtNo" column="CTRT_NO" />          <!-- 계약번호 -->
+        <result property="delayDays" column="DELAY_DAYS" />       <!-- 지체일 -->
+        <result property="delayGijunPay" column="DELAY_GIJUN_PAY" />  <!-- 기체기준액 -->
+        <result property="delayPrzAmt" column="DELAY_PRZ_AMT" />     <!-- 지체상금 -->
+        <result property="delayRate" column="DELAY_RATE" />        <!-- 지체비율 -->
+        <result property="delivDay" column="DELIV_DAY" />       <!-- 납품일 -->
+        <result property="gdsInptNo" column="GDS_INPT_NO" />      <!-- 물품검수번호 -->
+        <result property="inptDate" column="INPT_DATE" />  <!-- 검수일 -->
+    </resultMap>
+
+    <!-- 구매요구 -->
+    <resultMap type="BuyDemdBean" id="findDelivDayResultMap">
+        <result property="buyDemdDate" column="BUY_DEMD_DATE" /><!-- 구매요구일자 -->
+        <result property="receiptNo" column="RECEIPT_NO" />     <!-- 구매요구번호 -->
+    </resultMap>
+
+    <select id="selectCtrtList" resultType="CtrtInfoBean">
+        SELECT CTRT_NO
+            ,CTRT_DATE
+            ,CTRT_DIV
+            ,CTRT_START
+            ,CTRT_END
+            ,CTRT_RESPO_WORKER
+            ,CTRT_SEQ
+            ,CUST
+            ,CTRT_STAT
+            ,BUY_APRV_YB
+            ,SIGN_SS_YB
+            ,CTRT_CON
+            ,CTRT_STAND
+            ,CTRT_QNT
+            ,CTRT_PRICE
+            ,CTRT_AMT
+            ,BUY_RECEIPT_NO
+            ,INPT_YB
+            ,GDS_CD
+            ,CTRT_GDS
+            ,FM
+        FROM LP_CTRT
+            ORDER BY
+            CTRT_NO
+    </select>
+
+    <select id="selectCtrtInfoDetailList" resultMap="findCtrtInfoDetailListResultMap">
+        SELECT GDS_CD,
+            GDS_NM,
+            ORD_UNIT,
+            CTRT_QNT,
+            CTRT_PRICE,
+            CTRT_NO
+        FROM LP_CTRT_DTL_HIST
+         WHERE CTRT_NO =#{selectCtrtNo}
+    </select>
+
+    <select id="selectGdsInptList" resultMap="findGdsInptListResultMap">
+        SELECT *
+        FROM LE_GDS_INPT
+         WHERE CTRT_NO=#{selectCtrtNo}
+    </select>
+
+    <!-- 납품일자조회 -->
+    <select id="selectDelivDay" resultMap="findDelivDayResultMap">
+        SELECT BUY_DEMD_DATE
+          FROM LR_BUY_DEMD
+         WHERE RECEIPT_NO=#{selectBuyReceiptNo}
+    </select>
+
+    <select id="selectLastGdsInptNum" resultMap="findGdsInptListResultMap">
+        select gds_inpt_number.NEXTVAL as gds_inpt_no from dual
+    </select>
+
+    <!-- 검수확인 -->
+    <insert id="insertGdsInpt" parameterType="GdsInptBean">
+        INSERT
+          INTO LE_GDS_INPT (
+              AMT
+              ,CTRT_NO
+              ,DELAY_DAYS
+              ,DELAY_GIJUN_PAY
+              ,DELAY_PRZ_AMT
+              ,DELAY_RATE
+              ,DELIV_DAY
+              ,GDS_INPT_NO
+              ,INPT_DATE
+          )VALUES
+               (
+               #{amt}
+               ,#{ctrtNo}
+               ,#{delayDays}
+               ,#{delayGijunPay}
+               ,#{delayPrzAmt}
+               ,#{delayRate}
+               ,#{delivDay}
+               ,#{gdsInptNo}
+               ,#{inptDate}
+               )
+    </insert>
+
+    <!-- 검수여부변경 -->
+    <update id="updateCtrtInfo" parameterType="CtrtInfoBean">
+        UPDATE LP_CTRT
+               SET INPT_YB=#{inptYb}
+         WHERE CTRT_NO = #{ctrtNo}
+    </update>
+
+    <!-- 검수취소 -->
+    <delete id="deleteGdsInpt" parameterType="GdsInptBean">
+        DELETE
+          FROM LE_GDS_INPT
+         WHERE CTRT_NO =#{ctrtNo}
+    </delete>
+
+    <!-- 검수확인 -->
+    <update id="updateCtrtInfoY" parameterType="CtrtInfoBean">
+        UPDATE LP_CTRT
+               SET INPT_YB='Y'
+         WHERE CTRT_NO = #{ctrtNo}
+    </update>
+
+    <!-- 검수확인 -->
+    <update id="updateCtrtInfoN" parameterType="CtrtInfoBean">
+        UPDATE LP_CTRT
+               SET INPT_YB='N'
+         WHERE CTRT_NO = #{ctrtNo}
+    </update>
+
+</mapper>

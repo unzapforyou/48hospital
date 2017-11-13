@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.hrs.salMng.dao.SalStatementDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+	<resultMap type="SalCalEmpBean" id="salCalEmpResultMap">
+		<result property="empNm" column="EMP_NM"/>
+		<result property="empNo" column="EMP_NO"/>
+		<result property="jobClass" column="JOB_CLASS"/>
+		<result property="belongYm" column="BELONG_YM"/>
+		<result property="paymentDate" column="PAYMENT_DATE"/>
+		<result property="aap" column="AAP"/>
+		<collection property="salCalPayDeduList"
+			    select="com.seoul.his.hrs.salMng.dao.SalStatementDAO.findSalCalPayDeduList"
+			    column="{empNo=EMP_NO,belongYm=BELONG_YM,paymentDate=PAYMENT_DATE}"
+			    javaType="list"/>
+	</resultMap>
+
+	<select id="findSalCalEmpList" resultMap="salCalEmpResultMap">
+	    SELECT hws.EMP_NM,
+      			   hws.EMP_NO,
+      			   hws.JOB_CLASS,
+      			   hws.BELONG_YM,
+       			   hws.PAYMENT_DATE,
+       			   hws.AAP
+  		FROM HS_REGULAR_WORKS_SALARY hws
+		WHERE hws.BELONG_YM=#{belongYm}
+        		AND hws.PAYMENT_DATE= #{pamDate}
+       			AND hws.DLINE = 1
+        		<if test="deptNm != null">
+        		AND hws.JOB_CLASS=#{deptNm}
+        		</if>
+	</select>
+
+	<select id="findSalCalPayDeduList" resultType="SalCalPayDedBean">
+		SELECT hp.PAYM_DEDUC_DIV as paymDeducDiv,
+			       hp.PAYM_DEDUC_NM as paymDeducNm,
+			       hp.AMT,
+			       hp.EMP_NO as empNo
+  		FROM HS_PAY hp
+ 		WHERE hp.EMP_NO=#{empNo}
+		       	AND hp.BELONG_YM=#{belongYm}
+		        AND hp.PAYMENT_DATE=#{paymentDate}
+	</select>
+
+	<select id="findSalStatmEmp" resultType="SalStatmPDFBean">
+		SELECT DISTINCT
+				   hp.BELONG_YM AS belongYm,
+			       hp.PAYM_DEDUC_DIV AS paymDeducDiv,
+			       hp.PAYM_DEDUC_NM AS paymDeducNm,
+			       hp.AMT,
+			       hp.EMP_NO AS empNo,
+			       he.EMP_NM AS empNm,
+			       he.DEPT_NM AS deptNm,
+			       hws.AAP
+  		FROM HS_PAY hp,
+     			  HM_EMP he,
+     			  HS_REGULAR_WORKS_SALARY hws
+ 		WHERE hp.EMP_NO = #{empNo}
+        		AND hp.BELONG_YM = #{belongYm}
+        		AND hp.PAYMENT_DATE=#{paymentDate}
+        		AND hp.EMP_NO=he.EMP_NO
+        		AND he.EMP_NO = hws.EMP_NO
+	</select>
+	
+</mapper>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.seoul.his.msv.sup.comprehensiveexam.dao.SynthesisCheckupResultDAO">
+	<cache eviction="LRU" flushInterval="86400000"/>
+	<!-- 종합검진 결과관리 - 결과조회 -->
+	<select resultType="SynthesisCheckupResultBean" useCache="true" flushCache="false" id="selectRsltList"> 
+		SELECT R.RSVT_NO, R.INSP_CD, R.DTL_INSP_CD, D.DTL_INSP_NM, INSP_RSLT, I.OCS_DIV_CD, I.RSLT_DEPT_CD, D.REF_LOW_FIG, D.REF_HIGH_FIG, D.UNIT 
+		FROM SC_INSP_RSLT R, SC_INSP I, SC_DTL_INSP D 
+		WHERE R.INSP_CD = I.INSP_CD 
+		AND R.DTL_INSP_CD = D.DTL_INSP_CD 
+		AND R.INSP_CD = D.INSP_CD 
+		AND R.RSVT_NO = #{rsvtNo} 
+	</select>
+	
+	<!-- 종합검진 결과관리 - 저장 -->
+	<update id="updateRslt"> 
+		UPDATE SC_INSP_RSLT 
+		SET INSP_RSLT = #{inspRslt}, MOD_ID = #{userId}, MOD_IP = #{userIp}, MOD_DATE = TO_CHAR(SYSDATE,'YYYY-MM-DD') 
+		WHERE RSVT_NO = #{rsvtNo} 
+		AND INSP_CD = #{inspCd} 
+		AND DTL_INSP_CD = #{dtlInspCd} 
+	</update>
+
+</mapper>

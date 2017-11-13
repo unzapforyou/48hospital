@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.msv.pre.prescriptionmanagement.dao.FeeDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+	<select id="selectFeeListEMR" flushCache="false" useCache="true"
+		parameterType="map" resultType="FeeBean">
+		SELECT *
+		FROM WB_FEE
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="smCd != '' and smCd != null">
+				<choose>
+					<when test="smCd!=null and smCd == 1">
+						AND MID_GRP IN ('약제','주사료')
+					</when>
+					<when test="smCd!=null and smCd == 2">
+						AND MID_GRP IN ('영상진단 및 방사선 치료료',
+						'검사료',
+						'CT 및 MRI',
+						'초음파검사료',
+						'채혈')
+					</when>
+					<when test="smCd!=null and smCd == 3">
+						AND MID_GRP = '수혈'
+					</when>
+					<when test="smCd!=null and smCd == 4">
+						AND MID_GRP IN ('처치 및 수술료','치과처치 및 수술료')
+					</when>
+					<when test="smCd!=null and smCd == 5">
+						AND MID_GRP = '치료재료'
+					</when>
+					<otherwise>
+						AND MID_GRP = '재활 및 물리치료료'
+					</otherwise>
+				</choose>
+			</if>
+		</trim>
+	</select>
+
+
+</mapper>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.log.ctrt.dao.CtrtDAO">
+
+    <select id="selectCtrtList" flushCache="false" resultType="CtrtBean">
+        SELECT * FROM LP_CTRT
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="buyReceiptNo != null">
+                AND BUY_RECEIPT_NO = #{buyReceiptNo}
+            </if>
+            <if test="ctrtStartCal != null and ctrtEndCal != null and buyReceiptNo == null">
+                AND CTRT_DATE BETWEEN #{ctrtStartCal} AND #{ctrtEndCal} AND INPT_YB = 'Y'
+            </if>
+            <if test="ctrtStartCal == null and ctrtEndCal == null and buyReceiptNo == null">
+                AND INPT_YB = 'Y'
+            </if>
+        </trim>
+        ORDER BY
+            CTRT_NO
+    </select>
+    
+    <insert id="insertCtrt" flushCache="false" parameterType="CtrtBean">
+        INSERT INTO
+            LP_CTRT 
+        VALUES(
+            #{ctrtNo}
+            ,#{buyReceiptNo}
+            ,#{ctrtDiv}
+            ,#{inptYb}
+            ,#{cust}
+            ,#{ctrtDate}
+            ,#{ctrtTel}
+            ,#{ctrtAddr}
+            ,#{ctrtRespoWorker}
+            ,#{ctrtGds}
+            ,#{gdsCd}
+            ,#{ctrtPrid}
+            ,#{ctrtQnt}
+            ,#{ctrtPrice}
+            ,#{ctrtAmt}
+            ,#{ctrtCon}
+            ,#{ctrtStart}
+            ,#{ctrtEnd}
+            ,#{ctrtSeq}
+            ,#{ctrtStat}
+            ,#{buyAprvYb}
+            ,#{signSsYb}
+            ,#{ctrtStand}
+            ,#{fm}
+            ,#{custCd}
+            ,#{bussNo}
+            ,#{busCtgNm}
+            ,#{prsdntNm}
+        )
+    </insert>
+    
+    <update id="updateCtrt" flushCache="false" parameterType="CtrtBean">
+        UPDATE LP_CTRT SET
+            CTRT_NO = #{ctrtNo},
+            BUY_RECEIPT_NO = #{buyReceiptNo},
+            CTRT_DIV = #{ctrtDiv},
+            INPT_YB = #{inptYb},
+            CUST = #{cust},
+            CTRT_DATE = #{ctrtDate},
+            CTRT_TEL = #{ctrtTel},
+            CTRT_ADDR = #{ctrtAddr},
+            CTRT_RESPO_WORKER = #{ctrtRespoWorker},
+            CTRT_GDS = #{ctrtGds},
+            GDS_CD = #{gdsCd},
+            CTRT_PRID = #{ctrtPrid},
+            CTRT_QNT = #{ctrtQnt},
+            CTRT_PRICE = #{ctrtPrice},
+            CTRT_AMT = #{ctrtAmt},
+            CTRT_CON = #{ctrtCon},
+            CTRT_START = #{ctrtStart},
+            CTRT_END = #{ctrtEnd},
+            CTRT_SEQ = #{ctrtSeq},
+            CTRT_STAT = #{ctrtStat},
+            BUY_APRV_YB = #{buyAprvYb},
+            SIGN_SS_YB = #{signSsYb},
+            CTRT_STAND = #{ctrtStand},
+            FM = #{fm},
+            CUST_CD = #{custCd},
+            BUSS_NO = #{bussNo},
+            BUS_CTG_NM = #{busCtgNm},
+            PRSDNT_NM = #{prsdntNm}
+        WHERE
+            BUY_RECEIPT_NO = #{buyReceiptNo} AND CTRT_NO=#{ctrtNo}
+    </update>
+    
+    <delete id="deleteCtrt" flushCache="false" parameterType="CtrtBean">
+        DELETE FROM
+            LP_CTRT
+        WHERE
+            CTRT_NO=#{ctrtNo}
+    </delete>
+</mapper>

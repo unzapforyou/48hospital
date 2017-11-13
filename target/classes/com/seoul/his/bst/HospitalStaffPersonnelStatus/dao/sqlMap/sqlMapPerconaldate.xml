@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.seoul.his.bst.HospitalStaffPersonnelStatus.dao.PerconaldateDAO1">
+
+	<select id="findPerconaldateList" resultType="PerconaldateBean">
+		SELECT
+		HEIGHT ,							<!-- 신장 -->
+		WEIGHT ,							<!-- 체중 -->
+		EYESEGHT ,							<!-- 시력 -->
+		COLORBLIND ,						<!-- 색맹 -->
+		BLOOD_TYPE AS bloodType,			<!-- 혈액형 -->
+		MEDICAL_HISTORY	AS medicalHistory,	<!-- 장애유형 -->
+		RELIGION ,							<!-- 종교 -->
+		EMP_NO AS empNo,					<!-- 사원번호 -->
+		HOBBY ,								<!-- 취미 -->
+		TALENT ,							<!-- 특기 -->
+		REALESTATE,							<!-- 부동산 -->
+		LIFE_LEVEL AS lifeLevel,			<!-- 생활정도 -->
+		LIVING ,							<!-- 주거 -->
+		CITIZENSHIP ,						<!-- 시민권 -->
+		PERRESI ,							<!-- 영주권 -->
+		CTY_NAME AS	ctyName					<!-- 국명 -->
+		FROM HM_PERCONALDATE_INFO
+		where emp_no = #{empNo}				<!-- 사원번호 -->
+	</select>
+
+
+
+</mapper>

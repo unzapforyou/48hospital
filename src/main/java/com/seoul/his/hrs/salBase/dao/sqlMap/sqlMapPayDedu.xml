@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.hrs.salBase.dao.PayDeduDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+	<resultMap type="PayDeduBean" id="PayDeduResultMap">
+		<result property="salDiv" column="SAL_DIV"/>
+		<result property="paymDeducDiv" column="PAYM_DEDUC_DIV"/>
+		<result property="belongYear" column="BELONG_YEAR"/>
+		<result property="taxDiv" column="TAX_DIV"/>
+		<result property="probationApply" column="PROBATION_APPLY"/>
+		<result property="inOutApply" column="IN_OUT_APPLY"/>
+		<result property="monthSal" column="MONTH_SAL"/>
+		<result property="hireInsur" column="HIRE_INSUR"/>
+		<result property="divYn" column="DIV_YN"/>
+		<result property="paymDeducCd" column="PAYM_DEDUC_CD"/>
+		<result property="divSectCd" column="DIV_SECT_CD"/>
+		<result property="dicSectNm" column="DIC_SECT_NM"/>
+		<result property="dline" column="DLINE"/>
+		<result property="paymDeducNm" column="PAYM_DEDUC_NM"/>
+		<collection property="payDeduSectList"
+			    select="com.seoul.his.hrs.salBase.dao.PayDeduDAO.findPayDeduSectList"
+			    column="PAYM_DEDUC_CD"
+			    javaType="list"/>
+	</resultMap>
+
+	<select id="findPayDeduList" resultMap="PayDeduResultMap">
+		SELECT *
+		FROM HS_PAYM_DEDUC_ITEM_REG
+		WHERE SAL_DIV=#{salDiv}
+			AND PAYM_DEDUC_DIV=#{payDeduDiv}
+			AND BELONG_YEAR=#{year}
+	</select>
+	
+	<select id="findPayDeduSectList" resultType="PayDeduSectBean">
+	    SELECT
+			PAYM_DEDUC_CD AS paymDeducCd,
+			PAYM_DEDUC_NM AS paymDeducNm,
+			DIV_SECT_CD AS divSectCd,
+			DIV_SECT_CD_NM AS divSectCdNm,
+			DIV_CD AS divCd,
+			DIV_NM AS divNm,
+			AMT
+		FROM HS_PAYM_DEDUC_SECT
+		WHERE PAYM_DEDUC_CD=#{paymDeducCd}
+	</select>
+
+	<update id="magamCancel">
+	    UPDATE HS_PAYM_DEDUC_ITEM_REG
+        SET dline = 0
+ 		WHERE BELONG_YEAR=#{belongYear}
+	</update>
+
+	<update id="magam">
+	    UPDATE HS_PAYM_DEDUC_ITEM_REG
+        SET dline = 1
+ 		WHERE BELONG_YEAR=#{belongYear}
+	</update>
+
+	<insert id="insertPayDedu" parameterType="PayDeduBean">
+		INSERT INTO HS_PAYM_DEDUC_ITEM_REG(
+				 SAL_DIV,
+				 PAYM_DEDUC_DIV,
+				 BELONG_YEAR,
+				 TAX_DIV,
+				 PROBATION_APPLY,
+				 IN_OUT_APPLY,
+				 MONTH_SAL,
+				 HIRE_INSUR,
+				 DIV_YN,
+				 PAYM_DEDUC_CD,
+				 DIV_SECT_CD,
+				 DIC_SECT_NM,
+				 DLINE,
+				 PAYM_DEDUC_NM,
+				 TAX_TYPE
+		)VALUES(
+				#{salDiv},
+				#{paymDeducDiv},
+				#{belongYear},
+				#{taxDiv},
+				#{probationApply},
+				#{inOutApply},
+				#{monthSal},
+				#{hireInsur},
+				#{divYn},
+				#{paymDeducCd},
+				#{divSectCd},
+				#{dicSectNm},
+				0,
+				#{paymDeducNm},
+				#{taxType}
+			)
+	</insert>
+
+	<update id="updatePayDedu" parameterType="PayDeduBean">
+		UPDATE HS_PAYM_DEDUC_ITEM_REG SET
+			SAL_DIV=#{salDiv},
+			PAYM_DEDUC_DIV 	  = #{paymDeducDiv},
+			TAX_DIV 		  = #{taxDiv},
+			PROBATION_APPLY   = #{probationApply},
+			IN_OUT_APPLY 	  = #{inOutApply},
+			MONTH_SAL 		  = #{monthSal},
+			HIRE_INSUR 		  = #{hireInsur},
+			DIV_YN 			  = #{divYn},
+			DIV_SECT_CD 	  = #{divSectCd},
+			DIC_SECT_NM 	  = #{dicSectNm},
+			DLINE  			  = #{dline},
+			PAYM_DEDUC_NM     = #{paymDeducNm},
+			TAX_TYPE 		  = #{taxType}
+	    WHERE PAYM_DEDUC_CD   = #{paymDeducCd}
+	    	  AND BELONG_YEAR = #{belongYear}
+	</update>
+
+	<delete id="deletePayDedu" parameterType="PayDeduBean">
+		DELETE HS_PAYM_DEDUC_ITEM_REG
+			   WHERE PAYM_DEDUC_CD = #{paymDeducCd}
+	    	 	 AND BELONG_YEAR   = #{belongYear}
+	</delete>
+
+	<insert id="insertPayDeduSect" parameterType="PayDeduSectBean">
+		INSERT INTO HS_PAYM_DEDUC_SECT
+			VALUES(
+				#{paymDeducCd},
+				#{paymDeducNm},
+				#{divSectCd},
+				#{divSectCdNm},
+				#{divCd},
+				#{divNm},
+				#{amt}
+			)
+	</insert>
+
+	<update id="updatePayDeduSect" parameterType="PayDeduSectBean">
+		UPDATE HS_PAYM_DEDUC_SECT SET
+			PAYM_DEDUC_NM   = #{paymDeducNm},
+			DIV_SECT_CD_NM  = #{divSectCdNm},
+			DIV_NM 		    = #{divNm},
+			AMT 		    = #{amt}
+	    WHERE PAYM_DEDUC_CD = #{paymDeducCd}
+	</update>
+
+	<delete id="deletePayDeduSect" parameterType="PayDeduSectBean">
+		DELETE HS_PAYM_DEDUC_SECT
+			  WHERE PAYM_DEDUC_CD = #{paymDeducCd}
+	    	  AND DIV_CD =#{divCd}
+	</delete>
+	
+</mapper>

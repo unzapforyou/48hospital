@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.hdm.consultationfee.dao.InpatientReceDAO">
+
+ <cache flushInterval="86400000" eviction="LRU" />
+
+ 	<select id="selectHosptlzPatRece" flushCache="false"  useCache="true" resultType="HosptlzPatReceBean">
+ 	    SELECT RECE_STATE AS receState
+ 	    	 , RECE_DATE AS receDate
+ 	    	 , RECE_TYPE AS receType
+ 	    	 , RECE_AMT AS receAmt
+ 	    	 , HOSPTLZ_RECEIPT_NO AS hosptlzReceiptNo
+ 	    	 , ALRD_RECE_AMT AS alrdReceAmt
+ 	    	 , RECP AS recp
+ 	    	 , PROC_WORKER AS procWorker
+ 	    	 , OUT_AMT AS outAmt
+ 	      FROM WD_RECE
+ 	     WHERE HOSPTLZ_RECEIPT_NO = #{hosptlzReceiptNo}
+ 	</select>
+
+ 	<select id="callHosptlzPatRece"  parameterType="HosptlzPatReceBean" statementType="CALLABLE">
+ 	    CALL PC_WD_RECE_HOSPTLZ_TRMT_COST(
+			#{hosptlzReceiptNo,mode=IN,jdbcType=VARCHAR},
+			#{receDate,mode=IN,jdbcType=VARCHAR},
+			#{receType,mode=IN,jdbcType=VARCHAR},
+			#{receAmt,mode=IN,jdbcType=VARCHAR},
+			#{alrdReceAmt,mode=IN,jdbcType=VARCHAR},
+			#{recp,mode=IN,jdbcType=VARCHAR},
+			#{procWorker,mode=IN,jdbcType=VARCHAR},
+			#{outAmt,mode=IN,jdbcType=VARCHAR},
+			#{errorCode,mode=OUT,jdbcType=VARCHAR},
+			#{errorMsg,mode=OUT,jdbcType=VARCHAR})
+ 	</select>
+ </mapper>

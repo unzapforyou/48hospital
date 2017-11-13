@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.msv.sup.hosptaldiet.dao.FoodDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+ <!-- 음식 코드 리스트 -->
+    <select id="selectFoodCodeList" flushCache="false"  useCache="true" resultType="HosptalDietCodeBean">
+
+      select
+            SMALL_CODE as SMALL_CODE1,
+            FULL_NAME as FULL_NAME1
+        FROM
+            SN_CODE
+        where
+            LARGE_CODE  = 'S'
+        and
+            MID_CODE = 'SF007'
+        and
+            nvl(USE_YN,'N') = 'Y'
+        order by
+            SORT_SEQ,
+            SMALL_CODE
+
+</select>
+
+<select id="selectFoodList" flushCache="false"  useCache="true" resultType="FoodBean">
+       SELECT
+            a.FOOD_GRP_CD,
+            a.FOOD_CD,
+            a.FOOD_TYPE,
+            a.FOOD_NM,
+            a.NOTES,
+            0 as checkDiv
+        FROM
+            SN_FOOD a
+
+        where 1=1
+
+        <if test="foodGrpCd != null">
+            AND a.FOOD_GRP_CD = #{foodGrpCd}
+        </if>
+        <if test="foodCd != null">
+            AND a.FOOD_CD LIKE '%'||#{foodCd}||'%'
+        </if>
+        <if test="foodNm != null">
+            AND a.FOOD_NM LIKE '%'||#{foodNm}||'%'
+        </if>
+
+        GROUP BY
+            a.FOOD_GRP_CD,
+            a.FOOD_CD,
+            a.FOOD_TYPE,
+            a.FOOD_NM,
+            a.NOTES
+        ORDER BY
+            a.FOOD_CD
+
+</select>
+
+
+<select id="selectFoodDtlList" flushCache="false"  useCache="true" resultType="FoodDtlBean">
+	 select
+            a.FOOD_CD,
+            a.INGRED_CD,
+            b.INGRED_NM,
+            a.QTY,
+            b.UNIT,
+            a.MAINMENU_YN
+        from
+            SN_FOOD_DTL a,
+            SN_INGRED b
+        where
+        b.INGRED_CD = a.INGRED_CD
+        and
+            a.FOOD_CD = #{foodCd}
+</select>
+
+<update id="insertFoodList">
+ insert into SN_FOOD values(
+#{foodGrpCd},
+#{foodCd},
+#{foodType},
+#{foodNm},
+#{notes},
+#{hospcls}
+ )
+</update>
+
+<update id="updateFoodList">
+ update SN_FOOD set
+FOOD_GRP_CD=#{foodGrpCd},
+FOOD_CD=#{foodCd},
+FOOD_TYPE=#{foodType},
+FOOD_NM=#{foodNm},
+NOTES=#{notes}
+
+where
+FOOD_CD=#{foodCd}
+
+</update>
+
+
+<delete id="deleteFoodList">
+delete from SN_FOOD where FOOD_CD=#{foodCd}
+</delete>
+
+<update id="insertFoodDtlList">
+ insert into SN_FOOD_DTL values(
+#{foodCd},
+#{ingredCd},
+#{amount},
+#{mainmenuYn},
+#{qty},
+#{hospcls}
+
+ )
+</update>
+
+
+<update id="updateFoodDtlList">
+	update SN_FOOD_DTL set
+	FOOD_CD=#{foodCd},
+	INGRED_CD=#{ingredCd},
+	AMOUNT=#{amount},
+	MAINMENU_YN=#{mainmenuYn},
+	QTY=#{qty}
+
+	where FOOD_CD=#{foodCd}
+</update>
+
+<delete id="deleteFoodDtlList">
+delete from SN_FOOD_DTL where FOOD_CD=#{foodCd}
+</delete>
+</mapper>

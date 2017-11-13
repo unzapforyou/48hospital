@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.acc.vat.dao.TaxInvDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+ <resultMap type="TaxInvBean" id="taxInvList">
+        <result property="pubNo"            column="PUB_NO" />
+        <result property="pubDate"          column="PUB_DATE" />
+        <result property="pubDiv"           column="PUB_DIV" />
+        <result property="slipNo"           column="SLIP_NO" />
+        <result property="billDiv"          column="BILL_DIV" />
+        <result property="purchSalesDiv"    column="PURCH_SALES_DIV" />
+        <result property="anspDiv"          column="ANSP_DIV" />
+        <result property="custCd"           column="CUST_CD" />
+        <result property="ABS"              column="ABS" />
+        <result property="splyPrice"        column="SPLY_PRICE" />
+        <result property="sumPrice"         column="SUM_PRICE" />
+        <result property="taxAmt"           column="TAX_AMT" />
+        <result property="gipyoDate"        column="GIPYO_DATE" />
+        <result property="resolNo"          column="RESOL_NO" />
+        <collection property="detailTaxInvList" select="com.seoul.his.acc.vat.dao.TaxInvDAO.selectDetailTaxInvList"
+                    column="PUB_NO" javaType="list" />
+    </resultMap>
+
+    <select id="selectTaxInvoiceList" flushCache="false"  useCache="true" resultType="TaxInvBean">
+ SELECT
+            PUB_NO,				<!-- 발행번호 -->
+            PUB_DATE,			<!-- 발행일자 -->
+            PUB_DIV,			<!-- 발행구분 -->
+            SLIP_NO,			<!-- 전표번호 -->
+            BILL_DIV,			<!-- 계산서구분 -->
+            PURCH_SALES_DIV,	<!-- 매입/매출구분 -->
+            ANSP_DIV,			<!-- 청구구분 -->
+            CUST_CD,			<!-- 거래처코드 -->
+            ABS,				<!-- 적요 -->
+            SPLY_PRICE,			<!-- 공급가액 -->
+            TAX_AMT,			<!-- 세액 -->
+            SUM_PRICE,			<!-- 금액 -->
+            GIPYO_DATE,			<!-- 기표일자 -->
+            RESOL_NO			<!-- 결의번호 -->
+        FROM
+           AT_TAXINV
+        WHERE  1 = 1
+        <if test="startPubDate != null">
+           AND  PUB_DATE BETWEEN #{startPubDate} AND #{endPubDate}
+        </if>
+        <if test="startGipyoDate != null">
+           AND  GIPYO_DATE BETWEEN #{startGipyoDate} AND #{endGipyoDate}
+        </if>
+        <if test="custCd != null">
+           AND  CUST_CD = #{custCd}
+        </if>
+         <if test="resolNo != null">
+           AND  RESOL_NO = #{resolNo}
+        </if>
+        <if test="pubDiv != null">
+            <if test="pubDiv == 4">
+                AND PUB_DIV IN ('1','2')
+            </if>
+            <if test="pubDiv != 4">
+                AND PUB_DIV = #{pubDiv}
+            </if>
+        </if>
+        <if test="purchSalesDiv != null">
+           AND  PURCH_SALES_DIV = #{purchSalesDiv}
+        </if>
+        <if test="billDiv != null">
+           AND  BILL_DIV = #{billDiv}
+
+        </if>
+		</select>
+
+  <select id="selectDetailTaxInvList" flushCache="false"  useCache="true" resultType="DetailTaxInvBean">
+        SELECT
+            d.NO 			AS no,
+            d.PUB_DATE 	AS pubDate,
+            d.FM 			AS fm,
+            d.STAND 		AS stand,
+            d.QNT 		AS qnt,
+            d.PRICE 		AS price,
+            d.TAX_AMT 	AS taxAmt,
+            d.SPLY_PRICE 	AS splyPrice,
+            d.PUB_NO 		AS pubNo,
+            d.DED_yn 		AS dedYN,
+            t.PUB_DIV,			<!-- 발행구분 -->
+            t.SLIP_NO,			<!-- 전표번호 -->
+            t.BILL_DIV,			<!-- 계산서구분 -->
+            t.PURCH_SALES_DIV,	<!-- 매입/매출구분 -->
+            t.ANSP_DIV,			<!-- 청구구분 -->
+            t.CUST_CD,			<!-- 거래처코드 -->
+            t.ABS,				<!-- 적요 -->
+            t.SPLY_PRICE   as totalSplyPrice ,			<!-- 공급가액 -->
+            t.TAX_AMT   as totalTaxAmt,			<!-- 세액 -->
+            t.SUM_PRICE as totalSumPrice,			<!-- 금액 -->
+            t.GIPYO_DATE,			<!-- 기표일자 -->
+            t.RESOL_NO,		<!-- 결의번호 -->
+			a.bussno,
+			a.prsdntnm,	<!--  대표자명 -->
+			a.BUSCTGNM,   <!--  업종 -->
+			a.BUSSHPNM,	<!--  업태 -->
+			a.CUSTNM<!-- 거래처명 -->
+         FROM
+             AT_DETAIL_TAXINV d, AT_TAXINV t, CM_ACCOUNT a
+         WHERE
+             d.PUB_NO = t.PUB_NO and a.custcd=t.cust_cd
+             <if test="startPubDate != null">
+           AND  PUB_DATE BETWEEN #{startPubDate} AND #{endPubDate}
+        </if>
+        <if test="startGipyoDate != null">
+           AND  GIPYO_DATE BETWEEN #{startGipyoDate} AND #{endGipyoDate}
+        </if>
+        <if test="custCd != null">
+           AND  CUST_CD = #{custCd}
+        </if>
+         <if test="resolNo != null">
+           AND  RESOL_NO = #{resolNo}
+        </if>
+        <if test="pubDiv != null">
+            <if test="pubDiv == 4">
+                AND PUB_DIV IN ('1','2')
+            </if>
+            <if test="pubDiv != 4">
+                AND PUB_DIV = #{pubDiv}
+            </if>
+        </if>
+        <if test="purchSalesDiv != null">
+           AND  PURCH_SALES_DIV = #{purchSalesDiv}
+        </if>
+        <if test="billDiv != null">
+           AND  BILL_DIV = #{billDiv}
+
+        </if>
+     </select>
+
+</mapper>

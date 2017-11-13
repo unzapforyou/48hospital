@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.msv.pre.prescriptionmanagement.dao.DiseaseDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+	<resultMap type="DiseaseBean" id="Disease">
+
+		<result property="lv" column="lv" />
+		<result property="code" column="code" />
+		<result property="codeNm" column="code_nm" />
+		<result property="pCode" column="p_code" />
+
+ 	</resultMap>
+
+ 	<select id="selectDiseaseList" flushCache="false"  useCache="true" resultType="DiseaseBean" >
+
+SELECT
+ LEVEL-1 AS LV
+,code
+     , code_nm
+     , p_code
+  FROM MC_DG_CODE START
+WITH p_code IS NULL CONNECT BY PRIOR code = p_code
+
+ 	</select>
+
+</mapper>

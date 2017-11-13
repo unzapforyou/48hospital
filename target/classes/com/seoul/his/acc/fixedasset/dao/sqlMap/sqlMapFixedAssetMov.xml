@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.acc.fixedasset.dao.FixedAssetMovDAO">
+<cache flushInterval="86400000" eviction="LRU" />
+    <select id="selectFixedAssetMovList" flushCache="false"  useCache="true" resultType="FixedAssetMovBean">
+        SELECT 
+            * 
+        FROM 
+            AF_FIXED_ASSET_MOV
+        ORDER BY 
+            MOV_DATE
+    </select>
+    
+    <insert id="insertFixedAssetMov" parameterType="FixedAssetMovBean"> 
+        INSERT INTO 
+            AF_FIXED_ASSET_MOV 
+        VALUES( 
+             #{assetNo} 
+            ,#{movDate} 
+            ,#{mngntCd} 
+            ,#{ownDept} 
+            ,#{pstLoc} 
+            ,#{respoWorker} 
+            ,#{note} 
+        ) 
+    </insert>
+    
+    <update id="updateFixedAssetMov" parameterType="FixedAssetMovBean"> 
+        UPDATE 
+            AF_FIXED_ASSET_MOV 
+        SET 
+            MNGNT_CD=#{mngntCd} 
+            ,OWN_DEPT=#{ownDept} 
+            ,PST_LOC=#{pstLoc} 
+            ,RESPO_WORKER=#{respoWorker} 
+            ,NOTE=#{note} 
+        WHERE 
+            ASSET_NO=#{assetNo} 
+            AND MOV_DATE=#{movDate} 
+    </update>
+    
+    <delete id="deleteFixedAssetMov" parameterType="FixedAssetMovBean"> 
+        DELETE FROM 
+            AF_FIXED_ASSET_MOV 
+         WHERE 
+            ASSET_NO=#{assetNo} 
+            AND MOV_DATE=#{movDate} 
+    </delete>
+</mapper>

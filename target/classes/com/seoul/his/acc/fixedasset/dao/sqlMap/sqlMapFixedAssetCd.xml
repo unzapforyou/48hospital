@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.acc.fixedasset.dao.FixedAssetCdDAO">
+    
+    <cache flushInterval="86400000" eviction="LRU" />
+    
+    <select id="selectUsingFixedAssetCdDtlList" flushCache="false"  useCache="true" resultType="FixedAssetCdDtlBean">
+        SELECT 
+            * 
+        FROM 
+            AF_FIXED_ASSET_CD_DTL 
+        WHERE 
+            FIXED_ASSET_CD 
+            IN 
+            (SELECT 
+                FIXED_ASSET_CD 
+             FROM 
+                AF_FIXED_ASSET_CD 
+             WHERE 
+                CD_USE_YN = '1' 
+             ) 
+            AND 
+            CD_DTL_USE_YN = '1'  
+    </select>
+    
+    <select id="selectFixedAssetCdList" flushCache="false"  useCache="true" resultType="FixedAssetCdBean">
+        SELECT 
+            *
+        FROM 
+            AF_FIXED_ASSET_CD
+    </select>
+    
+    <select id="selectFixedAssetCdDtlList" flushCache="false"  useCache="true" resultType="FixedAssetCdDtlBean">
+        SELECT
+            *
+        FROM 
+            AF_FIXED_ASSET_CD_DTL 
+    </select>
+    
+    <insert id="insertFixedAssetCd" parameterType="FixedAssetCdBean">
+         INSERT INTO AF_FIXED_ASSET_CD VALUES
+           ( 
+               #{fixedAssetCd}
+             , #{cdNm}
+             , #{cdUseYn}
+           )
+    </insert>
+
+    <insert id="insertFixedAssetCdDtl" parameterType="FixedAssetCdDtlBean">
+         INSERT INTO AF_FIXED_ASSET_CD_DTL VALUES
+           ( 
+               #{fixedAssetCd}
+             , #{fixedAssetCdDtl}  
+             , #{cdDtlNm}
+             , #{cdDtlUseYn}
+           )
+    </insert>
+        
+    <delete id="deleteFixedAssetCd" parameterType="FixedAssetCdBean">
+        DELETE 
+        FROM 
+            AF_FIXED_ASSET_CD 
+        WHERE 
+            FIXED_ASSET_CD = #{fixedAssetCd}
+    </delete>
+    
+    <delete id="deleteFixedAssetCdDtl" parameterType="FixedAssetCdDtlBean">
+        DELETE 
+        FROM 
+            AF_FIXED_ASSET_CD_DTL 
+        WHERE 
+            FIXED_ASSET_CD = #{fixedAssetCd}
+        <if test="fixedAssetCdDtl != null">
+            AND FIXED_ASSET_CD_DTL = #{fixedAssetCdDtl}
+        </if>
+    </delete>
+
+    <update id="updateFixedAssetCd" parameterType="FixedAssetCdBean">
+        UPDATE 
+            AF_FIXED_ASSET_CD
+        SET 
+            CD_NM = #{cdNm}
+           ,CD_USE_YN = #{cdUseYn}
+        WHERE 
+            FIXED_ASSET_CD = #{fixedAssetCd}
+    </update>
+    
+    <update id="updateFixedAssetCdDtl" parameterType="FixedAssetCdDtlBean">
+        UPDATE 
+            AF_FIXED_ASSET_CD_DTL
+        SET 
+            CD_DTL_NM = #{cdDtlNm}
+          , CD_DTL_USE_YN = #{cdDtlUseYn}
+        WHERE 
+            FIXED_ASSET_CD = #{fixedAssetCd}
+            AND FIXED_ASSET_CD_DTL = #{fixedAssetCdDtl}
+    </update>
+
+</mapper>

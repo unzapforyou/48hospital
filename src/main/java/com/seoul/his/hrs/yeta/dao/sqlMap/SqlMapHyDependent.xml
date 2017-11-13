@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.hrs.yeta.dao.HyDependentDAO">
+	<select id="selectHyDependentList" resultType="hyDependentBean">
+		SELECT * FROM HY_DEPENDENT
+	</select>
+	<insert id="insertHyDependent" parameterType="hyDependentBean">
+		INSERT INTO HY_DEPENDENT
+		VALUES(
+		#{name}
+		,#{regiNo}
+		,#{basicDdt}
+		,#{womenDdt}
+		,#{handicappedPersonDdt}
+		,#{singleParentDdt}
+		,#{senior70yearoverDdt}
+		,#{empNo}
+		,#{belongYear}
+		,#{relationGubun}
+		,#{pensionerDdt}
+		,#{foChdDdt}
+		)
+	</insert>
+	<update id="updateHyDependent" parameterType="hyDependentBean">
+		UPDATE HY_DEPENDENT SET
+		NAME=#{name}
+		,BASIC_DDT=#{basicDdt}
+		,WOMEN_DDT=#{womenDdt}
+		,HANDICAPPED_PERSON_DDT=#{handicappedPersonDdt}
+		,SINGLE_PARENT_DDT=#{singleParentDdt}
+		,SENIOR_70YEAROVER_DDT=#{senior70yearoverDdt}
+		,BELONG_YEAR=#{belongYear}
+		,RELATION_GUBUN=#{relationGubun}
+		,PENSIONER_DDT=#{pensionerDdt}
+		,FO_CHD_DDT=#{foChdDdt}
+		WHERE REGI_NO=#{regiNo} AND EMP_NO=#{empNo}
+	</update>
+	<delete id="deleteHyDependent" parameterType="hyDependentBean">
+		DELETE FROM HY_DEPENDENT
+		WHERE REGI_NO=#{regiNo} AND EMP_NO=#{empNo}
+	</delete>
+</mapper>

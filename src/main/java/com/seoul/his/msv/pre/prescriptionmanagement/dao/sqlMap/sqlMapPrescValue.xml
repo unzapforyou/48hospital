@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.msv.pre.prescriptionmanagement.dao.PrescValueDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+<resultMap type="PrescValueBean" id="PrescValue">
+
+		<result property="patNo" column="PAT_NO" />
+		<result property="prescNo" column="PRESC_NO" />
+		<result property="codeNo" column="CODE_NO" />
+		<result property="codeValue" column="CODE_VALUE" />
+
+		<collection property="prescDtlList" select="com.seoul.his.msv.pre.prescriptionmanagement.dao.PrescDtlDAO.selectPrescDtlList" column="{prescNo=PRESC_NO, prescCd=CODE_NO}" javaType="list" />
+ 	</resultMap>
+
+	 <!-- 조건에 따른 처방내역조회, 진단서에서 조회 -->
+    <!-- 환자구분(Y/N)에 따라 외래환자, 입원환자 처방조회 -->
+     <select id="selectPrescValueList" resultType="PrescValueBean">
+       SELECT
+           *
+       <choose>
+           <when test="hosptizReceiptNo != false">
+            FROM
+                MC_IN_PAIENT_DETAIL
+           </when>
+           <otherwise>
+            FROM
+                MC_OUT_PAIENT_DETAIL
+           </otherwise>
+       </choose>
+       <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="patNo != null">
+                PAT_NO      = #{patNo}
+            </if>
+             <if test="prescNo != null">
+              and  PRESC_NO      = #{prescNo}
+            </if>
+             </trim>
+
+    </select>
+
+ <select id="selectMedPrescList" resultType="PrescMediBean">
+ 	 SELECT  A.PAT_NO
+				 , A.PRESC_NO
+				 , CODE_NO
+				 , CODE_VALUE
+         		 , NVL(IN_NUMBER,0) AS IN_NUMBER
+         		 , PRESC_DATE
+	  FROM 	(SELECT    PAT_NO
+				 			, C.PRESC_NO
+						    , CODE_NO
+				 			, CODE_VALUE
+         					, IN_NUMBER
+	  			  FROM   MC_IN_PAIENT_DETAIL C
+	  			  			,MP_PRESC_DTL D
+     			 WHERE   C.PRESC_NO = D.PRESC_NO ) A
+				,(SELECT   FEE_CD
+  				  FROM    WB_FEE
+				 WHERE    SM_GRP='약제' ) B
+  			   , MC_DISEASE C
+  	 WHERE A.CODE_NO = B. FEE_CD
+  	    AND A.PRESC_NO = C.PRESC_NO
+   	 <if test="patNo != null">
+        AND A.PAT_NO = #{patNo}
+      </if>
+      <if test="prescNo != null">
+        AND  A.PRESC_NO      = #{prescNo}
+     </if>
+  	 UNION
+  	SELECT  	 A.PAT_NO
+			    , A.PRESC_NO
+				, CODE_NO
+				, CODE_VALUE
+         		, NVL(IN_NUMBER,0) AS IN_NUMBER
+         		, PRESC_DATE
+	 FROM 	(SELECT 	 PAT_NO
+				 		   , C.PRESC_NO
+				 		   , CODE_NO
+				 		   , CODE_VALUE
+         				   , IN_NUMBER
+	  			  FROM   MC_OUT_PAIENT_DETAIL C
+	  			  			,MP_PRESC_DTL D
+    			WHERE  C.PRESC_NO = D.PRESC_NO ) A
+				,(SELECT   FEE_CD
+  				  FROM   WB_FEE
+				 WHERE  SM_GRP='약제' ) B
+  				, MC_DISEASE C
+  	WHERE 	A.CODE_NO = B. FEE_CD
+  	AND 		A.PRESC_NO = C.PRESC_NO
+	<if test="patNo != null">
+     AND 	A.PAT_NO = #{patNo}
+    </if>
+     <if test="prescNo != null">
+        AND  A.PRESC_NO      = #{prescNo}
+     </if>
+</select>
+<update id="insertPrescDtl" >
+        INSERT INTO
+            MP_PRESC_DTL (
+                PRESC_NO
+              , PRESC_CD
+              , IN_EMG_YN
+              , IN_PRN_YN
+              , EX_ANTI_YN
+              , HOLDING_YN
+              , EX_MTRL_YN
+              , MTRL_NM
+              , MTRL_BODY_PART
+              , EX_EXAM_WISH_DATE
+              , IN_TIMES
+              , IN_INSURANCE
+              , EX_SELECT_CARE_YN
+              , CLNC_STUDY_YN
+              , PAT_TYPE
+              , IN_REMARK
+              , IRRADI_YN
+              , MT_AMOUNT
+              , TF_PURPOSE
+              , TF_TRFU_LOC
+              , AST
+              , TF_BLOOD_DONOR
+              , VOLUME
+              , IN_UNIT
+              , RB_TAKE_AWAY
+              , RB_DAYS
+              , PRESC_DTL_NM
+              , PRESC_TYPE
+              , EX_NIGHT_YN
+              , IN_CAPACITY
+              , IN_NUMBER
+              , IN_METHOD
+              , EX_EMG_YN
+              , EX_PRN_YN
+              , EX_TIMES
+              , EX_INSURANCE
+              , EX_REMARK
+              , HD_EMG_YN
+              , HD_REOPER_YN
+              , HD_NIGHT_YN
+              , HD_TIMES
+              , HD_STARTTIME
+              , HD_INSURANCE
+              , HD_REMARK
+              , MT_EMG_YN
+              , MT_REOPER_YN
+              , MT_NIGHT_YN
+              , MT_STARTTIME
+              , MT_INSURANCE
+              , MT_MATER_LOC
+              , MT_REMARK
+              , RB_SELECT_CARE_IN
+              , RB_INSURANCE
+              , RB_REMARK
+              , TF_EMG_YN
+              , TF_AMOUNT
+              , TF_TIMES
+              , TF_STARTTIME
+              , TF_INSURANCE
+              , TF_REMARK
+            )
+        VALUES (
+            #{prescNo}
+          , #{prescCd}
+          , #{inEmgYn}
+          , #{inPrnYn}
+          , #{exAntiYn}
+          , #{holdingYn}
+          , #{exMtrlYn}
+          , #{mtrlNm}
+          , #{mtrlBodyPart}
+          , #{exExamWishDate}
+          , #{inTimes}
+          , #{inInsurance}
+          , #{exSelectCareYn}
+          , #{clncStudyYn}
+          , #{patType}
+          , #{inRemark}
+          , #{irradiYn}
+          , #{mtAmount}
+          , #{tfPurpose}
+          , #{tfTrfuLoc}
+          , #{ast}
+          , #{tfBloodDonor}
+          , #{volume}
+          , #{inUnit}
+          , #{rbTakeWay}
+          , #{rbDays}
+          , #{prescDtlNm}
+          , #{prescType}
+          , #{exNightYn}
+          , #{inCapacity}
+          , #{inNumber}
+          , #{inMethod}
+          , #{exEmgYn}
+          , #{exPrnYn}
+          , #{exTimes}
+          , #{exInsurance}
+          , #{exRemark}
+          , #{hdEmgYn}
+          , #{hdReoperYn}
+          , #{hdNightYn}
+          , #{hdTimes}
+          , #{hdStarttime}
+          , #{hdInsurance}
+          , #{hdRemark}
+          , #{mtEmgYn}
+          , #{mtReoperYn}
+          , #{mtNightYn}
+          , #{mtStarttime}
+          , #{mtInsurance}
+          , #{mtMaterLoc}
+          , #{mtRemark}
+          , #{rbSelectCareIn}
+          , #{rbInsurance}
+          , #{rbRemark}
+          , #{tfEmgYn}
+          , #{tfAmount}
+          , #{tfTimes}
+          , #{tfStarttime}
+          , #{tfInsurance}
+          , #{tfRemark}
+        )
+    </update>
+
+     <update id="updatePrescDtl" >
+        UPDATE
+            MP_PRESC_DTL
+        SET
+          IN_EMG_YN         = #{inEmgYn}
+          , IN_PRN_YN               = #{inPrnYn}
+          , EX_ANTI_YN = #{exAntiYn}
+          , HOLDING_YN             = #{holdingYn}
+          , EX_MTRL_YN             = #{exMtrlYn}
+          , MTRL_NM            = #{mtrlNm}
+          , MTRL_BODY_PART            = #{mtrlBodyPart}
+          , EX_EXAM_WISH_DATE             = #{exExamWishDate}
+          , IN_TIMES               = #{inTimes}
+          , IN_INSURANCE         = #{inInsurance}
+          , EX_SELECT_CARE_YN        = #{exSelectCareYn}
+          , CLNC_STUDY_YN         = #{clncStudyYn}
+          , PAT_TYPE          = #{patType}
+          , IN_REMARK            = #{inRemark}
+          , IRRADI_YN				= #{irradiYn}
+          , MT_AMOUNT				= #{mtAmount}
+          , TF_PURPOSE				= #{tfPurpose}
+          , TF_TRFU_LOC				= #{tfTrfuLoc}
+          , AST				= #{ast}
+          , TF_BLOOD_DONOR				= #{tfBloodDonor}
+          , VOLUME				= #{volume}
+          , IN_UNIT				= #{inUnit}
+          , RB_TAKE_AWAY				= #{rbTakeWay}
+          , RB_DAYS				= #{rbDays}
+          , PRESC_DTL_NM				= #{prescDtlNm}
+          , PRESC_TYPE				= #{prescType}
+          , EX_NIGHT_YN				= #{exNightYn}
+          , IN_CAPACITY				= #{inCapacity}
+          , IN_NUMBER				= #{inNumber}
+          , IN_METHOD				= #{inMethod}
+          , EX_EMG_YN				= #{exEmgYn}
+          , EX_PRN_YN				= #{exPrnYn}
+          , EX_TIMES				= #{exTimes}
+          , EX_INSURANCE				= #{exInsurance}
+          , EX_REMARK				= #{exRemark}
+          , HD_EMG_YN				= #{hdEmgYn}
+          , HD_REOPER_YN				= #{hdReoperYn}
+          , HD_NIGHT_YN				= #{hdNightYn}
+          , HD_TIMES				= #{hdTimes}
+          , HD_STARTTIME				= #{hdStarttime}
+          , HD_INSURANCE				= #{hdInsurance}
+          , HD_REMARK				= #{hdRemark}
+          , MT_EMG_YN				= #{mtEmgYn}
+          , MT_REOPER_YN				= #{mtReoperYn}
+          , MT_NIGHT_YN				= #{mtNightYn}
+          , MT_STARTTIME				= #{mtStarttime}
+          , MT_INSURANCE				= #{mtInsurance}
+          , MT_MATER_LOC				= #{mtMaterLoc}
+          , MT_REMARK				= #{mtRemark}
+          , RB_SELECT_CARE_IN				= #{rbSelectCareIn}
+          , RB_INSURANCE				= #{rbInsurance}
+          , RB_REMARK				= #{rbRemark}
+          , TF_EMG_YN				= #{tfEmgYn}
+          , TF_AMOUNT				= #{tfAmount}
+          , TF_TIMES				= #{tfTimes}
+          , TF_STARTTIME				= #{tfStarttime}
+          , TF_INSURANCE				= #{tfInsurance}
+          , TF_REMARK				= #{tfRemark}
+        WHERE
+            PRESC_NO         = #{prescNo}
+        AND  PRESC_CD         = #{prescCd}
+    </update>
+
+</mapper>

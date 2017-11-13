@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.msv.mcm.patientservice.dao.AttentionalFieldDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+	<resultMap type="AttentionalFieldBean" id="AttentionalField">
+
+		<result property="attentionalFieldSeq" column="ATTENTIONAL_FIELD_SEQ" />
+		<result property="attentionalFieldName" column="ATTENTIONAL_FIELD_NAME" />
+		<result property="attentionalDiv" column="ATTENTIONAL_DIV" />
+ 	</resultMap>
+
+ 	<select id="selectAttentionalFieldList" flushCache="false"  useCache="true"
+ 				resultMap="AttentionalField"   >
+
+		SELECT    ATTENTIONAL_FIELD_SEQ
+					, ATTENTIONAL_FIELD_NAME
+					, ATTENTIONAL_DIV
+		FROM    MB_ATTENTIONAL_FIELD
+
+ 	</select>
+
+ 	<update id="insertAttentionalField" parameterType="AttentionalFieldBean">
+            INSERT INTO MB_ATTENTIONAL_FIELD (
+                ATTENTIONAL_FIELD_SEQ
+              , ATTENTIONAL_FIELD_NAME
+              , ATTENTIONAL_DIV
+            ) VALUES (
+               ATTENTIONAL_FIELD_SEQ.NEXTVAL
+             , #{attentionalFieldName}
+             , #{attentionalDiv}
+            )
+    </update>
+
+    	<update id="updateAttentionalField" parameterType="AttentionalFieldBean">
+              UPDATE MB_ATTENTIONAL_FIELD SET
+                ATTENTIONAL_FIELD_NAME = #{attentionalFieldName}
+              , ATTENTIONAL_DIV             = #{attentionalDiv}
+              WHERE ATTENTIONAL_FIELD_SEQ = #{attentionalFieldSeq}
+    </update>
+
+
+    <delete id="deleteAttentionalField" parameterType="AttentionalFieldBean">
+        DELETE FROM
+            MB_ATTENTIONAL_FIELD
+        WHERE
+            ATTENTIONAL_FIELD_SEQ = #{attentionalFieldSeq}
+    </delete>
+
+</mapper>

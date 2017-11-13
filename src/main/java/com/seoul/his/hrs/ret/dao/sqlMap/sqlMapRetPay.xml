@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.hrs.ret.dao.RetPayDAO">
+
+	<cache flushInterval="86400000" eviction="LRU" />
+
+	<select id="selectRetPayList" flushCache="false" useCache="true"
+		resultType="RetPayBean">
+		SELECT
+		RET_INCOME_AMT ,                     <!-- 퇴직소득금액 -->
+		RET_INCOME_DEDUCTION ,               <!-- 퇴직소득공제 -->
+		RET_INCOME_ASSE_STANDARD ,           <!-- 퇴직소득과세 표준 -->
+		RET_INCOME_CALC_TAX_AMT ,            <!-- 퇴직소득산출 세액 -->
+		RET_INCOME_DECIDED_TAX_AMT,          <!-- 퇴직소득결정 세액 -->
+		RESIDENCE_TAX ,                      <!-- 주민세 -->
+		ACTUAL_RET_PAY ,                     <!-- 실지급퇴직금 -->
+		RET_INCOME_APPROPRIATION ,           <!-- 퇴직충당금 -->
+		SAL_AMOUNT ,                         <!-- 급여 금액 -->
+		WORKINGDAYS ,                        <!-- 근속일수 -->
+		SAL_DAYS ,                           <!-- 월급지급일 -->
+		RECENT_WORKINGDAYS ,                 <!-- 최근근무일자 -->
+		RECENT_SAL_AMOUNT ,                  <!-- 최근월급금액 -->
+		WORK_PERIOD ,                        <!-- 근속기간 -->
+		TAX_RATE ,                           <!-- 세율 -->
+		PROGRESSIVE_TAX_DEDUCTION,           <!-- 누진세율공제 -->
+		SINGLE_RATE_DEDUCTION ,              <!-- 단일 세율 공 제 -->
+		EMP_NO      ,                         <!-- 사원번호 -->
+		EMP_NM                               <!-- 사원명 -->
+		FROM HT_RET_PAY
+		<where>
+			<if test="empNo != null">
+				emp_no = #{empNo}
+			</if>
+		</where>
+
+	</select>
+	<insert id="insertRetPay" parameterType="RetPayBean">
+		INSERT INTO
+		HT_RET_PAY
+		VALUES(
+		#{retIncomeAmt },              <!-- 퇴직소득금액 -->
+		#{retIncomeDeduction },        <!-- 퇴직소득공제 -->
+		#{retIncomeAsseStandard },     <!-- 퇴직소득과세 표준 -->
+		#{retIncomeCalcTaxAmt },       <!-- 퇴직소득산출 세액 -->
+		#{retIncomeDecidedTaxAmt },    <!-- 퇴직소득결정 세액 -->
+		#{residenceTax },              <!-- 주민세 -->
+		#{actualRetPay },              <!-- 실지급퇴직금 -->
+		#{retIncomeAppropriation },    <!-- 퇴직충당금 -->
+		#{salAmount },                 <!-- 급여 금액 -->
+		#{workingdays },               <!-- 근속일수 -->
+		#{salDays },                   <!-- 월급지급일 -->
+		#{recentWorkingdays },         <!-- 최근근무일자 -->
+		#{recentSalAmount },           <!-- 최근월급금액 -->
+		#{workPeriod },                <!-- 근속기간 -->
+		#{taxRate },                   <!-- 세율 -->
+		#{progressiveTaxDeduction},    <!-- 누진세율공제 -->
+		#{singleRateDeduction },       <!-- 단일 세율 공 제 -->
+		#{empNo }  ,                   <!-- 사원번호 -->
+		#{empNm }                      <!-- 사원명 -->
+		)
+	</insert>
+
+	<update id="updateRetPay" parameterType="RetPayBean">
+		UPDATE
+		HT_RET_PAY SET
+		RET_INCOME_AMT =#{retIncomeAmt },                         <!-- 퇴직소득금액 -->
+		RET_INCOME_DEDUCTION=#{retIncomeDeduction },              <!-- 퇴직소득공제 -->
+		RET_INCOME_ASSE_STANDARD=#{retIncomeAsseStandard },       <!-- 퇴직소득과세 표준 -->
+		RET_INCOME_CALC_TAX_AMT=#{retIncomeCalcTaxAmt },          <!-- 퇴직소득산출 세액 -->
+		RET_INCOME_DECIDED_TAX_AMT=#{retIncomeDecidedTaxAmt },    <!-- 퇴직소득결정 세액 -->
+		RESIDENCE_TAX =#{residenceTax },                          <!-- 주민세 -->
+		ACTUAL_RET_PAY =#{actualRetPay },                         <!-- 실지급퇴직금 -->
+		RET_INCOME_APPROPRIATION=#{retIncomeAppropriation },      <!-- 퇴직충당금 -->
+		SAL_AMOUNT =#{salAmount },                                <!-- 급여 금액 -->
+		WORKINGDAYS=#{workingdays },                              <!-- 근속일수 -->
+		SAL_DAYS =#{salDays },                                    <!-- 월급지급일 -->
+		RECENT_WORKINGDAYS=#{recentWorkingdays },                 <!-- 최근근무일자 -->
+		RECENT_SAL_AMOUNT =#{recentSalAmount },                   <!-- 최근월급금액 -->
+		WORK_PERIOD =#{workPeriod },                              <!-- 근속기간 -->
+		TAX_RATE =#{taxRate },                                    <!-- 세율 -->
+		PROGRESSIVE_TAX_DEDUCTION =#{progressiveTaxDeduction},    <!-- 누진세율공제 -->
+		SINGLE_RATE_DEDUCTION =#{singleRateDeduction },           <!-- 단일 세율 공 제 -->
+		EMP_NO =#{empNo } ,										  <!-- 사원번호 -->
+		EMP_NO =#{empNm }                                         <!-- 사원명 -->
+		WHERE
+		EMP_NO=#{empNo}
+	</update>
+
+	<delete id="deleteRetPay" parameterType="RetPayBean">
+		DELETE
+		HT_RET_PAY
+		WHERE
+		EMP_NO=#{empNo}
+	</delete>
+
+	<select id="calcRetPay" statementType="CALLABLE" parameterType="map">
+
+		{ CALL PC_HT_RETPAY_CALCULATION(
+			#{empNo, mode=IN, jdbcType=VARCHAR},
+			#{errorCode, mode=OUT, jdbcType=VARCHAR},
+			#{errorMsg, mode=OUT, jdbcType=VARCHAR}
+		)
+		}
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+
+

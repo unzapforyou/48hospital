@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.acc.resol.dao.AccountDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+<select id="selectAccount" useCache="true" flushCache="false" resultType="AccountBean" >
+		SELECT CUSTCD AS custCd ,CUSTNM AS custNm ,
+		ADPTDT AS adptdt ,BUSSNO AS bussNo ,ZIPCD AS zipCd ,
+		ADDR AS addr ,TELNO AS telNo ,FAXNO AS faxNo ,
+		BANKCD AS bankCd ,ACCNO AS accNo ,BUSCTGNM AS busctgNm ,
+		BUSSHPNM AS busshpNm ,PRSDNTNM AS prsdntNm ,
+		RESNO AS resNo ,DPSTR AS dpstr ,USEYN AS useYn ,
+		GPUSEYN AS gpuseYn ,GDUSEYN AS gduseYn ,CARDYN AS cardYn ,
+		RIUSEYN AS riuseYn ,HOSPCLS AS hospcls FROM CM_ACCOUNT
+		<where>
+			<if test="accountCode != null"> CUSTCD=#{accountCode} </if>
+			<if test="accountName != null"> AND CUSTNM LIKE '%${accountName}%' </if>
+		</where>
+	</select>
+
+ </mapper>

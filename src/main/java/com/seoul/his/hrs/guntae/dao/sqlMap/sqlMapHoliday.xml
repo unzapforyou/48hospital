@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.seoul.his.hrs.guntae.dao.HolidayDAO">
+
+	<select id="selectHolidayList" resultType="HolidayBean">
+		select APP_TYPE
+			 , GUNTAE_GUBUN
+			 , START_DATE
+			 , END_DATE
+			 , HOLIDAY_STATUS
+			 , HOLIDAY_NO
+			 , TOTAL_DAYS
+			 , EMP_NO
+			 , USE_DAYS
+			 , REMAIN_DAYS
+			 , REQ_TOTAL_DAYS
+			 , BELONG_YEAR
+		from HG_HOLIDAY
+		where 1=1
+		<if test="empNo != '' and empNo != null and belongYear != '' and belongYear != null">
+			and EMP_NO = #{empNo}
+			and BELONG_YEAR = #{belongYear}
+		</if>
+		order by USE_DAYS
+	</select>
+
+
+	<select id="selectAdminHolidayList" resultType="HolidayBean">
+		select APP_TYPE
+			 , GUNTAE_GUBUN
+			 , START_DATE
+			 , END_DATE
+			 , HOLIDAY_STATUS
+			 , HOLIDAY_NO
+			 , TOTAL_DAYS
+			 , EMP_NO
+			 , USE_DAYS
+			 , REMAIN_DAYS
+			 , REQ_TOTAL_DAYS
+			 , BELONG_YEAR
+		from HG_HOLIDAY
+		where <!-- HOLIDAY_STATUS = '요청' -->
+		<if test="belongYear != '' and belongYear != null">
+			<!-- and --> BELONG_YEAR = #{belongYear}
+		</if>
+	</select>
+
+	<select id="callHoliday" statementType="CALLABLE" parameterType="HolidayBean">
+		CALL PC_HG_HOLIDAY_CREATE(
+		  #{appType}
+		, #{guntaeGubun}
+		, #{startDate}
+		, #{endDate}
+		, #{holidayNo}
+		, #{empNo}
+		, #{belongYear}
+		, #{errorCode, mode=OUT, jdbcType=VARCHAR, javaType=string}
+		, #{errorMsg, mode=OUT, jdbcType=VARCHAR, javaType=string}
+		)
+	</select>
+
+	<update id="updateHoliday" parameterType="HolidayBean">
+		update HG_HOLIDAY set
+		APP_TYPE = #{appType},
+		HOLIDAY_STATUS = #{holidayStatus}
+		where HOLIDAY_NO = #{holidayNo}
+	</update>
+
+
+</mapper>

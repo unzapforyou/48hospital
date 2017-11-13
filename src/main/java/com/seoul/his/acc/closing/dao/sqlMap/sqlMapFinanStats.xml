@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.acc.closing.dao.FinanStatsDAO">
+<cache flushInterval="86400000" eviction="LRU" />
+
+    <resultMap id="finanStatsResult" type="FinanStatsBean">
+        <result property="level"        column="LEVEL"   />
+        <result property="artiCd"       column="ARTI_CD" />
+        <result property="artiNm"       column="ARTI_NM" />
+        <result property="dangiAmt"     column="DANGI_AMT" />
+        <result property="dangiSum"     column="DANGI_SUM" />
+        <result property="jungiAmt"     column="JUNGI_AMT" />
+        <result property="jungiSum"     column="JUNGI_SUM" />
+    </resultMap>
+
+    <select id="selectIncomStatList" statementType="CALLABLE"
+                    parameterType="map" resultType="map">
+        CALL PC_AC_INCOM_STAT (
+            #{accPrid,      mode=IN,    jdbcType=VARCHAR},
+            #{errorCode,    mode=OUT,   jdbcType=VARCHAR},
+            #{errorMsg,     mode=OUT,   jdbcType=VARCHAR},
+            #{finanStatsList,   mode=OUT,   jdbcType=CURSOR,
+                  javaType=ResultSet,   resultMap=finanStatsResult}
+            )
+    </select>
+
+    <select id="selectFinanPosiList" statementType="CALLABLE"
+                    parameterType="map" resultType="map">
+        CALL PC_AC_FINANPOSI_STAT (
+            #{accPrid,          mode=IN,    jdbcType=VARCHAR},
+            #{errorCode,        mode=OUT,   jdbcType=VARCHAR},
+            #{errorMsg,         mode=OUT,   jdbcType=VARCHAR},
+            #{finanStatsList,   mode=OUT,   jdbcType=CURSOR,
+                  javaType=ResultSet,   resultMap=finanStatsResult}
+            )
+    </select>
+
+
+
+</mapper>

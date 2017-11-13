@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.acc.fixedasset.dao.FixedAssetGrpCdDAO">
+<cache flushInterval="86400000" eviction="LRU" />
+
+    <select id="selectFixedAssetLgGrpCdList" flushCache="false"  useCache="true" resultType="FixedAssetLgGrpCdBean">
+        SELECT 
+            *
+        FROM 
+            AF_ASSET_LG_GRP_CD
+    </select>
+    
+    <select id="selectFixedAssetMidGrpCdList" flushCache="false"  useCache="true" resultType="FixedAssetMidGrpCdBean">
+        SELECT 
+            *
+        FROM 
+            AF_ASSET_MID_GRP_CD 
+    </select>
+    
+    <select id="selectFixedAssetSmGrpCdList" flushCache="false"  useCache="true" resultType="FixedAssetSmGrpCdBean">
+        SELECT 
+            *
+        FROM 
+            AF_ASSET_SM_GRP_CD 
+    </select>
+    
+    <insert id="insertFixedAssetLgGrpCd" parameterType="FixedAssetLgGrpCdBean">
+        INSERT INTO 
+            AF_ASSET_LG_GRP_CD
+        VALUES(
+             #{lgGrpCd},
+             #{lgGrpCdNm}
+        )
+    </insert>
+
+    <update id="updateFixedAssetLgGrpCd" parameterType="FixedAssetLgGrpCdBean">
+        UPDATE 
+            AF_ASSET_LG_GRP_CD 
+        SET
+            LG_GRP_CD_NM=#{lgGrpCdNm}
+        WHERE 
+            LG_GRP_CD=#{lgGrpCd}
+    </update>
+
+    <delete id="deleteFixedAssetLgGrpCd" parameterType="FixedAssetLgGrpCdBean">
+        DELETE 
+            FROM AF_ASSET_LG_GRP_CD
+        WHERE 
+            LG_GRP_CD=#{lgGrpCd}
+    </delete>
+
+    <insert id="insertFixedAssetMidGrpCd" parameterType="FixedAssetMidGrpCdBean">
+        INSERT INTO 
+            AF_ASSET_MID_GRP_CD
+        VALUES(
+            #{lgGrpCd}
+            ,#{midGrpCd}
+            ,#{midGrpCdNm}
+        )
+    </insert>
+    
+    <update id="updateFixedAssetMidGrpCd" parameterType="FixedAssetMidGrpCdBean">
+        UPDATE 
+            AF_ASSET_MID_GRP_CD 
+        SET
+            MID_GRP_CD_NM=#{midGrpCdNm}
+        WHERE 
+            LG_GRP_CD=#{lgGrpCd} 
+            AND MID_GRP_CD=#{midGrpCd}
+    </update>
+    
+    <delete id="deleteFixedAssetMidGrpCd" parameterType="FixedAssetMidGrpCdBean">
+        DELETE FROM 
+            AF_ASSET_MID_GRP_CD
+        WHERE 
+            LG_GRP_CD=#{lgGrpCd} 
+        <if test="midGrpCd != null">
+            AND MID_GRP_CD=#{midGrpCd}
+        </if>
+    </delete>
+   
+    <insert id="insertFixedAssetSmGrpCd" parameterType="FixedAssetSmGrpCdBean">
+        INSERT INTO 
+            AF_ASSET_SM_GRP_CD
+        VALUES(
+            #{lgGrpCd}
+            ,#{midGrpCd}
+            ,#{smGrpCd}
+            ,#{smGrpCdNm}
+            ,#{useYn}
+        )
+    </insert>
+    
+    <update id="updateFixedAssetSmGrpCd" parameterType="FixedAssetSmGrpCdBean">
+        UPDATE 
+            AF_ASSET_SM_GRP_CD 
+        SET
+            SM_GRP_CD_NM=#{smGrpCdNm}
+            ,USE_YN=#{useYn}
+        WHERE 
+            LG_GRP_CD=#{lgGrpCd} 
+            AND 
+            MID_GRP_CD=#{midGrpCd} 
+            AND 
+            SM_GRP_CD=#{smGrpCd}
+    </update>
+    
+    <delete id="deleteFixedAssetSmGrpCd" parameterType="FixedAssetSmGrpCdBean">
+        DELETE FROM 
+            AF_ASSET_SM_GRP_CD
+        WHERE 
+            LG_GRP_CD=#{lgGrpCd} 
+        <if test="midGrpCd != null">
+            AND MID_GRP_CD=#{midGrpCd} 
+        </if>
+        <if test="smGrpCd != null">
+            AND SM_GRP_CD=#{smGrpCd}
+        </if>
+    </delete>
+    
+</mapper>

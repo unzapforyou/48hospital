@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.hrs.salMng.dao.SalCalculationDAO">
+    <cache flushInterval="86400000" eviction="LRU" />
+    
+    <resultMap type="SalCalculationBean" id="SalCalculResultMap">
+        <result property="empNo" column="EMP_NO"/>
+		<result property="empNm" column="EMP_NM"/>
+		<result property="deptNm" column="DEPT_NM"/>
+		<result property="jobClass" column="JOB_CLASS"/>
+		<result property="hireDate" column="HIRE_DATE"/>
+		<result property="retDate" column="RET_DATE"/>
+		<result property="taxationTaxSum" column="TAXATION_TAX_SUM"/>
+		<result property="freeTaxAmt" column="FREE_TAX_AMT"/>
+		<result property="compShare" column="COMP_SHARE"/>
+		<result property="aap" column="AAP"/>
+		<result property="dline" column="DLINE"/>
+		<result property="calYn" column="CAL_YN"/>
+		<result property="belongYm" column="BELONG_YM"/>
+		<result property="paymentDate" column="PAYMENT_DATE"/>
+		<collection property="salCalculDetailList"
+			    select="com.seoul.his.hrs.salMng.dao.SalCalculationDAO.selectSalCalculDetailList"
+			    column="{empNo=EMP_NO,belongYm=BELONG_YM,paymentDate=PAYMENT_DATE}"
+			    javaType="list"/>
+    </resultMap>
+    
+		<select id="findSalCalList" resultMap="SalCalculResultMap">
+			SELECT hws.EMP_NO,
+			       hws.EMP_NM,
+			       he.DEPT_NM,
+			       hws.JOB_CLASS,
+			       he.HIRE_DATE,
+			       nvl(he.RET_DATE,'00000000') RET_DATE,
+			       hws.TAXATION_TAX_SUM,
+			       hws.free_tax_amt,
+			       hws.COMP_SHARE,
+			       hws.AAP,
+			       hws.DLINE,
+			       hws.CAL_YN,
+			       hws.BELONG_YM,
+      			   hws.PAYMENT_DATE
+			  FROM HS_REGULAR_WORKS_SALARY hws,
+			       HM_EMP he
+			 WHERE hws.BELONG_YM=#{belongYm}
+					 <if test="paymDate != null">
+			       AND hws.PAYMENT_DATE=#{paymDate}
+			       </if>
+			       <if test="deptNm != null">
+			       AND hws.JOB_CLASS = #{deptNm}
+			       </if>
+			       AND hws.EMP_NO=he.EMP_NO
+		</select>
+		
+		<select id="selectSalCalculDetailList" resultType="SalCalculDetailBean">
+			SELECT hp.PAYM_DEDUC_DIV as paymDeducDiv,
+			       hp.PAYM_DEDUC_NM as paymDeducNm,
+			       hp.AMT,
+			       hp.EMP_NO
+			  FROM HS_PAY hp
+			 WHERE hp.BELONG_YM = #{belongYm}
+			       <if test="paymentDate != null">
+			       AND hp.PAYMENT_DATE = #{paymentDate}
+			       </if>
+			       AND hp.EMP_NO = #{empNo}
+		</select>
+		
+		<!-- 마감취소 -->
+		<update id="magamCancelSalCal">
+			UPDATE HS_REGULAR_WORKS_SALARY
+			       SET dline = '0'
+			 WHERE EMP_NO = #{empNo}
+			       AND BELONG_YM = #{belongYm}
+		</update>
+		
+		<!-- 마감 -->
+		<update id="magamSalCalList">
+		    UPDATE HS_REGULAR_WORKS_SALARY
+			       SET dline = '1'
+			 WHERE EMP_NO = #{empNo}
+			       AND BELONG_YM = #{belongYm}
+		</update>
+
+		<select id="findSalCalSumList" resultType="SalCalculSumBean">
+			SELECT hws.BELONG_YM,
+				   SUM(hws.TAXATION_TAX_SUM) taxationTaxSum,
+			       SUM(hws.FREE_TAX_AMT) freeTaxAmt,
+			       SUM(hws.COMP_SHARE) compShare,
+			       SUM(NVL(DECODE(hp.PAYM_DEDUC_NM,'국민연금',hp.AMT),0)) gookmin,
+			       SUM(NVL(DECODE(hp.PAYM_DEDUC_NM,'고용보험',hp.AMT),0)) goyoung,
+			       SUM(NVL(DECODE(hp.PAYM_DEDUC_NM,'건강보험',hp.AMT),0)) gungang,
+			       SUM(NVL(DECODE(hp.PAYM_DEDUC_NM,'농특세',hp.AMT),0)) nongteuk,
+			       SUM(NVL(DECODE(hp.PAYM_DEDUC_NM,'소득세',hp.AMT),0)) sodeuk,
+			       SUM(NVL(DECODE(hp.PAYM_DEDUC_NM,'지방세',hp.AMT),0)) jibang
+			  FROM HS_REGULAR_WORKS_SALARY hws,
+			       HS_PAY hp
+			 WHERE hws.BELONG_YM = #{belongYm}
+			 		<if test="paymDate != null">
+			       AND hws.PAYMENT_DATE = #{paymDate}
+			       </if>
+			       <if test="deptNm != null">
+			       AND hws.JOB_CLASS = #{deptNm}
+			       </if>
+			       <if test="deptNm != null">
+			       AND hp.EMP_NO = #{empNo}
+			       </if>
+			       AND hws.BELONG_YM = hp.BELONG_YM
+			 GROUP BY hws.BELONG_YM
+		</select>
+		
+		<!-- 급여계산 프로시저 호출 -->
+		<select id="callSalCalculation" statementType="CALLABLE" parameterType="SalCalculationBean">
+			CALL PC_HS_SAL_CALCULATION(
+					#{empNo,		mode=IN,	jdbcType=VARCHAR,	javaType=string},
+					#{belongYm,		mode=IN,	jdbcType=VARCHAR,	javaType=string},
+					#{year,			mode=IN,	jdbcType=VARCHAR,	javaType=string},
+					#{paymentDate,	mode=IN,	jdbcType=VARCHAR,	javaType=string},
+					#{ERRCD,		mode=OUT,	jdbcType=VARCHAR,	javaType=string},
+					#{ERRMSG,		mode=OUT,	jdbcType=VARCHAR,	javaType=string}
+			)
+		</select>
+		
+		<select id="callUpdateSal" statementType="CALLABLE" parameterType="SalCalculationBean">
+			CALL PC_HS_SAL_UDATE(
+					#{empNo,		mode=IN,	jdbcType=VARCHAR,	javaType=string},
+					#{paymDeducCd,	mode=IN,	jdbcType=VARCHAR,	javaType=string},
+					#{belongYm,		mode=IN,	jdbcType=VARCHAR,	javaType=string},
+					#{amt,			mode=IN,	jdbcType=VARCHAR,	javaType=string},
+					#{compShare,	mode=IN,	jdbcType=VARCHAR,	javaType=string},
+					#{ERRCD,		mode=OUT,	jdbcType=VARCHAR,	javaType=string},
+					#{ERRMSG,		mode=OUT,	jdbcType=VARCHAR,	javaType=string}
+			)
+		</select>
+
+</mapper>

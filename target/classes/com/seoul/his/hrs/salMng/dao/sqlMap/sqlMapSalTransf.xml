@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.hrs.salMng.dao.SalTransfDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+	
+		<select id="findSalTransfList" resultType="SalTransfBean">
+			SELECT DECODE(GROUPING(1), 0, NVL(he.BANK_NM,''), he.BANK_NM) AS bankNm, 
+			       DECODE(GROUPING(1), 0, NVL(he.EMP_NO,'소계'), '누계') empno,
+			       he.EMP_NM as empNm,
+			       he.ACCOUNT_NM as accountNm,
+			       DECODE(GROUPING(1), 0,sum(hws.aap),sum(hws.aap)over(ORDER BY he.bank_nm)) aap,
+			       hws.PAYMENT_DATE as paymentDate
+			 FROM HM_EMP he,
+			       HS_REGULAR_WORKS_SALARY hws
+			 WHERE he.EMP_NO = hws.EMP_NO
+			       AND hws.BELONG_YM = #{belongYm}
+			       AND hws.PAYMENT_DATE = #{paymentDate}
+			       AND hws.DLINE = 1
+			  <if test="deptNm != null">
+			      AND he.JOBCL = #{deptNm}
+			  </if>
+			  <if test="bankNm != null">
+			      AND he.BANK_NM = #{bankNm}
+			  </if>
+			 GROUP BY he.bank_nm, 
+			       ROLLUP(1,(he.emp_no,he.emp_nm,he.account_nm,hws.PAYMENT_DATE,hws.aap))
+		</select>
+		
+</mapper>

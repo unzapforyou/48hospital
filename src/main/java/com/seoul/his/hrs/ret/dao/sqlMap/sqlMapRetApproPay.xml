@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.hrs.ret.dao.RetApproPayDAO">
+
+	<cache flushInterval="86400000" eviction="LRU" />
+
+	<select id="selectRetApproPayList" flushCache="false" useCache="true"
+		resultType="RetApproPayBean">
+		Select th
+		, payment_month
+		, grade
+		, myself_burden_amount
+		, user_burden_amount
+		, retirement_before_salary
+		, payYN
+		, payment_date
+		, emp_no
+		, emp_nm
+		FROM HT_RETIREMENT_APPRO_PAY
+		<where>
+		<if test="empNo != null">
+			AND emp_no = #{empNo}
+		</if>
+		</where>
+	</select>
+	<insert id="insertRetApproPay" parameterType="RetApproPayBean">
+		INSERT INTO
+		HT_RETIREMENT_APPRO_PAY
+		VALUES(
+		#{th },
+		#{paymentMonth },
+		#{grade},
+		#{myselfBurdenAmount },
+		#{userBurdenAmount},
+		#{retirementBeforeSalary},
+		#{payYN},
+		#{paymentDate},
+		#{empNo},
+		#{empNm}
+
+		)
+	</insert>
+
+	<update id="updateRetApproPay" parameterType="RetApproPayBean">
+		UPDATE
+		HT_RETIREMENT_APPRO_PAY SET
+		TH= #{th },
+		PAYMENT_MONTH =#{paymentMonth},
+		GRADE=#{grade},
+		MYSELF_BURDEN_AMOUNT=#{myselfBurdenAmount },
+		USER_BURDEN_AMOUNT=#{userBurdenAmount},
+		RETIREMENT_BEFORE_SALARY=#{retirementBeforeSalary},
+		payYN=#{payYN},
+		PAYMENT_DATE=#{paymentDate},
+		EMP_NO=#{empNo},
+		EMP_NM=#{empNm}
+		WHERE
+		EMP_NO=#{empNo}
+	</update>
+
+	<delete id="deleteRetApproPay" parameterType="RetApproPayBean">
+		DELETE
+		HT_RETIREMENT_APPRO_PAY
+		WHERE EMP_NO=#{empNo}
+	</delete>
+
+</mapper>

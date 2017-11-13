@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.log.inpt.dao.SkillExmntDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+	<resultMap type="SkillExmntHistBean" id="findSkillExmntHistMap">
+		<result property="assetGrpCd" column="ASSET_GRP_CD" />        <!-- 자산분류코드 -->
+		<result property="assetNm" column="ASSET_NM" />               <!-- 자산명 -->
+		<result property="bigGrpCd" column="BIG_GRP_CD" />            <!-- 대분류코드 -->
+		<result property="ctrtNo" column="CTRT_NO" />                 <!-- 계약번호 -->
+		<result property="ctryNm" column="CTRY_NM" />                 <!-- 국가명 -->
+		<result property="exmntDate" column="EXMNT_DATE" />           <!-- 검사일자 -->
+		<result property="gdsCd" column="GDS_CD" />                   <!-- 물품코드 -->
+		<result property="midGrpCd" column="MID_GRP_CD" />            <!-- 중분류코드 -->
+		<result property="modelNm" column="MODEL_NM" />               <!-- 모델명 -->
+		<result property="prodCompNm" column="PROD_COMP_NM" />        <!-- 제조회사명 -->
+		<result property="prodNo" column="PROD_NO" />                 <!-- 제조번호 -->
+		<result property="skillExmntNo" column="SKILL_EXMNT_NO" />    <!-- 기술검사번호 -->
+		<result property="smGrpCd" column="SM_GRP_CD" />              <!-- 소분류코드 -->
+		<result property="mngnt" column="MNGNT" />                    <!-- 관리부서 -->
+	</resultMap>
+
+	<!-- 기술검사내역조회 -->
+	<select id="selectSkillExmntHistList" resultMap="findSkillExmntHistMap">
+		SELECT *
+		FROM LE_SKILL_EXMNT_HIST
+		ORDER BY SKILL_EXMNT_NO
+	</select>
+
+	<!-- 기술검사내역등록 -->
+	<insert id="insertSkillExmnt">
+		INSERT
+			  INTO LE_SKILL_EXMNT_HIST (
+				  ASSET_GRP_CD
+				  ,ASSET_NM
+				  ,BIG_GRP_CD
+				  ,CTRT_NO
+				  ,CTRY_NM
+				  ,EXMNT_DATE
+				  ,GDS_CD
+				  ,MID_GRP_CD
+				  ,MODEL_NM
+				  ,PROD_COMP_NM
+				  ,PROD_NO
+				  ,SKILL_EXMNT_NO
+				  ,SM_GRP_CD
+				  ,MNGNT
+			  )VALUES
+			       (
+			       #{assetGrpCd}
+			       ,#{assetNm}
+			       ,#{bigGrpCd}
+			       ,#{ctrtNo}
+			       ,#{ctryNm}
+			       ,#{exmntDate}
+			       ,#{gdsCd}
+			       ,#{midGrpCd}
+			       ,#{modelNm}
+			       ,#{prodCompNm}
+			       ,#{prodNo}
+			       ,#{skillExmntNo}
+			       ,#{mngnt}
+			       ,#{smGrpCd}
+			       )
+	</insert>
+
+	<delete id="deleteSkillExmnt">
+		DELETE
+		  FROM LE_SKILL_EXMNT_HIST
+		 WHERE SKILL_EXMNT_NO = #{skillExmntNo}
+		       AND CTRT_NO = #{ctrtNo}
+	</delete>
+
+</mapper>

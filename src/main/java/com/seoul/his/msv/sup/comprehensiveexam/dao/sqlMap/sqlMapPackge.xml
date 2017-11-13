@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.msv.sup.comprehensiveexam.dao.PackgeDAO">
+    <cache flushInterval="86400000" eviction="LRU" />
+
+    <!-- 종합검진 패키지 관리 - 패키지검사 조회 -->
+    <select id="selectPckInspList" flushCache="false" useCache="true"  resultType="SynthesisCheckupCheckTypeBean">
+        SELECT
+            PCK_CD,
+            I.INSP_CD,
+            INSP_NM,
+            OCS_CD,
+            E.EMR_NM AS OCS_NM,
+            RSLT_DEPT_CD,
+            FN_CM_CODENAME('SC036',RSLT_DEPT_CD) AS RSLT_DEPT_NM,
+            OCS_DIV_CD,
+            AMT,
+            USE_YN
+        FROM
+            SC_PCK_INSP P,
+            SC_INSP I,
+            SC_EMR_CODE E
+        WHERE
+            P.PCK_CD  = #{pckCd}
+        AND
+            P.INSP_CD = I.INSP_CD
+        AND
+            I.OCS_CD  = E.EMR_CD
+    </select>
+    
+    <select id="selectPckList" flushCache="false"  useCache="true" resultType="PackgeBean">
+        SELECT /*+ INDEX(SC_PCK SC_PCK_INDEX)*/
+               PCK_CD
+              ,PCK_NM
+              ,GENDER_CD
+              ,AMT
+              ,INSP_DIV_CD
+              ,USE_YN
+        FROM SC_PCK
+        <where>
+            <if test="pckCd != null">
+               (PCK_CD LIKE '%'||#{pckCd}||'%'
+               OR PCK_NM LIKE '%'||#{pckCd}||'%')
+            </if>
+            <if test="useYn != null">
+               AND NVL(USE_YN,'Y') = #{useYn}
+            </if>
+            <if test="pckNm != null">
+               AND PCK_NM LIKE '%'||#{pckNm}||'%'
+            </if>
+        </where>
+     </select>
+     
+     <!-- 종합검진 패키지 관리 - EX패키지 조회 -->
+     <select id="selectExPckInspList" flushCache="false"  useCache="true" resultType="SynthesisCheckupCheckTypeBean">
+        SELECT
+            #{pckCd} AS PCK_CD,
+            INSP_CD,
+            INSP_NM,
+            OCS_CD,
+            E.EMR_NM AS OCS_NM,
+            RSLT_DEPT_CD,
+            FN_CM_CODENAME('SC036',RSLT_DEPT_CD) AS RSLT_DEPT_NM,
+            OCS_DIV_CD,
+            AMT
+      FROM 
+            SC_INSP,
+            SC_EMR_CODE E
+     WHERE 
+        INSP_CD NOT IN
+          (SELECT
+                INSP_CD
+           FROM
+                SC_PCK_INSP
+           WHERE
+                PCK_CD = #{pckCd} )
+          <if test="useYn != null">
+               AND NVL(USE_YN,'Y') = #{useYn}
+          </if>
+          AND OCS_CD = E.EMR_CD
+    </select>
+     
+    <!-- 종합검진 패키지 관리 - 저장 -->
+    <update id="updatePck">
+        UPDATE SC_PCK
+            SET PCK_NM = #{pckNm},
+                GENDER_CD = #{genderCd},
+                AMT = #{amt},
+                INSP_DIV_CD = #{inspDivCd},
+                USE_YN = #{useYn},
+                REG_ID = #{userId},
+                REG_IP = #{userIp},
+                REG_DATE = TO_CHAR(SYSDATE,'YYYY-MM-DD')
+            WHERE PCK_CD = #{pckCd}
+
+    </update>
+
+    <update id="insertPck" >
+       
+          INSERT INTO SC_PCK
+               ( PCK_CD,
+                 PCK_NM,
+                 GENDER_CD,
+                 AMT,
+                 INSP_DIV_CD,
+                 USE_YN,
+                 REG_ID,
+                 REG_IP,
+                 REG_DATE )
+        VALUES
+               ( #{pckCd},
+                 #{pckNm},
+                 NVL(#{genderCd},'B'),
+                 #{amt},
+                 #{inspDivCd},
+                 NVL(#{useYn},'Y'),
+                 #{userId},
+                 #{userIp},
+                 TO_CHAR(SYSDATE,'YYYY-MM-DD'))
+    </update>
+
+    <delete id="deletePck">
+        DELETE FROM 
+            SC_PCK
+        WHERE 
+            PCK_CD = #{pckCd}
+     </delete>
+     
+    <delete id="deletePckInsp">
+        DELETE FROM 
+            SC_PCK_INSP
+        WHERE 
+            PCK_CD = #{pckCd}
+     </delete>
+     
+     <update id="insertPckInsp" >
+         
+        INSERT INTO SC_PCK_INSP (
+                PCK_CD,
+                INSP_CD
+                )
+        values(
+               #{pckCd},
+               #{inspCd}
+        )
+     </update>
+     
+    <delete id="deletePckInsp2">
+        DELETE FROM 
+            SC_PCK_INSP
+        WHERE 
+            PCK_CD = #{pckCd}
+        AND
+            INSP_CD= #{inspCd}
+     </delete>
+</mapper>

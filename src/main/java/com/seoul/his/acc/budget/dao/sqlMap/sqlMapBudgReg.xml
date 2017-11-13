@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.acc.budget.dao.BudgRegDAO">
+
+ 	<cache flushInterval="86400000" eviction="LRU" />
+
+  	<select id="selectBudg" flushCache="false"  useCache="true" resultType="BudgRegBean">
+		SELECT 	A.BIMOK_NM AS BIMOK_NM,
+				A.BIMOK_CD,
+				A.PARENT_BIMOK,
+	       		C.USE_DEPT_NM	AS USE_DEPT_NM,
+			   	A.ACNT_CD AS ACNT_CD,
+	       		D.ACNT_NM AS ACNT_NM,
+	       		A.FIN_YN,
+	       		A.BIMOK_LEVEL AS BIMOK_LEVEL,
+	       		B.CALC_REASON,
+	       		A.ACC_YEAR AS ACC_YEAR,
+	       		NVL( (
+	        	   	SELECT SUM(nvl(BB.AMOUNT,'0'))
+	 				FROM ( SELECT * FROM AB_BUDG_ORG WHERE ACC_YEAR=#{accYear}) BB
+	             	RIGHT OUTER JOIN( SELECT * FROM AB_BUDG_BIMOK WHERE ACC_YEAR = #{accYear}) AA
+	             	ON BB.BIMOK_CD = AA.BIMOK_CD
+	             	CONNECT BY PRIOR AA.BIMOK_CD = AA.PARENT_BIMOK
+	             	START WITH AA.PARENT_BIMOK = A.BIMOK_CD
+	       		),B.AMOUNT) AS AMOUNT,
+	     		NVL(	(
+	        	   		SELECT SUM(nvl(BB.AMOUNT,'0'))
+	 					FROM (SELECT * FROM AB_BUDG_ORG WHERE ACC_YEAR=#{accYear}-1) BB
+		             	RIGHT OUTER JOIN(SELECT * FROM AB_BUDG_BIMOK WHERE ACC_YEAR = #{accYear}-1) AA
+		             	ON BB.BIMOK_CD = AA.BIMOK_CD
+		             	CONNECT BY PRIOR AA.BIMOK_CD = AA.PARENT_BIMOK
+		             	START WITH AA.PARENT_BIMOK = A.BIMOK_CD
+		       			),(
+		       			SELECT AMOUNT
+		          		FROM AB_BUDG_ORG AAA
+		          		WHERE AAA.ACC_YEAR = #{accYear}-1
+		          		AND AAA.BIMOK_CD = A.BIMOK_CD)
+	          	) AS BEFORE_AMOUNT
+		FROM AB_BUDG_BIMOK A
+		LEFT OUTER JOIN (SELECT * FROM AB_BUDG_ORG WHERE ACC_YEAR = #{accYear}) B
+		ON A.BIMOK_CD = B.BIMOK_CD
+		LEFT OUTER JOIN(SELECT * FROM AB_BUDG_USE_DEPT WHERE ACC_YEAR = #{accYear} AND ACNT_RESP_YN = 'Y') C
+		ON A.BIMOK_CD = C.BIMOK_CD
+		LEFT OUTER JOIN(SELECT * FROM AE_ACC_ACNT WHERE ACC_YEAR = #{accYear}) D
+		ON A.ACNT_CD = D.ACNT_CD
+		WHERE A.ACC_YEAR=#{accYear}
+		<if test="bimokNm != null">
+			AND A.BIMOK_NM = #{bimokNm}
+		</if>
+		<if test="acntNm!= null">
+			AND ACNT_NM = #{acntNm}
+		</if>
+		ORDER BY A.BIMOK_CD
+ 	</select>
+
+ 	<select id="mergeIntoBudg" >
+		MERGE INTO AB_BUDG_ORG  A
+		USING DUAL B
+		ON
+		(
+			A.BIMOK_CD = #{bimokCd} AND
+      		A.ACC_YEAR = #{accYear}
+		)
+
+		WHEN MATCHED THEN
+		UPDATE
+		  SET
+	         AMOUNT=#{amount},
+	         CALC_REASON=#{calcReason}
+
+		WHEN NOT MATCHED THEN
+			INSERT(
+             BIMOK_CD,
+             AMOUNT,
+             ACC_YEAR,
+             CALC_REASON
+            )
+		    VALUES(
+		           #{bimokCd},
+		           #{amount},
+		           #{accYear},
+		           #{calcReason}
+		          )
+ 	</select>
+</mapper>

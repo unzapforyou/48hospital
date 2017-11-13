@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.hrs.yeta.dao.HyDependentPaymentDAO">
+	<select id="selectHyDependentPaymentList" resultType="hyDependentPaymentBean">
+		SELECT * FROM HY_DEPENDENT_PAYMENT
+	</select>
+	<insert id="insertHyDependentPayment" parameterType="hyDependentPaymentBean">
+		INSERT INTO HY_DEPENDENT_PAYMENT
+		VALUES(
+		#{empNo}
+		,#{occGubun}
+		,#{creditcardAmt}
+		,#{cashReceiptAmt}
+		,#{debitcardAmt}
+		,#{trdMarketAmt}
+		,#{publicTransportationAmt}
+		,#{regiNo}
+		,#{name}
+		)
+	</insert>
+	<update id="updateHyDependentPayment" parameterType="hyDependentPaymentBean">
+		UPDATE HY_DEPENDENT_PAYMENT SET
+		OCC_GUBUN=#{occGubun}
+		,CREDITCARD_AMT=#{creditcardAmt}
+		,CASH_RECEIPT_AMT=#{cashReceiptAmt}
+		,DEBITCARD_AMT=#{debitcardAmt}
+		,TRD_MARKET_AMT=#{trdMarketAmt}
+		,PUBLIC_TRANSPORTAION_AMT=#{publicTransportationAmt}
+		,NAME=#{name}
+		WHERE EMP_NO=#{empNo} AND REGI_NO=#{regiNo}
+	</update>
+	<delete id="deleteHyDependentPayment" parameterType="hyDependentPaymentBean">
+		DELETE FROM HY_DEPENDENT_PAYMENT
+		WHERE EMP_NO=#{empNo} AND REGI_NO=#{regiNo}
+	</delete>
+</mapper>

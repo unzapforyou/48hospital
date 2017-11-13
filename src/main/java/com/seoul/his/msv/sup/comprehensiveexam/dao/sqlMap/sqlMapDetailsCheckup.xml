@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.msv.sup.comprehensiveexam.dao.DetailsCheckupDAO">
+    <cache flushInterval="86400000" eviction="LRU" />
+
+
+	<!-- 종합검진 검사종류관리 - 조회 -->
+    <select id="selectSimpleCheckupList" flushCache="false" useCache="true" resultType="SynthesisCheckupCheckTypeBean">
+        SELECT
+            I.INSP_CD,
+            I.INSP_NM,
+            I.OCS_CD,
+            E.EMR_NM AS OCS_NM,
+            I.RSLT_DEPT_CD,
+            FN_CM_CODENAME('SC036',I.RSLT_DEPT_CD) AS RSLT_DEPT_NM,
+            I.OCS_DIV_CD,
+            I.AMT,
+            I.USE_YN
+        FROM
+            SC_INSP I,
+            SC_EMR_CODE E
+        WHERE
+            I.OCS_CD = E.EMR_CD
+        <if test="inspCd != null">
+            AND INSP_CD LIKE '%'||#{inspCd}||'%'
+        </if>
+        <if test="inspNm != null">
+            AND INSP_NM LIKE '%'||#{inspNm}||'%'
+        </if>
+            ORDER BY INSP_CD
+    </select>
+
+    <!-- 종합검진 검사관리 - 세부검사 조회 -->
+    <select id="selectDetailsCheckupList" flushCache="false" useCache="true"
+        resultType="DetailsCheckupBean">
+        SELECT
+            I.INSP_CD,
+            I.DTL_INSP_CD AS DT_INSP_CD,
+            I.DTL_INSP_NM AS DT_INSP_NM,
+            I.UNIT,
+            I.GENDER_CD,
+            I.OCS_CD,
+            E.EMR_NM AS OCS_NM,
+            I.REF_HIGH_FIG,
+            I.REF_LOW_FIG,
+            NVL(I.RUN_YN,1) AS RUN_YN
+        FROM
+            SC_DTL_INSP I,
+            SC_EMR_CODE E
+        WHERE
+            I.OCS_CD= E.EMR_CD
+        <if test="inspCd != null">
+            AND INSP_CD = #{inspCd}
+        </if>
+
+    </select>
+
+
+    <!-- 종합검진 세부검사관리 - 수정, 추가 -->
+    <update id="updateDetailsCheckup">
+        UPDATE
+            SC_DTL_INSP
+        SET
+            DTL_INSP_NM =#{dtInspNm},
+            UNIT =#{unit},
+            GENDER_CD =#{genderCd},
+            OCS_CD =#{ocsCd},
+            REF_HIGH_FIG =#{refHighFig},
+            REF_LOW_FIG =#{refLowFig},
+            RUN_YN =#{runYn},
+            MOD_ID =#{userId},
+            MOD_IP =#{userIp},
+            MOD_DATE =TO_CHAR(SYSDATE,'YYYY-MM-DD')
+        WHERE
+            INSP_CD =#{inspCd}
+        AND
+            DTL_INSP_CD =#{dtInspCd}
+    </update>
+
+    <update id="insertDetailsCheckup">
+
+                INSERT INTO SC_DTL_INSP(
+                    INSP_CD,
+                    DTL_INSP_CD,
+                    DTL_INSP_NM,
+                    UNIT,
+                    GENDER_CD,
+                    OCS_CD,
+                    REF_HIGH_FIG,
+                    REF_LOW_FIG,
+                    RUN_YN,
+                    REG_ID,
+                    REG_IP,
+                    REG_DATE
+                )
+                VALUES(
+                    #{inspCd},
+                    #{dtInspCd},
+                    #{dtInspNm},
+                    #{unit},
+                    #{genderCd},
+                    #{ocsCd},
+                    #{refHighFig},
+                    #{refLowFig},
+                    #{runYn},
+                    #{userId},
+                    #{userIp},
+                    TO_CHAR(SYSDATE,'YYYY-MM-DD')
+                )
+    </update>
+
+</mapper>

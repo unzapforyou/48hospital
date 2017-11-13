@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.acc.budget.dao.JobLimitDAO">
+
+ 	<cache flushInterval="86400000" eviction="LRU" />
+
+ 	<select id="selectJobLimitList" flushCache="false"  useCache="true" resultType="JobLimitBean">
+	SELECT 	A.DETAIL_CODE_NAME 	AS JOBCL
+			, B.COUNT			  	AS PRE_PERSONNEL
+	       	, C.LIMIT				AS LIMIT
+	       	, C.CHG_CAU				AS CHG_CAU
+	       	, C.CHG_DAY				AS CHG_DAY
+	       	, MODIFIER				AS MODIFIER
+	       	, -(NVL(C.LIMIT,0)-NVL(B.COUNT,0)) AS PRE_LIMIT
+	       	, SYSDATE            	AS PREDATE
+	FROM CM_CODE A
+	LEFT OUTER JOIN (SELECT
+							JOBCL,
+	        				COUNT(*) AS COUNT
+	                 FROM HM_EMP
+	                 GROUP BY JOBCL
+	                 ) B
+	ON A.DETAIL_CODE_NAME = B.JOBCL
+	INNER JOIN AB_JOB_LIMIT C
+	ON A.DETAIL_CODE_NAME = C.JOBCL
+	WHERE A.code = 'GP070'
+	ORDER BY A.DETAIL_CODE_NAME
+
+ 	</select>
+	<update id="updateJobLimit">
+		UPDATE AB_JOB_LIMIT SET
+	             CHG_CAU=#{chgCau},
+	             CHG_DAY=SYSDATE,
+	             MODIFIER=#{modifier},
+	             LIMIT=#{limit}
+	  	WHERE JOBCL = #{jobcl}
+
+	</update>
+</mapper>

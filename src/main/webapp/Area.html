@@ -1,0 +1,91 @@
+<html>
+<head>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- 현재 작성하고 있는 파일은 UTF-8 DOS파일입니다.-->
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko">
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<style type="text/css">${demo.css}</style>
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" language="javascript">
+ 
+$(function () {
+
+var testList = new Array() ;
+var data = new Object() ; 
+var var1= new Array();
+var loc=location.href;
+var seriesVar=loc.replace("http://localhost:8282/his/Area.html?","");
+var foo1=seriesVar.split('-');
+var foo3 = foo1[0].split(',');
+var foo4 = foo1[1].split(',');
+
+for(var i=0; i<foo4.length; i++) {foo4[i]=Number(foo4[i]);}
+var data1={name: '진단치료',data:foo4};
+testList[0]=data1;
+             
+             
+
+
+
+    Highcharts.chart('container', {
+        title: {
+            text: '월간 경영통계 환자현황',
+            x: -20 //center
+        },
+        subtitle: {
+            text: '종합 현황',
+            x: -20
+        },
+        xAxis: {
+            categories: foo3
+        },
+        yAxis: {
+            title: {
+                text: '횟수'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: '회'
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        series: testList
+    });
+});
+
+   </script>
+
+
+
+
+</head>
+
+	<body>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto">test</div>
+
+	</body>
+</html>

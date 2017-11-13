@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.bst.HospitalStaffPersonnelStatus.dao.HospitalStaffPersonnelStatusDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+	<resultMap type="HospitalStaffPersonnelStatusBean" id="resultHospitalStaffPersonnelStatus">
+
+
+		<result property="empNo" column="EMP_NO" />
+		<result property="empNm" column="EMP_NM" />
+		<result property="jobcl" column="JOBCL" />
+		<result property="jobtt" column="JOBTT" />
+		<result property="jobrk" column="JOBRK" />
+		<result property="gender" column="GENDER" />
+		<result property="addr" column="ADDR" />
+		<result property="detailAddr" column="DETAIL_ADDR" />
+		<result property="zipCd" column="ZIP_CD" />
+		<result property="natnt" column="NATNT" />
+		<result property="deptCd" column="DEPT_CD" />
+		<result property="hireDate" column="HIRE_DATE" />
+		<result property="workPeriod" column="WORK_PERIOD" />
+		<result property="deptNm" column="DEPT_NM" />
+
+
+		<collection property="careerList"
+			select="com.seoul.his.bst.HospitalStaffPersonnelStatus.dao.CareerDAO1.findCareerList"
+			column="EMP_NO" javaType="list" />
+
+		<collection property="disabilityList"
+			select="com.seoul.his.bst.HospitalStaffPersonnelStatus.dao.DisabilityDAO1.findDisabilityList"
+			column="EMP_NO" javaType="list" />
+
+		<collection property="educationBeanList"
+			select="com.seoul.his.bst.HospitalStaffPersonnelStatus.dao.EducationDAO1.findEducationList"
+			column="EMP_NO" javaType="list" />
+
+		<collection property="familyList"
+			select="com.seoul.his.bst.HospitalStaffPersonnelStatus.dao.FamilyDAO1.findFamilyList"
+			column="EMP_NO" javaType="list" />
+
+		<collection property="licenseList"
+			select="com.seoul.his.bst.HospitalStaffPersonnelStatus.dao.LicenseDAO1.findLicenseList"
+			column="EMP_NO" javaType="list" />
+
+		<collection property="militaryList"
+			select="com.seoul.his.bst.HospitalStaffPersonnelStatus.dao.MilitaryDAO1.findMilitaryList"
+			column="EMP_NO" javaType="list" />
+
+		<collection property="perconaldateList"
+			select="com.seoul.his.bst.HospitalStaffPersonnelStatus.dao.PerconaldateDAO1.findPerconaldateList"
+			column="EMP_NO" javaType="list" />
+
+
+ 	</resultMap>
+
+
+	<select id="selectPersonnelStatusList" resultMap="resultHospitalStaffPersonnelStatus" parameterType="HashMap">
+		select
+	         *
+		from hm_emp e
+		where
+		<if test="jobcl != null">
+		 JOBCL = #{jobcl}
+		</if>
+		<if test="deptCd != null">
+		 DEPT_CD = #{deptCd}
+		</if>
+		<if test="jobtt != null">
+		 JOBTT = #{jobtt}
+		</if>
+		<if test="gender != null">
+		 GENDER = #{gender}
+		</if>
+		order by emp_no
+	</select>
+
+<!-- 부서조회 -->
+<select id="selectDeptList" flushCache="false" useCache="true"  resultType="bstDeptBean">
+       SELECT * FROM HM_DEPT
+    </select>
+
+<select id="selectAllPersonnelStatusList" flushCache="false" useCache="true"  resultMap="resultHospitalStaffPersonnelStatus">
+       SELECT * FROM hm_emp
+    </select>
+
+
+</mapper>

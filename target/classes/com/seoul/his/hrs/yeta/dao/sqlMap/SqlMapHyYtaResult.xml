@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.hrs.yeta.dao.HyYtaResultDAO">
+	<select id="selectHyYtaResultList"  resultType="hyYtaResultBean">
+		SELECT * FROM HY_YTA_RESULT WHERE EMP_NO=#{empNo} AND BELONG_YEAR = #{belongYear}
+	</select>
+	<insert id="insertHyYtaResult" parameterType="hyYtaResultBean">
+		INSERT INTO HY_YTA_RESULT
+		VALUES(
+		#{belongYear}
+		,#{empNo}
+		,#{preTotalSalary}
+		,#{rwYearTaxationTotal}
+		,#{decidedTaxIncomeAmt}
+		,#{decidedTaxLocalAmt}
+		,#{paidIncomeTaxAmt}
+		,#{paidLocalIncomeTaxAmt}
+		,#{balIncomeTaxAmt}
+		,#{balLocalTaxAmt}
+		,#{dependentCnt}
+		,#{senior70yearoverDdt}
+		,#{handicappedPersonDdt}
+		,#{womanDdt}
+		,#{singleParentDdt}
+		,#{perosnalDdtAmt}
+		,#{nationalPensionAmt}
+		,#{etcPensionAmt}
+		,#{pensionDdtAmt}
+		,#{insuranceDdtAmt}
+		,#{housingFundDdtAmt}
+		,#{housingLeaseDebtAmt}
+		,#{mbsDdtAmt}
+		,#{mbsRepaymentPeriod}
+		,#{mbsRate}
+		,#{mbsRepaymentType}
+		,#{housingSubDepositAmt}
+		,#{personalPensionAmt}
+		,#{creditcardDdtAmt}
+		,#{tmDdtAmt}
+		,#{ptDdtAmt}
+		,#{debitDdtAmt}
+		,#{cashReceiptDdtAmt}
+		,#{cardddtExceptDdtAmt}
+		,#{addDdtUsedDdtAmt1}
+		,#{addDdtUsedDdtAmt2}
+		,#{creditcardEtcDdtAmt}
+		,#{smallBusinessDdtAmt}
+		,#{invAssociationDdtAmt}
+		,#{invVentureDdtAmt}
+		,#{empSharePensionDdtAmt}
+		,#{mesbwDdtAmt}
+		,#{nrsliDdtAmt}
+		,#{lssDdtAmt}
+		,#{ddtAmt}
+		,#{specialDdtAmt}
+		,#{incomeDdtTotalOverAmt}
+		,#{incomeTaxationStandard}
+		,#{calTaxAmt}
+		,#{sbeDdtAmt}
+		,#{earnedIncomeTaxDdtAmt}
+		,#{childTaxDdtAmt}
+		,#{pensionTotalDdtAmt}
+		,#{guaranteedInsuranceDdtAmt}
+		,#{guaranteedInsuranceDdt}
+		,#{guaranteedHandicappedDdt}
+		,#{medicalCostDdtAmt}
+		,#{eduCostDdtAmt}
+		,#{eduOwnCostDdt}
+		,#{eduUnder20CostDdt}
+		,#{eduOver20CostDdt}
+		,#{eduHandicappedCostDdt}
+		,#{donationDdtAmt}
+		,#{donationPfDdt}
+		,#{donationCourtDdt}
+		,#{donationEsoaDdt}
+		,#{donationReligionDdt}
+		,#{donationDesignatedDdt}
+		,#{taxAssociationDdtAmt}
+		,#{housingLeaseDdt}
+		,#{foreignPaymentDdt}
+		,#{monthlyRentDdtAmt}
+		,#{specialTaxDdtAmt}
+		,#{standardTaxDdtAmt}
+		,#{taxDdtAmt}
+		,#{cutoffFlag}
+		)
+	</insert>
+	<update id="updateHyYtaResult" parameterType="hyYtaResultBean">
+		UPDATE HY_YTA_RESULT SET
+		PRE_TOTAL_SALARY=#{preTotalSalary}
+		,RW_YEAR_TAXATION_TOTAL=#{rwYearTaxationTotal}
+		,DECIDED_TAX_INCOME_AMT=#{decidedTaxIncomeAmt}
+		,DECIDED_TAX_LOCAL_AMT=#{decidedTaxLocalAmt}
+		,PAID_INCOME_TAX_AMT=#{paidIncomeTaxAmt}
+		,PAID_LOCAL_INCOME_TAX_AMT=#{paidLocalIncomeTaxAmt}
+		,BAL_INCOME_TAX_AMT=#{balIncomeTaxAmt}
+		,BAL_LOCAL_TAX_AMT=#{balLocalTaxAmt}
+		,DEPENDENT_CNT=#{dependentCnt}
+		,SENIOR_70YEAROVER_DDT=#{senior70yearoverDdt}
+		,HANDICAPPED_PERSON_DDT=#{handicappedPersonDdt}
+		,WOMAN_DDT=#{womanDdt}
+		,SINGLE_PARENT_DDT=#{singleParentDdt}
+		,PEROSNAL_DDT_AMT=#{perosnalDdtAmt}
+		,NATIONAL_PENSION_AMT=#{nationalPensionAmt}
+		,ETC_PENSION_AMT=#{etcPensionAmt}
+		,PENSION_DDT_AMT=#{pensionDdtAmt}
+		,INSURANCE_DDT_AMT=#{insuranceDdtAmt}
+		,HOUSING_FUND_DDT_AMT=#{housingFundDdtAmt}
+		,HOUSING_LEASE_DEBT_AMT=#{housingLeaseDebtAmt}
+		,MBS_DDT_AMT=#{mbsDdtAmt}
+		,MBS_REPAYMENT_PERIOD=#{mbsRepaymentPeriod}
+		,MBS_RATE=#{mbsRate}
+		,MBS_REPAYMENT_TYPE=#{mbsRepaymentType}
+		,HOUSING_SUB_DEPOSIT_AMT=#{housingSubDepositAmt}
+		,PERSONAL_PENSION_AMT=#{personalPensionAmt}
+		,CREDITCARD_DDT_AMT=#{creditcardDdtAmt}
+		,TM_DDT_AMT=#{tmDdtAmt}
+		,PT_DDT_AMT=#{ptDdtAmt}
+		,DEBIT_DDT_AMT=#{debitDdtAmt}
+		,CASH_RECEIPT_DDT_AMT=#{cashReceiptDdtAmt}
+		,CARDDDT_EXCEPT_DDT_AMT=#{cardddtExceptDdtAmt}
+		,ADD_DDT_USED_DDT_AMT1=#{addDdtUsedDdtAmt1}
+		,ADD_DDT_USED_DDT_AMT2=#{addDdtUsedDdtAmt2}
+		,CREDITCARD_ETC_DDT_AMT=#{creditcardEtcDdtAmt}
+		,SMALL_BUSINESS_DDT_AMT=#{smallBusinessDdtAmt}
+		,INV_ASSOCIATION_DDT_AMT=#{invAssociationDdtAmt}
+		,INV_VENTURE_DDT_AMT=#{invVentureDdtAmt}
+		,EMP_SHARE_PENSION_DDT_AMT=#{empSharePensionDdtAmt}
+		,MESBW_DDT_AMT=#{mesbwDdtAmt}
+		,NRSLI_DDT_AMT=#{nrsliDdtAmt}
+		,LSS_DDT_AMT=#{lssDdtAmt}
+		,DDT_AMT=#{ddtAmt}
+		,SPECIAL_DDT_AMT=#{specialDdtAmt}
+		,INCOME_DDT_TOTAL_OVER_AMT=#{incomeDdtTotalOverAmt}
+		,INCOME_TAXATION_STANDARD=#{incomeTaxationStandard}
+		,CAL_TAX_AMT=#{calTaxAmt}
+		,SBE_DDT_AMT=#{sbeDdtAmt}
+		,EARNED_INCOME_TAX_DDT_AMT=#{earnedIncomeTaxDdtAmt}
+		,CHILD_TAX_DDT_AMT=#{childTaxDdtAmt}
+		,PENSION_TOTAL_DDT_AMT=#{pensionTotalDdtAmt}
+		,GUARANTEED_INSURANCE_DDT_AMT=#{guaranteedInsuranceDdtAmt}
+		,GUARANTEED_INSURANCE_DDT=#{guaranteedInsuranceDdt}
+		,GUARANTEED_HANDICAPPED_DDT=#{guaranteedHandicappedDdt}
+		,MEDICAL_COST_DDT_AMT=#{medicalCostDdtAmt}
+		,EDU_COST_DDT_AMT=#{eduCostDdtAmt}
+		,EDU_OWN_COST_DDT=#{eduOwnCostDdt}
+		,EDU_UNDER20_COST_DDT=#{eduUnder20CostDdt}
+		,EDU_OVER20_COST_DDT=#{eduOver20CostDdt}
+		,EDU_HANDICAPPED_COST_DDT=#{eduHandicappedCostDdt}
+		,DONATION_DDT_AMT=#{donationDdtAmt}
+		,DONATION_PF_DDT=#{donationPfDdt}
+		,DONATION_COURT_DDT=#{donationCourtDdt}
+		,DONATION_ESOA_DDT=#{donationEsoaDdt}
+		,DONATION_RELIGION_DDT=#{donationReligionDdt}
+		,DONATION_DESIGNATED_DDT=#{donationDesignatedDdt}
+		,TAX_ASSOCIATION_DDT_AMT=#{taxAssociationDdtAmt}
+		,HOUSING_LEASE_DDT=#{housingLeaseDdt}
+		,FOREIGN_PAYMENT_DDT=#{foreignPaymentDdt}
+		,MONTHLY_RENT_DDT_AMT=#{monthlyRentDdtAmt}
+		,SPECIAL_TAX_DDT_AMT=#{specialTaxDdtAmt}
+		,STANDARD_TAX_DDT_AMT=#{standardTaxDdtAmt}
+		,TAX_DDT_AMT=#{taxDdtAmt}
+		,CUTOFF_FLAG=#{cutoffFlag}
+		WHERE BELONG_YEAR=#{belongYear} AND EMP_NO=#{empNo}
+	</update>
+	<delete id="deleteHyYtaResult" parameterType="hyYtaResultBean">
+		DELETE FROM HY_YTA_RESULT
+		WHERE BELONG_YEAR=#{belongYear} AND EMP_NO=#{empNo}
+	</delete>
+
+	<parameterMap id="ytaParmeterMap" type="Map" >
+		<parameter property="hireType" mode="IN" javaType="string" jdbcType="VARCHAR" />
+		<parameter property="caculation_year" mode="IN" javaType="string" jdbcType="VARCHAR" />
+		<parameter property="errorMessage" mode="OUT" javaType="string" jdbcType="VARCHAR" />
+	</parameterMap>
+
+	<select id="executeYta" statementType="CALLABLE" parameterMap="ytaParmeterMap">
+		{ CALL PC_HY_YEAR_END_CALCULATION(?, ?, ?) }
+	</select>
+
+
+</mapper>

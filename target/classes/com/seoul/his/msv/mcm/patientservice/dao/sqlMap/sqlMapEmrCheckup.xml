@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.msv.mcm.patientservice.dao.EmrCheckupDAO">
+
+    <select id="selectEmrCheckupList" parameterType="map" resultType="EmrCheckupBean">
+        SELECT    PRESC_NO
+					,PAT_NO
+					,PRESC_DATE
+					,DISEASE_CD
+					,DISEASE_NM
+					,SUR_YN
+					,DEPT_NO
+        FROM 	MC_EMR_PRESC
+    </select>
+</mapper>

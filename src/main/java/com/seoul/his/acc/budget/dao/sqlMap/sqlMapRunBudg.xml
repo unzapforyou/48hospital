@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.acc.budget.dao.RunBudgDAO">
+
+ 	<cache flushInterval="86400000" eviction="LRU" />
+
+<select id="selectRunBudg" flushCache="false"  useCache="true" resultType="RunBudgBean">
+    	SELECT 	AAAA.*
+     	   		, 100-DECODE(AAAA.budgAmount,0,0,TRUNC(AAAA.budgBal / AAAA.budgAmount * 100,1) ) || '%' AS executionPercent
+     	FROM 	(SELECT B.BIMOK_CD
+	      			, NVL( (
+		         		SELECT SUM(nvl(BB.CNG_AMOUNT,'0'))
+		           		FROM (SELECT * FROM AB_RUN_BUDG WHERE ACC_YEAR=#{accYear}) BB
+		            	RIGHT OUTER JOIN(SELECT * FROM AB_BUDG_BIMOK WHERE ACC_YEAR = #{accYear}) AA
+		             	ON BB.BIMOK_CD = AA.BIMOK_CD
+		             	CONNECT BY PRIOR AA.BIMOK_CD = AA.PARENT_BIMOK
+		             	START WITH AA.PARENT_BIMOK = B.BIMOK_CD
+	       			), A.CNG_AMOUNT) AS cngAmount
+	      			, NVL( (
+	              		SELECT SUM(nvl(BB.ALLOT_PLAN_AMOUNT,'0'))
+	                    FROM (SELECT * FROM AB_RUN_BUDG WHERE ACC_YEAR=#{accYear}) BB
+	             		RIGHT OUTER JOIN(SELECT * FROM AB_BUDG_BIMOK WHERE ACC_YEAR = #{accYear}) AA
+			           	ON BB.BIMOK_CD = AA.BIMOK_CD
+			         	CONNECT BY PRIOR AA.BIMOK_CD = AA.PARENT_BIMOK
+			          	START WITH AA.PARENT_BIMOK = B.BIMOK_CD
+	       			),A.ALLOT_PLAN_AMOUNT) AS allotPlanAmount
+		 			, A.BIMOK_CD        AS bimokCode
+		 			, A.ACC_YEAR        AS accYear
+					, NVL( (
+		         		SELECT SUM(nvl(BB.CAUSE_AMOUNT,'0'))
+		    			FROM (SELECT * FROM AB_RUN_BUDG WHERE ACC_YEAR=#{accYear}) BB
+		       			RIGHT OUTER JOIN(SELECT * FROM AB_BUDG_BIMOK WHERE ACC_YEAR = #{accYear}) AA
+		       			ON BB.BIMOK_CD = AA.BIMOK_CD
+		    			CONNECT BY PRIOR AA.BIMOK_CD = AA.PARENT_BIMOK
+		 				START WITH AA.PARENT_BIMOK = B.BIMOK_CD
+		       		),A.CAUSE_AMOUNT) AS causeAmount
+	      			, NVL( (
+	  					SELECT SUM(nvl(BB.BUDG_AMOUNT,'0'))
+	         			FROM (SELECT * FROM AB_RUN_BUDG WHERE ACC_YEAR=#{accYear}) BB
+	 					RIGHT OUTER JOIN(SELECT * FROM AB_BUDG_BIMOK WHERE ACC_YEAR = #{accYear}) AA
+	    				ON BB.BIMOK_CD = AA.BIMOK_CD
+	   					CONNECT BY PRIOR AA.BIMOK_CD = AA.PARENT_BIMOK
+						START WITH AA.PARENT_BIMOK = B.BIMOK_CD
+	       			),A.BUDG_AMOUNT) AS budgAmount
+	      			, NVL( (
+	              		SELECT SUM(nvl(BB.BUDG_BAL,'0'))
+	         			FROM (SELECT * FROM AB_RUN_BUDG WHERE ACC_YEAR=#{accYear}) BB
+						RIGHT OUTER JOIN(SELECT * FROM AB_BUDG_BIMOK WHERE ACC_YEAR = #{accYear}) AA
+	     				ON BB.BIMOK_CD = AA.BIMOK_CD
+						CONNECT BY PRIOR AA.BIMOK_CD = AA.PARENT_BIMOK
+	 					START WITH AA.PARENT_BIMOK = B.BIMOK_CD
+	      				),A.BUDG_BAL) AS budgBal
+	        		, B.BIMOK_NM
+	      			, C.ACNT_NM
+	      			, B.BIMOK_LEVEL
+
+				FROM (SELECT * FROM AB_RUN_BUDG WHERE ACC_YEAR=#{accYear}) A
+	    		RIGHT OUTER JOIN (SELECT * FROM AB_BUDG_BIMOK WHERE ACC_YEAR=#{accYear}) B
+				ON A.BIMOK_CD = B.BIMOK_CD
+				LEFT OUTER JOIN (SELECT * FROM AE_ACC_ACNT WHERE ACC_YEAR= #{accYear}) C
+				ON B.ACNT_CD = C.ACNT_CD
+
+	    		WHERE 1=1
+
+
+				<if test="bimokNm != null">
+				   AND B.BIMOK_NM = #{bimokNm}
+				</if>
+				<if test="acntNm != null">
+				   AND C.ACNT_NM = #{acntNm}
+				</if>
+		 		ORDER BY B.BIMOK_CD
+		 	) AAAA
+ 	</select>
+ 	
+	<select id="selectRunBudgList" flushCache="false"  useCache="true" resultType="RunBudgBean">
+		SELECT 	A.BUDG_AMOUNT
+			   	, A.BUDG_BAL
+			   	, B.ACC_YEAR
+			   	, B.BIMOK_CD
+			   	, B.BIMOK_NM
+			   	, B.BIMOK_LEVEL
+		FROM (SELECT *
+		      FROM AB_RUN_BUDG
+		      WHERE ACC_YEAR = #{accYear}) A
+		RIGHT OUTER JOIN (SELECT *
+						  FROM AB_BUDG_BIMOK
+		                  WHERE ACC_YEAR = #{accYear}) B
+		ON A.BIMOK_CD = B.BIMOK_CD
+		WHERE 1=1
+		<if test="bimokNm != null">
+		   AND B.BIMOK_NM = #{bimokNm}
+		</if>
+		ORDER BY B.BIMOK_CD
+
+ 	</select>
+    
+    <select id="selectRunBimok" flushCache="false"  useCache="true" resultType="RunBudgBean">
+        SELECT A.CAUSE_AMOUNT,
+               A.BUDG_BAL,
+               A.ALLOT_PLAN_AMOUNT,
+               A.BUDG_AMOUNT,
+               A.ACC_YEAR,
+               B.BIMOK_CD,
+               B.BIMOK_NM
+
+        FROM (SELECT *
+              FROM AB_RUN_BUDG
+              WHERE ACC_YEAR =#{accYear})  A
+        RIGHT OUTER JOIN (SELECT *
+                      FROM AB_BUDG_BIMOK
+                      WHERE ACC_YEAR =#{accYear}) B
+        ON A.BIMOK_CD = B.BIMOK_CD
+        WHERE 1=1
+        <if test="bimokCd != null">
+            AND B.BIMOK_CD = #{bimokCd}
+        </if>
+        ORDER BY B.BIMOK_CD
+    </select>
+
+
+</mapper>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.msv.mcm.doctorschedule.dao.ScheduleTypeDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+	<resultMap type="ScheduleTypeBean" id="ScheduleTypeResultMap">
+		<result property="medDr" column="EMP_NO" />
+		<result property="tpSeqNo" column="TRMT_TYPE_NO" />
+		<result property="typeName" column="TRMT_TYPE_NM" />
+		<result property="amStTm" column="AM_STIME" />
+		<result property="amEdTm" column="AM_ETIME" />
+		<result property="amTerm" column="AM_INTV" />
+		<result property="amTotCnt" column="AM_HANDLE" />
+		<result property="pmStTm" column="FM_STIME" />
+		<result property="pmEdTm" column="FM_ETIME" />
+		<result property="pmTerm" column="FM_INTV" />
+		<result property="pmTotCnt" column="FM_HANDLE" />
+		<result property="rsvYn" column="DIFF_DEPT_RESER" />
+		<result property="comments" column="COMMENTS" />
+		<collection property="detailDowList"
+			column="{medDr=EMP_NO,tpSeqNo=TRMT_TYPE_NO}"
+			select="com.seoul.his.msv.mcm.doctorschedule.dao.ScheduleDetailDAO.selectDetailDowList"
+			javaType="list" />
+	</resultMap>
+
+	<select id="selectScheduleTypeList" flushCache="false" useCache="true"
+		resultMap="ScheduleTypeResultMap">
+		SELECT
+		EMP_NO,
+		TRMT_TYPE_NO,
+		TRMT_TYPE_NM,
+		AM_STIME,
+		AM_ETIME,
+		AM_INTV,
+		AM_HANDLE,
+		FM_STIME,
+		FM_ETIME,
+		FM_INTV,
+		FM_HANDLE,
+		DIFF_DEPT_RESER,
+		COMMENTS
+		FROM MC_TRMT_SCHD_TYPE
+		WHERE EMP_NO=#{empNo}
+	</select>
+	<update id="insertScheduleType" parameterType="ScheduleTypeBean">
+		insert into
+		MC_TRMT_SCHD_TYPE(
+		EMP_NO,
+		TRMT_TYPE_NO,
+		TRMT_TYPE_NM,
+		AM_STIME,
+		AM_ETIME,
+		AM_INTV,
+		AM_HANDLE,
+		FM_STIME,
+		FM_ETIME,
+		FM_INTV,
+		FM_HANDLE,
+		DIFF_DEPT_RESER,
+		COMMENTS
+		)
+		values(
+		#{medDr},
+		#{tpSeqNo},
+		#{typeName},
+		#{amStTm},
+		#{amEdTm},
+		#{amTerm},
+		#{amTotCnt},
+		#{pmStTm},
+		#{pmEdTm},
+		#{pmTerm},
+		#{pmTotCnt},
+		#{rsvYn},
+		#{comments}
+		)
+	</update>
+	<update id="updateScheduleType" parameterType="ScheduleTypeBean">
+		update
+		MC_TRMT_SCHD_TYPE
+		set
+		TRMT_TYPE_NM=#{typeName},
+		AM_STIME=#{amStTm},
+		AM_ETIME=#{amEdTm},
+		AM_INTV=#{amTerm},
+		AM_HANDLE=#{amTotCnt},
+		FM_STIME=#{pmStTm},
+		FM_ETIME=#{pmEdTm},
+		FM_INTV=#{pmTerm},
+		FM_HANDLE=#{pmTotCnt},
+		DIFF_DEPT_RESER=#{rsvYn},
+		COMMENTS=#{comments}
+		where EMP_NO=#{medDr}
+		and TRMT_TYPE_NO=#{tpSeqNo}
+	</update>
+	<delete id="deleteScheduleType" parameterType="ScheduleTypeBean">
+		delete
+		MC_TRMT_SCHD_TYPE
+		where EMP_NO=#{medDr}
+		and TRMT_TYPE_NO=#{tpSeqNo}
+	</delete>
+</mapper>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.msv.sup.pathology.dao.PathologyDAO">
+
+	<!-- 검체번호 조회 -->
+	<select id="selectClinspeNoList" resultType="SpecimenCollectionBean">
+		SELECT CLINSPE_NO
+		  FROM SL_CLINSPE
+	</select>
+
+	<!-- 검체정보 조회 -->
+	<select id="selectClinspeBlokList" resultType="PathologyBean">
+		SELECT *
+		  FROM SL_CLINSPE_BLOK
+		 WHERE CLINSPE_NO = #{clinspeNo}
+		ORDER BY CLINSPE_NO
+		     , CLINSPE_BLOK_CODE
+		     , CLINSPE_BLOK_PROD_DAY
+	</select>
+
+	<!-- 검체블록 일괄처리 (등록) -->
+	<insert id="insertClinspeBlok" parameterType="PathologyBean">
+		INSERT INTO SL_CLINSPE_BLOK
+		       (
+		           CLINSPE_NO
+		         , CLINSPE_BLOK_CODE
+		         , CLINSPE_BLOK_PROD_DAY
+		         , CLINSPE_BLOK_PROD_TIME
+		         , CLINSPE_BLOK_QNT
+		         , PAT_NO
+		         , PAT_NM
+		       )
+		       VALUES
+		       (
+		           #{clinspeNo}
+		         , #{clinspeBlokCode}
+		         , #{clinspeBlokProdDay}
+		         , #{clinspeBlokProdTime}
+		         , #{clinspeBlokQnt}
+		         , #{patNo}
+		         , #{patNm}
+		       )
+	</insert>
+	<!-- 검체블록 일괄처리 (수정) -->
+	<update id="updateClinspeBlok" parameterType="PathologyBean">
+		UPDATE SL_CLINSPE_BLOK
+		       SET CLINSPE_NO=#{clinspeNo}
+		     , CLINSPE_BLOK_CODE=#{clinspeBlokCode}
+		     , CLINSPE_BLOK_PROD_DAY=#{clinspeBlokProdDay}
+		     , CLINSPE_BLOK_PROD_TIME=#{clinspeBlokProdTime}
+		     , CLINSPE_BLOK_QNT=#{clinspeBlokQnt}
+		     , PAT_NO=#{patNo}
+		     , PAT_NM=#{patNm}
+		 WHERE CLINSPE_NO=#{clinspeNo}
+	</update>
+	<!-- 검체블록 일괄처리 (삭제) -->
+	<delete id="deleteClinspeBlok" parameterType="PathologyBean">
+		DELETE
+		  FROM SL_CLINSPE_BLOK
+		 WHERE CLINSPE_NO=#{clinspeNo}
+		       AND CLINSPE_BLOK_CODE=#{clinspeBlokCode}
+	</delete>
+
+</mapper>

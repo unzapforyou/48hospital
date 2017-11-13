@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.log.csr.dao.SplyRmSetCpntDAO">
+
+  <cache flushInterval="86400000" eviction="LRU" />
+
+	<resultMap type="SplyRmSetCpntBean" id="SplyRmSetCpntResultMap">
+	    <result property="realuseYb" column="REALUSE_YB"/> 		<!--실사용여부-->
+	    <result property="setNm" column="SET_NM"/>			    <!--SET명-->
+	    <result property="mngntDeptCd" column="MNGNT_DEPT_CD"/> <!--관리부서코드-->
+	    <result property="mngntDeptNm" column="MNGNT_DEPT_NM"/> <!--관리부서명-->
+	    <result property="disuseDate" column="DISUSE_DATE"/>    <!--불용일자-->
+	    <result property="disuseCau" column="DISUSE_CAU"/>      <!--불용사유-->
+	    <result property="bigGrpCd" column="BIG_GRP_CD"/>       <!--대분류코드-->
+	    <result property="midGrpCd" column="MID_GRP_CD"/>       <!--중분류코드-->
+	    <result property="smGrpCd" column="SM_GRP_CD"/>         <!--소분류코드-->
+	    <result property="setCd" column="SET_CD"/>              <!--SET코드-->
+	    <collection property="splyRmSetCpntHistList" select="selectSplyRmSetCpntHistList" column="SET_CD" javaType="list"/>
+	</resultMap>
+
+ 	<select id="selectSplyRmSetCpntList" resultMap="SplyRmSetCpntResultMap">
+		 SELECT REALUSE_YB
+		  	  , SET_NM
+		      ,	MNGNT_DEPT_CD
+		      ,	MNGNT_DEPT_NM
+		      ,	DISUSE_DATE
+		      ,	DISUSE_CAU
+		      ,	BIG_GRP_CD
+		      ,	MID_GRP_CD
+		      ,	SM_GRP_CD
+		      ,	SET_CD
+           FROM LW_SPLY_ROOM_SET_CPNT
+           <trim prefix="WHERE" prefixOverrides="AND">
+	<if test="realuseYb != null">
+	   AND REALUSE_YB = #{realuseYb}
+	</if>
+	</trim>
+	ORDER BY SET_CD DESC
+ 	</select>
+
+	<insert id="insertSplyRmSetCpnt">
+		INSERT INTO LW_SPLY_ROOM_SET_CPNT
+	    VALUES (#{realuseYb}
+			  , #{setNm}
+			  , #{mngntDeptCd}
+			  , #{mngntDeptNm}
+			  , #{disuseDate}
+			  , #{disuseCau}
+			  , #{bigGrpCd}
+			  , #{midGrpCd}
+			  , #{smGrpCd}
+			  , #{setCd})
+	</insert>
+
+	<update id="updateSplyRmSetCpnt">
+	    UPDATE LW_SPLY_ROOM_SET_CPNT
+		   SET REALUSE_YB=#{realuseYb}
+			 , DISUSE_DATE=#{disuseDate}
+			 , DISUSE_CAU=#{disuseCau}
+			 , SET_NM=#{setNm}
+		 WHERE SET_CD=#{setCd}
+	</update>
+
+
+
+	<delete id="deleteSplyRmSetCpnt">
+		DELETE FROM LW_SPLY_ROOM_SET_CPNT
+		 WHERE SET_CD=#{setCd}
+	</delete>
+
+
+	<select id="callSetCdSeq" flushCache="false"  useCache="true" resultType="String">
+	    SELECT SET_CD_NO_SEQ.NEXTVAL
+  		  FROM DUAL
+	</select>
+
+	<resultMap type="SplyRmSetCpntHistBean" id="SplyRmSetCpntHistResultMap">
+	    <result property="cpntHistNo" column="CPNT_HIST_NO"/>	<!--구성품내역번호-->
+	    <result property="fmCd" column="FM_CD"/>                <!--품목코드-->
+	    <result property="fmNm" column="FM_NM"/>                <!--품명-->
+	    <result property="stand" column="STAND"/>               <!--규격-->
+	    <result property="unit" column="UNIT"/>                 <!--단위-->
+	    <result property="qnt" column="QNT"/>                   <!--수량-->
+	    <result property="bigGrpCd" column="BIG_GRP_CD"/>       <!--대분류코드-->
+	    <result property="midGrpCd" column="MID_GRP_CD"/>       <!--중분류코드-->
+	    <result property="smGrpCd" column="SM_GRP_CD"/>         <!--소분류코드-->
+	    <result property="setCd" column="SET_CD"/>              <!--SET코드-->
+	</resultMap>
+
+	<select id="selectSplyRmSetCpntHistList" resultMap="SplyRmSetCpntHistResultMap">
+		SELECT *
+          FROM LW_SPLY_ROOM_SET_CPNT_HIST
+         WHERE SET_CD=#{setCd}
+      ORDER BY FM_CD
+ 	</select>
+
+	<insert id="insertSplyRmSetCpntHist">
+	    <selectKey keyProperty="cpntHistNo" resultType="String" order="BEFORE">
+			SELECT CPNT_HIST_NO_SEQ.NEXTVAL AS cpntHistNo
+			  FROM DUAL
+		</selectKey>
+		INSERT INTO LW_SPLY_ROOM_SET_CPNT_HIST
+	    VALUES (#{cpntHistNo}
+	          , #{fmCd}
+	          , #{fmNm}
+	          , #{stand}
+	          , #{unit}
+	          , #{qnt}
+	          , #{bigGrpCd}
+	          , #{midGrpCd}
+	          , #{smGrpCd}
+	          , #{setCd})
+	</insert>
+
+	<update id="updateSplyRmSetCpntHist">
+	    UPDATE LW_SPLY_ROOM_SET_CPNT_HIST
+		   SET FM_CD=#{fmCd}
+			 , FM_NM=#{fmNm}
+			 , STAND=#{stand}
+			 , UNIT=#{unit}
+			 , QNT=#{qnt}
+		 WHERE SET_CD=#{setCd}
+		   AND BIG_GRP_CD=#{bigGrpCd}
+		   AND MID_GRP_CD=#{midGrpCd}
+		   AND SM_GRP_CD=#{smGrpCd}
+		   AND CPNT_HIST_NO=#{cpntHistNo}
+	</update>
+
+	<delete id="deleteSplyRmSetCpntHist">
+		DELETE FROM LW_SPLY_ROOM_SET_CPNT_HIST
+		 WHERE FM_CD=#{fmCd}
+	</delete>
+
+</mapper>

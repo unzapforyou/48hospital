@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.hrs.yeta.dao.HyDependentDonationDAO">
+	<select id="selectHyDependentDonationList" resultType="hyDependentDonationBean">
+		SELECT * FROM HY_DEPENDENT_DONATION
+	</select>
+	<insert id="insertHyDependentDonation" parameterType="hyDependentDonationBean">
+		INSERT INTO HY_DEPENDENT_DONATION
+		VALUES(
+		#{empNo}
+		,#{occGubun}
+		,#{donationType}
+		,#{donationDate}
+		,#{donationCompanyName}
+		,#{donationAmt}
+		,#{regiNo}
+		,#{name}
+		)
+	</insert>
+	<update id="updateHyDependentDonation" parameterType="hyDependentDonationBean">
+		UPDATE HY_DEPENDENT_DONATION SET
+		OCC_GUBUN=#{occGubun}
+		,DONATION_TYPE=#{donationType}
+		,DONATION_DATE=#{donationDate}
+		,DONATION_COMPANY_NAME=#{donationCompanyName}
+		,DONATION_AMT=#{donationAmt}
+		,NAME=#{name}
+		WHERE EMP_NO=#{empNo} AND REGI_NO=#{regiNo}
+	</update>
+	<delete id="deleteHyDependentDonation" parameterType="hyDependentDonationBean">
+		DELETE FROM HY_DEPENDENT_DONATION
+		WHERE EMP_NO=#{empNo} AND REGI_NO=#{regiNo}
+	</delete>
+</mapper>

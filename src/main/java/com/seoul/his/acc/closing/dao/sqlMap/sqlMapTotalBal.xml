@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.acc.closing.dao.TotalBalDAO">
+<cache flushInterval="86400000" eviction="LRU" />
+    <resultMap id="totalBalResult" type="TotalBalBean">
+        <result property="level"    column="LEVEL"   />
+        <result property="acntCd"   column="ACNT_CD" />
+        <result property="acntNm"   column="ACNT_NM" />
+        <result property="debBal"   column="DEB_BAL" />
+        <result property="debSum"   column="DEB_SUM" />
+        <result property="creSum"   column="CRE_SUM" />
+        <result property="creBal"   column="CRE_BAL" />
+    </resultMap>
+
+    <select id="selectTotalBalList" statementType="CALLABLE" parameterType="map" resultType="map">
+        CALL PC_AC_TOTALBAL_STAT (
+            #{accPrid,      mode=IN,    jdbcType=VARCHAR},
+            #{errorCode,    mode=OUT,   jdbcType=VARCHAR},
+            #{errorMsg,     mode=OUT,   jdbcType=VARCHAR},
+            #{totalBalList, mode=OUT,   jdbcType=CURSOR,
+                  javaType=ResultSet,   resultMap=totalBalResult}
+            )
+    </select>
+
+</mapper>

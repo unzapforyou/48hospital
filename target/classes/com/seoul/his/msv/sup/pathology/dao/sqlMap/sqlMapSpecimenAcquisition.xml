@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.msv.sup.pathology.dao.SpecimenAcquisitionDAO">
+
+   <cache flushInterval="86400000" eviction="LRU" />
+
+	<!-- 검체접수 리스트 조회 (검체인수 확인을 하기 위해 검체접수 리스트 조회) -->
+	<select id="selectSpecimenAcquisitionList" flushCache="false"  useCache="true" parameterType="map" resultType="SpecimenAcquisitionBean">
+        SELECT R.CLINSPE_NO,
+               R.CLINSPE_RECEIPT_DATE,
+               S.BLOODGET_DATE,
+               S.BLOODGET_EMP,
+               S.PAT_NO,
+               S.PAT_NM,
+               SA.ACQUISITION_YN,
+               SA.ACQUISITION_DATE,
+               SA.ACQUISITION_CANCEL_DATE
+          FROM SL_CLINSPE S,
+               SL_CLINSPE_RECEIPT R
+          LEFT OUTER JOIN ERP48.SSP_SPECIMEN_ACQUISITION SA
+               ON R.CLINSPE_NO = SA.CLINSPE_NO
+         WHERE S.CLINSPE_NO = R.CLINSPE_NO
+               AND R.CLINSPE_RECEIPT_DATE BETWEEN #{startDate} AND #{endDate}
+	</select>
+
+	<!-- clinspeNo(검체번호)유무로 insert 와 update 구분 -->
+	<select id="selectSpecimenAcquisition" parameterType="String" resultType="String">
+		select CLINSPE_NO from ERP48.SSP_SPECIMEN_ACQUISITION where CLINSPE_NO = #{clinspeNo}
+	</select>
+
+	<update id="insertSpecimenAcquisition" parameterType="SpecimenAcquisitionBean">
+		INSERT INTO ERP48.SSP_SPECIMEN_ACQUISITION
+		       (
+		           CLINSPE_NO
+		         , ACQUISITION_YN
+		         , ACQUISITION_DATE
+		         , ACQUISITION_CANCEL_DATE
+		       )
+		       VALUES
+		       (
+		           #{clinspeNo}
+		         , #{acquisitionYn}
+		         , #{acquisitionDate}
+		         , #{acquisitionCancelDate}
+		       )
+	</update>
+
+	<update id="updateSpecimenAcquisition" parameterType="SpecimenAcquisitionBean">
+		UPDATE ERP48.SSP_SPECIMEN_ACQUISITION
+		       SET ACQUISITION_YN = #{acquisitionYn}
+		     , ACQUISITION_DATE = #{acquisitionDate}
+		     , ACQUISITION_CANCEL_DATE = #{acquisitionCancelDate}
+		 WHERE CLINSPE_NO = #{clinspeNo}
+	</update>
+
+</mapper>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.seoul.his.hrs.ret.dao.RetPlanEmpDAO">
+
+	<cache flushInterval="86400000" eviction="LRU" />
+
+	<select id="selectRetPlanEmpList" flushCache="false" useCache="true"
+		resultType="RetPlanEmpBean">
+
+							SELECT EMP_NO as empNo,
+							       EMP_NM as empNm,
+							       DEPT_CD as deptCd,
+							       DEPT_NM as deptNm,
+							       JOBTT as jobtt,
+				                   RET_MONTH_WORKINGDAYS as retMonthWorkingdays 
+  
+					 		 FROM HM_EMP  
+					 		 
+					 		 WHERE 
+					 		 RET_MONTH_WORKINGDAYS IS NOT NULL
+                             AND
+                             RET_DATE IS NULL
+						 		 <if test="deptCd != null">
+						 		 AND DEPT_CD like
+						 		 '%'||#{deptCd}||'%'
+						 		 </if>
+						 		 
+						 		 <if test="deptNm != null">
+						 		  AND DEPT_NM like
+						 		 '%'||#{deptNm}||'%'
+						 		 </if>
+                                    
+                                <if test="empNo != null">
+                                  AND EMP_NO like
+                                 '%'||#{empNo}||'%'
+                                 </if>  
+                                   
+						 		 <if test="sDate != null">
+						 		  AND RET_MONTH_WORKINGDAYS
+						 		  BETWEEN #{sDate} AND #{eDate}
+						 		 </if>
+
+
+	
+	</select>
+
+
+
+</mapper>

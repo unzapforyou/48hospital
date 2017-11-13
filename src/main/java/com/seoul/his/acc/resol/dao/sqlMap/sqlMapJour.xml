@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.acc.resol.dao.JourDAO">
+<cache flushInterval="86400000" eviction="LRU" />
+
+
+
+<select id="selectAutoJourRuleList" resultType="AutoJourRuleBean" useCache="true" flushCache="false" >
+SELECT ACC_YEAR, BUSI_DIV_CD, JOUR_DIV_NM, CRE_DEB_DIV, ACNT_CD, ASSI_SUB_CD, NOTE, JOUR_CD, PARENT_JOUR_CD, ACNT_CD_NM, ASSI_SUB_CD_NM, BIMOK_CD FROM AR_AUTO_JOUR_RULE WHERE ACC_YEAR = #{accYear}
+<if test="parentJourCd != null"> AND PARENT_JOUR_CD IS NOT null </if>
+
+<if test="parentJourCd == null"> AND PARENT_JOUR_CD IS null </if>
+
+<if test="busiDivCd != null"> AND BUSI_DIV_CD = #{busiDivCd} </if>
+
+<if test="jourDivNm != null"> AND JOUR_DIV_NM LIKE #{jourDivNm} || '%' </if>
+
+</select>
+
+
+<!-- 분개내역 상세 조회 -->
+<select id="selectJourDetail" resultType="JourBean" useCache="true" flushCache="false" >
+SELECT SEQ ,CRE_DEB_DIV ,DEB_AMT ,CRE_AMT ,TAX_DIV ,ACNT_CD ,ASSI_SUB_CD ,ACC_PRID ,
+RESOL_NO ,SLIP_NO ,ACNT_NM ,ASSI_SUB_NM ,BIMOK_CD ,CLOS_YB
+
+FROM AR_JOUR
+
+WHERE RESOL_NO = #{resolNo} ORDER BY SEQ
+
+</select>
+
+
+
+</mapper>

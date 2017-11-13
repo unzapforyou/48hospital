@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.acc.closing.dao.AcClosDataDAO">
+
+	<cache flushInterval="86400000" eviction="LRU" />
+
+	<resultMap id="closDataResult" type="acClosDataBean">
+		<result property="level" 		column="LEVEL" />
+		<result property="artiCd" 		column="ARTI_CD" />
+		<result property="artiNm" 		column="ARTI_NM" />
+		<result property="amt" 			column="AMT" />
+		<result property="sumAmt" 		column="SUM_AMT" />
+		<result property="cellInputDiv" column="CELL_INPUT_DIV" />
+		<result property="autoCalYn" 	column="AUTO_CAL_YN" />
+		<result property="sumArtiCd" 	column="SUM_ARTI_CD" />
+		<result property="deductYn" 	column="DEDUCT_YN" />
+	</resultMap>
+
+	<select id="selectAcClosTabArtiList" statementType="CALLABLE"
+		parameterType="map" resultType="map">
+		CALL PC_AC_CLOSDATA_STAT (
+			#{accPrid, mode=IN, jdbcType=VARCHAR},
+			#{errorCode, mode=OUT, jdbcType=VARCHAR},
+			#{errorMsg, mode=OUT, jdbcType=VARCHAR},
+			#{closDataList, mode=OUT, jdbcType=CURSOR,
+			javaType=ResultSet, resultMap=closDataResult}	)
+	</select>
+
+	<select id="selectAccPridList" resultType="accPridBean">
+		SELECT * FROM
+		AE_ACC_PRID
+	</select>
+</mapper>

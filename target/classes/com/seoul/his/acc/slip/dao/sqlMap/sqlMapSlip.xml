@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.acc.slip.dao.SlipDAO">
+<cache flushInterval="86400000" eviction="LRU" />
+	<!-- 전표등록 -->
+	<update parameterType="SlipBean" flushCache="false" id="insertSlip">
+		INSERT
+
+		INTO AS_SLIP
+
+		VALUES(
+		#{slipNo}||AS_SLIP_SEQ.NEXTVAL ,
+		#{gipyoDate},
+		#{slipDiv} ,
+		#{ctrtNo} ,
+		#{custCd} ,
+		#{operNo} ,
+		#{abs} ,
+		#{demdDeptCd } ,
+		#{resolDeptCd} ,
+		#{regWorker } ,
+		#{danDiv } ,
+		#{prfYb } ,
+		#{receiptNo } ,
+		#{sakNo } ,
+		#{resolNo } ,
+		#{closYb } ,
+		#{accPrid } )
+	</update>
+
+	<!-- 전표번호 등록 프로시져 -->
+	<select id="callSlipNoUpdate" statementType="CALLABLE">
+		call PC_AS_SLIP_NO_UPDATE( #{resolNo,mode=IN,jdbcType=VARCHAR,javaType=string}, #{errCd,mode=OUT,jdbcType=VARCHAR,javaType=string}, #{errMsg,mode=OUT,jdbcType=VARCHAR,javaType=string} )
+	</select>
+
+	<!-- 결산분개시 분개에 전표번호 등록 -->
+	<select id="updateSlipNo" statementType="CALLABLE">
+		call PC_AS_SET_SLIPNO( #{resolNo,mode=IN,jdbcType=VARCHAR,javaType=string}, #{errorCode,mode=OUT,jdbcType=VARCHAR,javaType=string}, #{errorMsg,mode=OUT,jdbcType=VARCHAR,javaType=string} )
+	</select>
+
+	<!-- 전표 목록 조회 -->
+	<select flushCache="false" id="selectSlipList" resultType="SlipBean" useCache="true">
+	SELECT SLIP_NO ,GIPYO_DATE ,SLIP_DIV ,CTRT_NO ,CUST_CD ,OPER_NO ,ABS ,DEMD_DEPT_CD ,RESOL_DEPT_CD ,REG_WORKER ,DAN_DIV ,PRF_YB ,RECEIPT_NO ,SAK_NO ,RESOL_NO ,CLOS_YB ,ACC_PRID FROM AS_SLIP WHERE 1=1
+	<if test="slipNo != null">
+		AND SLIP_NO = #{slipNo}
+	</if>
+
+	<if test="accPrid != null">
+		AND ACC_PRID = #{accPrid}
+	</if>
+
+	<if test="slipDiv != null">
+		AND SLIP_DIV = #{slipDiv}
+	</if>
+
+
+	<if test="startDate != null">
+		<![CDATA[
+		AND to_number(GIPYO_DATE) >= #{startDate} AND to_number(GIPYO_DATE) <= #{endDate}
+		]]>
+	</if>
+
+	<if test="startSlipNo != null">
+		<![CDATA[
+		AND to_number(SLIP_NO) >= #{startSlipNo} AND to_number(SLIP_NO) <= #{endSlipNo}
+		]]>
+	</if>
+
+	<if test="resolDeptCd != null">
+		AND RESOL_DEPT_CD = #{resolDeptCd}
+	</if>
+
+	<if test="closYb != null">
+		AND CLOS_YB =#{closYb}
+	</if>
+	ORDER BY SLIP_NO DESC
+	</select>
+
+</mapper>

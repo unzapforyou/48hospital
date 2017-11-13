@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.acc.budget.dao.OrgDlineDAO">
+
+ 	<cache flushInterval="86400000" eviction="LRU" />
+
+ 	<select id="selectOrgDlineList" flushCache="false"  useCache="true" resultType="OrgDlineBean">
+		SELECT 	ACC_YEAR		AS accYear
+      			, DLINE_DIV		AS dlineDiv
+      			, PROC_DIV		AS procDiv
+      			, PROC_DAY		AS procDay
+      			, REASON			AS reason
+      			, PROC_PERSON	AS procPerson
+		FROM AB_ORG_DLINE
+		WHERE 1=1
+		<if test="accYear != null">
+	   		AND ACC_YEAR = #{accYear}
+		</if>
+		ORDER BY PROC_DAY
+ 	</select>
+ 	
+	<select id="selectOrgDline" flushCache="false"  useCache="true" resultType="OrgDlineBean">
+		SELECT 	ACC_YEAR		AS accYear
+      			, DLINE_DIV		AS dlineDiv
+      			, PROC_DIV		AS procDiv
+      			, PROC_DAY		AS procDay
+      			, REASON			AS reason
+      			, PROC_PERSON	AS procPerson
+		FROM AB_ORG_DLINE
+		WHERE 1=1 AND PROC_DAY = (SELECT MAX(PROC_DAY) FROM AB_ORG_DLINE)
+		<if test="accYear != null">
+	   		AND ACC_YEAR = #{accYear}
+		</if>
+		ORDER BY PROC_DAY
+ 	</select>
+
+
+ 	<select id="callOrgDlineReg" statementType="CALLABLE" parameterType="OrgDlineBean" resultType="OrgDlineBean">
+     	{call PC_AB_ORG_DLINE_REG (
+      		#{accYear, mode=IN, jdbcType=VARCHAR},
+      		#{dlineDiv, mode=IN, jdbcType=VARCHAR},
+      		#{procDiv, mode=IN, jdbcType=VARCHAR},
+      		#{procPerson, mode=IN, jdbcType=VARCHAR},
+      		#{reason, mode=IN, jdbcType=VARCHAR},
+      		#{errorCode, mode=OUT, jdbcType=VARCHAR},
+      		#{errorMsg, mode=OUT, jdbcType=VARCHAR}
+     	) }
+ 	</select>
+ </mapper>

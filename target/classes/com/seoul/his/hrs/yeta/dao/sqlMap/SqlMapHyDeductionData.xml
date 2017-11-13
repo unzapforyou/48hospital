@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.hrs.yeta.dao.HyDeductionDataDAO">
+	<resultMap type="hyDeductionBean" id="hyDeductionResultMap">
+		<result property="empNo" column="EMP_NO"/>
+		<collection property="hyDependentBeanList" select="selectHyDependentList"
+			column="EMP_NO" javaType="list"/>
+		<collection property="hyDependentInsuranceBeanList" select="selectHyDependentInsuranceBeanList"
+			column="EMP_NO" javaType="list"/>
+		<collection property="hyDependentMedicalBeanList" select="selectHyDependentMedicalBeanList"
+			column="EMP_NO" javaType="list"/>
+		<collection property="hyDependentDonationBeanList" select="selectHyDependentDonationBeanList"
+			column="EMP_NO" javaType="list"/>
+		<collection property="hyDependentEducationBeanList" select="selectHyDependentEducationBeanList"
+			column="EMP_NO" javaType="list"/>
+		<collection property="hyDependentPaymentBeanList" select="selectHyDependentPaymentBeanList"
+			column="EMP_NO" javaType="list"/>
+		<collection property="hyFormerCompanyBeanList" select="selectHyFormerCompanyBeanList"
+			column="EMP_NO" javaType="list"/>
+		<collection property="hyDeductionDataBean" select="selectHyDeductionDataBean"
+			column="EMP_NO" javaType="HyDeductionDataBean"/>
+	</resultMap>
+
+	<select id="selectHyDeduction" resultMap="hyDeductionResultMap">
+		SELECT #{empNo} AS EMP_NO
+		FROM DUAL
+	</select>
+
+	<select id="selectHyDependentList" resultType="HyDependentBean">
+		SELECT *
+		FROM HY_DEPENDENT
+		WHERE EMP_NO = #{empNo}
+	</select>
+
+	<select id="selectHyDependentInsuranceBeanList" resultType="HyDependentInsuranceBean">
+		SELECT *
+		FROM hy_dependent_insurance
+		WHERE EMP_NO = #{empNo}
+	</select>
+
+	<select id="selectHyDependentMedicalBeanList" resultType="HyDependentMedicalBean">
+		SELECT *
+		FROM HY_DEPENDENT_MEDICAL
+		WHERE EMP_NO = #{empNo}
+	</select>
+
+	<select id="selectHyDependentDonationBeanList" resultType="HyDependentDonationBean">
+		SELECT *
+		FROM HY_DEPENDENT_DONATION
+		WHERE EMP_NO = #{empNo}
+	</select>
+
+	<select id="selectHyDependentEducationBeanList" resultType="HyDependentEducationBean">
+		SELECT *
+		FROM HY_DEPENDENT_EDUCATION
+		WHERE EMP_NO = #{empNo}
+	</select>
+
+	<select id="selectHyDependentPaymentBeanList" resultType="HyDependentPaymentBean">
+		SELECT *
+		FROM HY_DEPENDENT_PAYMENT
+		WHERE EMP_NO = #{empNo}
+	</select>
+
+	<select id="selectHyFormerCompanyBeanList" resultType="HyFormerCompanyBean">
+		SELECT *
+		FROM HY_FORMER_COMPANY
+		WHERE EMP_NO = #{empNo}
+	</select>
+
+	<select id="selectHyDeductionDataBean" resultType="HyDeductionDataBean">
+		SELECT *
+		FROM HY_DEDUCTION_DATA
+		WHERE EMP_NO = #{empNo}
+	</select>
+
+
+	<insert id="insertHyDeductionData" parameterType="hyDeductionDataBean">
+		INSERT INTO HY_DEDUCTION_DATA
+		VALUES(
+		#{empNo}
+		,#{spouseDdt}
+		,#{linAscDdt}
+		,#{linDescChdDdt}
+		,#{sibilingDdt}
+		,#{pensionerDdt}
+		,#{foChdDdt}
+		,#{senior70yearoverDdt}
+		,#{handicappedPersonDdt}
+		,#{womanDdt}
+		,#{singleParentDdt}
+		,#{nationalPensionDdt}
+		,#{publicOfficialPensionDdt}
+		,#{militaryPensionDdt}
+		,#{privateSchoolDdt}
+		,#{specialPostofficeDdt}
+		,#{healthInsuranceDdt}
+		,#{empInsuranceDdt}
+		,#{housingLeaseDebtDdt}
+		,#{mbsUnder15yearDdt}
+		,#{mbs15to29yearDdt}
+		,#{mbsOver30yearDdt}
+		,#{mbsFrmDdt}
+		,#{mbsEtcDdt}
+		,#{personalPensionDdt}
+		,#{subDepositDdt}
+		,#{empHmlDdt}
+		,#{housingSubDepositDdt}
+		,#{creditcardDdt}
+		,#{cashReceiptDdt}
+		,#{debitcardDdt}
+		,#{tradMarketDdt}
+		,#{publicTransportationDdt}
+		,#{own2013CreditcardUsedDdt}
+		,#{own2014CreditcardUsedDdt}
+		,#{own2013AdditionalDdt}
+		,#{own2014SecondHalfDdt}
+		,#{smallBusinessDdt}
+		,#{inv2012AssociationDdt}
+		,#{inv2013AssociationDdt}
+		,#{inv2014AssociationDdt}
+		,#{empSharePensionDdt}
+		,#{empShareDonationDdt}
+		,#{sbeSalaryDdt}
+		,#{noMokdonHousingDdt}
+		,#{longtermSavingStockDdt}
+		,#{incomeTaxLawDdt}
+		,#{sbeDdt}
+		,#{sbcOwnWorkingPersonDdt}
+		,#{foreignTechnicianDdt}
+		,#{taxTreatyDdt}
+		,#{earnedIncomeTaxDdtAuto}
+		,#{chdTaxDdt}
+		,#{scientistDdt}
+		,#{retirementPensionDdt}
+		,#{annuitySavingDdt}
+		,#{guaranteedInsuranceDdt}
+		,#{guaranteedHandicappedDdt}
+		,#{medical65overCostDdt}
+		,#{etcMedicalCostDdt}
+		,#{medicalOwnCostDdt}
+		,#{medicalBasicCostDdt}
+		,#{eduOwnCostDdt}
+		,#{familyEduCostDdt}
+		,#{eduHandicappedCostDdt}
+		,#{eduCostTotal}
+		,#{eduCostDdt}
+		,#{campaigningDonationDdt}
+		,#{legalDonationDdtLast}
+		,#{legalDonationDdt}
+		,#{chaTrustDonationDdtLast}
+		,#{chaTrustDonationDdt}
+		,#{empSharePensionDonationDdt}
+		,#{desDonationDdtLast}
+		,#{desDonationDdt}
+		,#{desDonationReligionDdtLast}
+		,#{desDonationReligionDdt}
+		,#{standardTaxDdtAuto}
+		,#{taxAssociationDdt}
+		,#{housingLeaseDdt}
+		,#{foreignIncomeDdt}
+		,#{foreignPaymentDdt}
+		,#{monthlyRentDdt}
+		,#{belongYear}
+		,#{cutoffFlag}
+		,#{seniorLongtermDdt}
+		,#{mbsRepaymentType}
+		,#{mbsRepaymentPeriod}
+		,#{mbsDdt}
+		,#{housingFundDdt}
+		,#{mbsRate}
+		,#{adu2014Amt}
+		,#{adu2015FhyAmt}
+		,#{adu2015ShyAmt}
+		,#{adu2013Amt}
+		,#{inv2015AssociationDdt}
+		,#{inv2013VentureDdt}
+		,#{inv2014VentureDdt}
+		,#{inv2015VentureDdt}
+		,#{mesbwDdt}
+		,#{nrsliDdt}
+		,#{sbeDdtRate}
+		,#{childUnder6Ddt}
+		,#{childBirthAdoptDdt}
+		,#{eduUnder20CostDdt}
+		,#{eduOver20CostDdt}
+		,#{eduOver20Cnt}
+		,#{eduUnder20Cnt}
+		,#{medicalHandicappedCostDdt}
+		,#{medicalIgCostDdt}
+		,#{housingDepositWorkerDdt}
+		,#{medicalInfertilityCostDdt}
+		)
+	</insert>
+	<update id="updateHyDeductionData" parameterType="hyDeductionDataBean">
+		UPDATE HY_DEDUCTION_DATA SET
+		SPOUSE_DDT=#{spouseDdt}
+		,LIN_ASC_DDT=#{linAscDdt}
+		,LIN_DESC_CHD_DDT=#{linDescChdDdt}
+		,SIBILING_DDT=#{sibilingDdt}
+		,PENSIONER_DDT=#{pensionerDdt}
+		,FO_CHD_DDT=#{foChdDdt}
+		,SENIOR_70YEAROVER_DDT=#{senior70yearoverDdt}
+		,HANDICAPPED_PERSON_DDT=#{handicappedPersonDdt}
+		,WOMAN_DDT=#{womanDdt}
+		,SINGLE_PARENT_DDT=#{singleParentDdt}
+		,NATIONAL_PENSION_DDT=#{nationalPensionDdt}
+		,PUBLIC_OFFICIAL_PENSION_DDT=#{publicOfficialPensionDdt}
+		,MILITARY_PENSION_DDT=#{militaryPensionDdt}
+		,PRIVATE_SCHOOL_DDT=#{privateSchoolDdt}
+		,SPECIAL_POSTOFFICE_DDT=#{specialPostofficeDdt}
+		,HEALTH_INSURANCE_DDT=#{healthInsuranceDdt}
+		,EMP_INSURANCE_DDT=#{empInsuranceDdt}
+		,HOUSING_LEASE_DEBT_DDT=#{housingLeaseDebtDdt}
+		,MBS_UNDER15YEAR_DDT=#{mbsUnder15yearDdt}
+		,MBS_15TO29YEAR_DDT=#{mbs15to29yearDdt}
+		,MBS_OVER30YEAR_DDT=#{mbsOver30yearDdt}
+		,MBS_FRM_DDT=#{mbsFrmDdt}
+		,MBS_ETC_DDT=#{mbsEtcDdt}
+		,PERSONAL_PENSION_DDT=#{personalPensionDdt}
+		,SUB_DEPOSIT_DDT=#{subDepositDdt}
+		,EMP_HML_DDT=#{empHmlDdt}
+		,HOUSING_SUB_DEPOSIT_DDT=#{housingSubDepositDdt}
+		,CREDITCARD_DDT=#{creditcardDdt}
+		,CASH_RECEIPT_DDT=#{cashReceiptDdt}
+		,DEBITCARD_DDT=#{debitcardDdt}
+		,TRAD_MARKET_DDT=#{tradMarketDdt}
+		,PUBLIC_TRANSPORTATION_DDT=#{publicTransportationDdt}
+		,OWN_2013_CREDITCARD_USED_DDT=#{own2013CreditcardUsedDdt}
+		,OWN_2014_CREDITCARD_USED_DDT=#{own2014CreditcardUsedDdt}
+		,OWN_2013_ADDITIONAL_DDT=#{own2013AdditionalDdt}
+		,OWN_2014_SECOND_HALF_DDT=#{own2014SecondHalfDdt}
+		,SMALL_BUSINESS_DDT=#{smallBusinessDdt}
+		,INV_2012_ASSOCIATION_DDT=#{inv2012AssociationDdt}
+		,INV_2013_ASSOCIATION_DDT=#{inv2013AssociationDdt}
+		,INV_2014_ASSOCIATION_DDT=#{inv2014AssociationDdt}
+		,EMP_SHARE_PENSION_DDT=#{empSharePensionDdt}
+		,EMP_SHARE_DONATION_DDT=#{empShareDonationDdt}
+		,SBE_SALARY_DDT=#{sbeSalaryDdt}
+		,NO_MOKDON_HOUSING_DDT=#{noMokdonHousingDdt}
+		,LONGTERM_SAVING_STOCK_DDT=#{longtermSavingStockDdt}
+		,INCOME_TAX_LAW_DDT=#{incomeTaxLawDdt}
+		,SBE_DDT=#{sbeDdt}
+		,SBC_OWN_WORKING_PERSON_DDT=#{sbcOwnWorkingPersonDdt}
+		,FOREIGN_TECHNICIAN_DDT=#{foreignTechnicianDdt}
+		,TAX_TREATY_DDT=#{taxTreatyDdt}
+		,EARNED_INCOME_TAX_DDT_AUTO=#{earnedIncomeTaxDdtAuto}
+		,CHD_TAX_DDT=#{chdTaxDdt}
+		,SCIENTIST_DDT=#{scientistDdt}
+		,RETIREMENT_PENSION_DDT=#{retirementPensionDdt}
+		,ANNUITY_SAVING_DDT=#{annuitySavingDdt}
+		,GUARANTEED_INSURANCE_DDT=#{guaranteedInsuranceDdt}
+		,GUARANTEED_HANDICAPPED_DDT=#{guaranteedHandicappedDdt}
+		,MEDICAL_65OVER_COST_DDT=#{medical65overCostDdt}
+		,ETC_MEDICAL_COST_DDT=#{etcMedicalCostDdt}
+		,MEDICAL_OWN_COST_DDT=#{medicalOwnCostDdt}
+		,MEDICAL_BASIC_COST_DDT=#{medicalBasicCostDdt}
+		,EDU_OWN_COST_DDT=#{eduOwnCostDdt}
+		,FAMILY_EDU_COST_DDT=#{familyEduCostDdt}
+		,EDU_HANDICAPPED_COST_DDT=#{eduHandicappedCostDdt}
+		,EDU_COST_TOTAL=#{eduCostTotal}
+		,EDU_COST_DDT=#{eduCostDdt}
+		,CAMPAIGNING_DONATION_DDT=#{campaigningDonationDdt}
+		,LEGAL_DONATION_DDT_LAST=#{legalDonationDdtLast}
+		,LEGAL_DONATION_DDT=#{legalDonationDdt}
+		,CHA_TRUST_DONATION_DDT_LAST=#{chaTrustDonationDdtLast}
+		,CHA_TRUST_DONATION_DDT=#{chaTrustDonationDdt}
+		,EMP_SHARE_PENSION_DONATION_DDT=#{empSharePensionDonationDdt}
+		,DES_DONATION_DDT_LAST=#{desDonationDdtLast}
+		,DES_DONATION_DDT=#{desDonationDdt}
+		,DES_DONATION_RELIGION_DDT_LAST=#{desDonationReligionDdtLast}
+		,DES_DONATION_RELIGION_DDT=#{desDonationReligionDdt}
+		,STANDARD_TAX_DDT_AUTO=#{standardTaxDdtAuto}
+		,TAX_ASSOCIATION_DDT=#{taxAssociationDdt}
+		,HOUSING_LEASE_DDT=#{housingLeaseDdt}
+		,FOREIGN_INCOME_DDT=#{foreignIncomeDdt}
+		,FOREIGN_PAYMENT_DDT=#{foreignPaymentDdt}
+		,MONTHLY_RENT_DDT=#{monthlyRentDdt}
+		,CUTOFF_FLAG=#{cutoffFlag}
+		,SENIOR_LONGTERM_DDT=#{seniorLongtermDdt}
+		,MBS_REPAYMENT_TYPE=#{mbsRepaymentType}
+		,MBS_REPAYMENT_PERIOD=#{mbsRepaymentPeriod}
+		,MBS_DDT=#{mbsDdt}
+		,HOUSING_FUND_DDT=#{housingFundDdt}
+		,MBS_RATE=#{mbsRate}
+		,ADU_2014_AMT=#{adu2014Amt}
+		,ADU_2015_FHY_AMT=#{adu2015FhyAmt}
+		,ADU_2015_SHY_AMT=#{adu2015ShyAmt}
+		,ADU_2013_AMT=#{adu2013Amt}
+		,INV_2015_ASSOCIATION_DDT=#{inv2015AssociationDdt}
+		,INV_2013_VENTURE_DDT=#{inv2013VentureDdt}
+		,INV_2014_VENTURE_DDT=#{inv2014VentureDdt}
+		,INV_2015_VENTURE_DDT=#{inv2015VentureDdt}
+		,MESBW_DDT=#{mesbwDdt}
+		,NRSLI_DDT=#{nrsliDdt}
+		,SBE_DDT_RATE=#{sbeDdtRate}
+		,CHILD_UNDER6_DDT=#{childUnder6Ddt}
+		,CHILD_BIRTH_ADOPT_DDT=#{childBirthAdoptDdt}
+		,EDU_UNDER20_COST_DDT=#{eduUnder20CostDdt}
+		,EDU_OVER20_COST_DDT=#{eduOver20CostDdt}
+		,EDU_OVER20_CNT=#{eduOver20Cnt}
+		,EDU_UNDER20_CNT=#{eduUnder20Cnt}
+		,MEDICAL_HANDICAPPED_COST_DDT=#{medicalHandicappedCostDdt}
+		,MEDICAL_IG_COST_DDT=#{medicalIgCostDdt}
+		,HOUSING_DEPOSIT_WORKER_DDT=#{housingDepositWorkerDdt}
+		,MEDICAL_INFERTILITY_COST_DDT=#{medicalInfertilityCostDdt}
+		WHERE EMP_NO=#{empNo} AND BELONG_YEAR=#{belongYear}
+	</update>
+
+	<delete id="deleteHyDeductionData" parameterType="hyDeductionDataBean">
+		DELETE FROM HY_DEDUCTION_DATA
+		WHERE EMP_NO=#{empNo} AND BELONG_YEAR=#{belongYear}
+	</delete>
+</mapper>

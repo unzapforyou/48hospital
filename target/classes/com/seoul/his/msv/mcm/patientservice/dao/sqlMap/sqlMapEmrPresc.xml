@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.msv.mcm.patientservice.dao.EmrPrescDAO">
+
+	<resultMap type="EmrPrescBean" id="resultEmr">
+		<result property="prescNo" column="PRESC_NO" />
+		<result property="patNo" column="PAT_NO" />
+		<result property="diseaseCd" column="DISEASE_CD" />
+		<result property="diseaseNm" column="DISEASE_NM" />
+		<result property="surYn" column="SUR_YN" />
+		<result property="deptNo" column="DEPT_NO" />
+		<result property="prescDate" column="PRESC_DATE" />
+		<collection property="rehabilitationList"
+			select="com.seoul.his.msv.mcm.patientservice.dao.EmrRehabilitationDAO.selectEmrRehabilitationList" column="EMP_NO"
+			javaType="list" />
+		<collection property="materialList"
+			select="com.seoul.his.msv.mcm.patientservice.dao.EmrMaterialDAO.selectEmrMaterialList"
+			column="EMP_NO" javaType="list" />
+		<collection property="injectionList"
+			select="com.seoul.his.msv.mcm.patientservice.dao.EmrInjectionDAO.selectEmrInjectionList" column="EMP_NO"
+			javaType="list" />
+		<collection property="handleList"
+			select="com.seoul.his.msv.mcm.patientservice.dao.EmrHandleDAO.selectEmrHandleList" column="EMP_NO"
+			javaType="list" />
+		<collection property="checkupList"
+			select="com.seoul.his.msv.mcm.patientservice.dao.EmrCheckupDAO.selectEmrCheckupList" column="EMP_NO"
+			javaType="list" />
+		<collection property="transfusionList"
+			select="com.seoul.his.msv.mcm.patientservice.dao.EmrTransfusionDAO.selectEmrTransfusionList" column="EMP_NO"
+			javaType="list" />
+	</resultMap>
+
+    <select id="selectEmrPrescList" parameterType="map" resultMap="resultEmr">
+        SELECT    PRESC_NO
+					,PAT_NO
+					,PRESC_DATE
+					,DISEASE_CD
+					,DISEASE_NM
+					,SUR_YN
+					,DEPT_NO
+        FROM 	MC_EMR_PRESC
+    </select>
+</mapper>

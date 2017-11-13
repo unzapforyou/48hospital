@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.seoul.his.hrs.guntae.dao.HdayDAO">
+
+<select id="selectHdayList" resultType="HdayBean">
+
+		select
+            HDAY_DATE,
+            HDAY_NM,
+            HDAY_NM2
+		from
+            HG_HDAY
+		WHERE
+            1=1
+		<if test="sDate != '' and sDate != null and eDate != '' and eDate != null">
+		AND HDAY_DATE BETWEEN #{sDate} and #{eDate}
+		</if>
+		order by HDAY_DATE
+	</select>
+
+	<select id="callHday" statementType="CALLABLE" parameterType="HdayBean">
+		CALL PC_HG_HDAY_CREATE(
+		  #{hdayDate}
+		, #{hdayNm2}
+		, #{errorCode, mode=OUT, jdbcType=VARCHAR, javaType=string}
+		, #{errorMsg, mode=OUT, jdbcType=VARCHAR, javaType=string}
+		)
+	</select>
+
+	<delete id="deleteHday" parameterType="HdayBean">
+		delete from HG_HDAY
+		where HDAY_DATE = #{hdayDate}
+	</delete>
+
+
+</mapper>

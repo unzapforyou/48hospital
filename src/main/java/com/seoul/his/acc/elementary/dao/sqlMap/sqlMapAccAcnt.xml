@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.acc.elementary.dao.AccAcntDAO">
+<cache flushInterval="86400000" eviction="LRU" />
+
+    <select id="selectAccAcntList" flushCache="false" useCache="true" resultType="AccAcntBean">
+        SELECT
+            A.ACC_YEAR as accYear,
+            A.ACNT_CD as acntCd,
+            A.ACNT_NM as acntNm,
+            A.PARENT_ACNT_CD as parentAcntCd,
+            A.ACNT_DIV as acntDiv,
+            A.CRE_DEB_DIV as creDebDiv,
+            B.ASSI_TYPE_CD as assiTypeCd,
+            B.ASSI_TYPE_NM as assiTypeNm,
+            A.BUDG_YN as budgYn,
+            A.USE_YN as useYn,
+            A.INCOM_ARTI_CD as incomArtiCd,
+            A.CASH_ARTI_CD as cashArtiCd,
+            A.INPUT_YN as inputYn,
+            A.DEDUCT_YN as deductYn,
+            LEVEL as lev
+        FROM
+            (SELECT * FROM AE_ACC_ACNT WHERE ACC_YEAR=#{accYear}) A
+            LEFT OUTER JOIN (SELECT * FROM AE_ASSI_TYPE WHERE ACC_YEAR=#{accYear}) B
+            ON A.ASSI_TYPE_CD = B.ASSI_TYPE_CD
+        WHERE
+            1=1
+        <if test="acntNm != null">
+            AND A.ACNT_NM LIKE '%' || #{acntNm} || '%'
+        </if>
+        <if test="accYear != null">
+            AND A.ACC_YEAR = #{accYear}
+        </if>
+        <if test="creDebDiv != null">
+            AND A.CRE_DEB_DIV = #{creDebDiv}
+            AND A.INPUT_YN = 'Y'
+        </if>
+        <if test="acntDiv != null">
+            AND A.ACNT_DIV = #{acntDiv}
+        </if>
+        START WITH 
+            PARENT_ACNT_CD IS NULL
+        CONNECT BY PRIOR 
+            ACNT_CD = PARENT_ACNT_CD
+        ORDER BY 
+            ACNT_CD
+    </select>
+    
+    <select id="callCopyAcnt" statementType="CALLABLE" parameterType="AccAcntBean" resultType="AccAcntBean">
+         {call PC_AE_COPY_ACNT (
+            #{accYear, mode=IN, jdbcType=VARCHAR},
+            #{errorCode, mode=OUT, jdbcType=VARCHAR},
+            #{errorMsg, mode=OUT, jdbcType=VARCHAR}
+         ) }
+    </select>
+
+    <insert id="insertAccAcnt" parameterType="AccAcntBean">
+        INSERT INTO
+            AE_ACC_ACNT(
+                 ACNT_CD,
+                 ACNT_NM,
+                 ACNT_DIV,
+                 CRE_DEB_DIV,
+                 ASSI_TYPE_CD,
+                 BUDG_YN,
+                 USE_YN,
+                 INCOM_ARTI_CD,
+                 INPUT_YN,
+                 ACC_YEAR,
+                 PARENT_ACNT_CD,
+                 CASH_ARTI_CD,
+                 DEDUCT_YN
+            )
+            values(
+                 #{acntCd},
+                 #{acntNm},
+                 #{acntDiv},
+                 #{creDebDiv},
+                 #{assiTypeCd},
+                 #{budgYn},
+                 #{useYn},
+                 FN_AC_GET_INCOM_CD(#{accYear},#{parentAcntCd}),
+                 #{inputYn},
+                 #{accYear},
+                 #{parentAcntCd},
+                 #{cashArtiCd},
+                 #{deductYn}
+            )
+    </insert>
+    
+    <delete id="deleteAccAcnt" parameterType="AccAcntBean">
+        DELETE 
+            AE_ACC_ACNT
+        WHERE 
+            ACNT_CD=#{acntCd }
+            AND ACC_YEAR=#{accYear}
+    </delete>
+    
+    <update id="updateAccAcnt" parameterType="AccAcntBean">
+        UPDATE 
+            AE_ACC_ACNT SET
+                ACNT_NM       = #{acntNm},
+                ACNT_DIV      = #{acntDiv},
+                CRE_DEB_DIV   = #{creDebDiv},
+                ASSI_TYPE_CD  = #{assiTypeCd},
+                BUDG_YN       = #{budgYn},
+                USE_YN        = #{useYn},
+                INCOM_ARTI_CD = #{incomArtiCd},
+                INPUT_YN      = #{inputYn},
+                PARENT_ACNT_CD= #{parentAcntCd},
+                CASH_ARTI_CD  = #{cashArtiCd},
+                DEDUCT_YN     = #{deductYn}
+        WHERE 
+            ACNT_CD=#{acntCd}
+            AND ACC_YEAR=#{accYear}
+    </update>
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beansProjectDescription>
+	<version>1</version>
+	<pluginVersion><![CDATA[3.7.0.201506251244-RELEASE]]></pluginVersion>
+	<configSuffixes>
+		<configSuffix><![CDATA[xml]]></configSuffix>
+	</configSuffixes>
+	<enableImports><![CDATA[false]]></enableImports>
+	<configs>
+	</configs>
+	<autoconfigs>
+		<config>src/main/webapp/WEB-INF/context/applicationContext-mybatis.xml</config>
+		<config>src/main/webapp/WEB-INF/context/applicationContext-aop.xml</config>
+		<config>src/main/webapp/WEB-INF/context/applicationContext-jdbc.xml</config>
+		<config>src/main/webapp/WEB-INF/servlet/servlet.xml</config>
+		<config>src/main/webapp/WEB-INF/context/applicationContext.xml</config>
+	</autoconfigs>
+	<configSets>
+	</configSets>
+</beansProjectDescription>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.acc.elementary.dao.AccntNoDAO">
+<cache flushInterval="86400000" eviction="LRU" />
+    <select id="selectAccntNoList" flushCache="false"  useCache="true" resultType="AccntNoBean">
+        SELECT  
+            a.ACCNT_NM, 
+            a.ACCNT_NO, 
+            a.ACC_YEAR, 
+            a.BANK_DIV, 
+            a.NOTE, 
+            a.USE_YN, 
+            B.ACNT_CD AS acntCd, 
+            B.ACNT_NM AS acntNm, 
+            E.ASSI_TYPE_CD AS assiTypeCd, 
+            E.ASSI_TYPE_Nm AS assiTypeNm
+        FROM 
+            AE_ACCNT_NO A
+            LEFT OUTER JOIN 
+                (SELECT 
+                    *
+                FROM 
+                    AE_ACC_ACNT
+                WHERE 
+                    ACC_YEAR=#{accYear}
+                ) B
+            ON 
+                A.ACNT_CD = B.ACNT_CD
+            LEFT OUTER JOIN
+                (SELECT 
+                    *
+                 FROM 
+                    AE_ASSI_TYPE
+                 WHERE 
+                    ACC_YEAR=#{accYear}
+                 ) E
+            ON 
+                A.ASSI_TYPE_CD = E.ASSI_TYPE_CD
+        WHERE 1=1
+            <if test="accYear != null">
+                AND A.ACC_YEAR = #{accYear}
+            </if>
+    </select>
+
+    <insert id="insertAccntNo" parameterType="accntNoBean">
+        INSERT INTO 
+            AE_ACCNT_NO(
+                ACNT_CD, 
+                ASSI_TYPE_CD, 
+                ACCNT_NO, 
+                BANK_DIV, 
+                USE_YN, 
+                NOTE, 
+                ACC_YEAR, 
+                ACCNT_NM
+            )
+        VALUES (
+            #{acntCd    }, 
+            #{assiTypeCd}, 
+            #{accntNo   }, 
+            #{bankDiv   }, 
+            #{useYn     }, 
+            #{note      }, 
+            #{accYear   }, 
+            #{accntNm   }
+        )
+    </insert>
+
+    <update id="updateAccntNo" parameterType="accntNoBean">
+        UPDATE 
+            AE_ACCNT_NO 
+        SET
+            ACNT_CD     =#{acntCd    }, 
+            ASSI_TYPE_CD=#{assiTypeCd}, 
+            BANK_DIV    =#{bankDiv   }, 
+            USE_YN      =#{useYn     }, 
+            NOTE        =#{note      }, 
+            ACCNT_NM    =#{accntNm   }
+        WHERE 
+            ACCNT_NO=#{accntNo}
+            AND ACC_YEAR=#{accYear}
+    </update>
+
+    <delete id="deleteAccntNo" parameterType="accntNoBean">
+        DELETE 
+            AE_ACCNT_NO
+        WHERE 
+            ACCNT_NO=#{accntNo}
+            AND ACC_YEAR=#{accYear}
+    </delete>
+    
+    <select id="callCopyAccntNo" statementType="CALLABLE" parameterType="accntNoBean" resultType="accntNoBean">
+        {call PC_AE_COPY_ACCNTNO (
+            #{accYear, mode=IN, jdbcType=VARCHAR},
+            #{errorCode, mode=OUT, jdbcType=VARCHAR},
+            #{errorMsg, mode=OUT, jdbcType=VARCHAR}
+        ) }
+    </select>
+</mapper>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.hdm.admission.dao.HospitalizationInfoDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+	<!-- 입원정보 조회 -->
+	<select id="selectHospitalizationInfo" flushCache="false"
+		useCache="true" resultType="HospitalizationInfoBean">
+		SELECT
+		DSCG_DATE as dscgDate
+		,DSCG_DIV as dscgDiv
+		,GRTOR_ADDR as grtorAddr
+		,GRTOR_NM as grtorNm
+		,GRTOR_RRN as grtorRrn
+		,GRTOR_TEL as grtorTel
+		,HOSPTLZ_DATE as hosptlzDate
+		,HOSPTLZ_RECEIPT_NO as hosptlzReceiptNo
+		,HOSPTLZ_ROUTE as hosptlzRoute
+		,HOSPTLZ_RSVT_YB as hosptlzRsvtYb
+		,HROOM as hroom
+		,OUTPA_RECEIPT_NO as outpaReceiptNo
+		,PAT_NO as patNo
+		,PAT_RSHIP as patRship
+		,PAT_TYPE_CD as patTypeCd
+		,PAT_TYPE_NM as patTypeNm
+		,RESP_DOCT_CD as respDoctCd
+		,RESP_DOCT_NM as respDoctNm
+		,RSHIP as rship
+		,TRMT_DEPT_CD as trmtDeptCd
+		,TRMT_DEPT_NM as trmtDeptNm
+		,WARD as ward
+		FROM WH_HOSPTLZ_RECEIPT
+		WHERE PAT_NO=#{patNo}
+	</select>
+
+	<!-- 입원등록하기 -->
+	<update id="insertHospitalizationInfo">
+		INSERT INTO WH_HOSPTLZ_RECEIPT(
+		DSCG_DATE
+		,DSCG_DIV
+		,GRTOR_ADDR
+		,GRTOR_NM
+		,GRTOR_RRN
+		,GRTOR_TEL
+		,HOSPTLZ_DATE
+		,HOSPTLZ_RECEIPT_NO
+		,HOSPTLZ_ROUTE
+		,HOSPTLZ_RSVT_YB
+		,HROOM
+		,OUTPA_RECEIPT_NO
+		,PAT_NO
+		,PAT_RSHIP
+		,PAT_TYPE_CD
+		,PAT_TYPE_NM
+		,RESP_DOCT_CD
+		,RESP_DOCT_NM
+		,RSHIP
+		,TRMT_DEPT_CD
+		,TRMT_DEPT_NM
+		,WARD)
+		VALUES (
+		#{dscgDate}
+		, #{dscgDiv}
+		, #{grtorAddr}
+		, #{grtorNm}
+		, #{grtorRrn}
+		, #{grtorTel}
+		, #{hosptlzDate}
+		, #{hosptlzReceiptNo}
+		, #{hosptlzRoute}
+		, #{hosptlzRsvtYb}
+		, #{hroom}
+		, #{outpaReceiptNo}
+		, #{patNo}
+		, #{patRship}
+		, #{patTypeCd}
+		, #{patTypeNm}
+		, #{respDoctCd}
+		, #{respDoctNm}
+		, #{rship}
+		, #{trmtDeptCd}
+		,#{trmtDeptNm}
+		,#{ward}
+		)
+	</update>
+
+	<!-- 입원등록 정보 수정 -->
+	<update id="updateHospitalizationInfo">
+		UPDATE WH_HOSPTLZ_RECEIPT
+		SET HOSPTLZ_DATE =#{hosptlzDate}
+		,DSCG_DATE=#{dscgDate}
+		,WARD=#{ward}
+		,HROOM=#{hroom}
+		WHERE PAT_NO=#{patNo}
+		AND HOSPTLZ_RECEIPT_NO =#{hosptlzReceiptNo}
+	</update>
+
+	<!-- 입원등록취소 -->
+	<update id="deleteHospitalizationInfo">
+		DELETE FROM WH_HOSPTLZ_RECEIPT
+		WHERE PAT_NO=#{patNo}
+		AND HOSPTLZ_RECEIPT_NO = #{hosptlzReceiptNo}
+	</update>
+
+	<!-- 입원등록번호 구하기 -->
+	<select id="selectHospitalizationSeq" flushCache="false"
+		useCache="true" resultType="java.lang.String">
+		SELECT HOSPTLZ_RECEIPT_SEQ.NEXTVAL
+		FROM DUAL
+	</select>
+
+
+</mapper>

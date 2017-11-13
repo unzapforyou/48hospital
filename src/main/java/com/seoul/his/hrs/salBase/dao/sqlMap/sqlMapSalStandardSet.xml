@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.hrs.salBase.dao.SalStandardSetDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+ 
+	<select id="findSalStandardList" resultType="SalStandardSetBean">
+	    SELECT
+			JOBFM,
+			BELONG_MONTH_SECT AS belongMonthSect,
+			START_DATE AS startDate,
+			IBSAJA_SAL_STAN_DAY AS ibsajaSalStanDay,
+			PEPR,
+			PESC,
+			PEP_RATE AS pepRate,
+			RE_EMP_SAL_CAL AS reEmpSalCal,
+			BONUS_TAX_CAL_STAN AS bonusTaxCalStan,
+			FRN_TAX_FREE_RATE AS frnTaxFreeRate,
+			PCSCS,
+			STAN_DAY AS stanDay,
+			STAN_HOUR AS stanHour,
+			HOUR_OF_ONE_DAY AS hourOfOneDay,
+			COUNT_DAY_OF_MONTH AS countDayOfMonth,
+			JOBFM_CD AS jobfmCd
+		FROM HS_SALARY_STANDARD
+	</select>
+
+	<insert id="insertSalStanSet">
+		 INSERT INTO HS_SALARY_STANDARD
+		 VALUES (
+		         #{jobfmCd},
+		         #{pesc},
+		         #{pcscs},
+		         #{frnTaxFreeRate},
+		         #{ibsajaSalStanDay},
+		         #{reEmpSalCal},
+		         #{belongMonthSect},
+		         #{stanHour},
+		         #{stanDay},
+		         #{pepr},
+		         #{countDayOfMonth},
+		         #{jobfm},
+		         #{startDate},
+		         #{pepRate},
+		         #{bonusTaxCalStan},
+		         #{hourOfOneDay}
+		       )
+	</insert>
+
+	<update id="updateSalStanSet">
+		UPDATE HS_SALARY_STANDARD SET
+		       PESC=#{pesc},
+		       PCSCS=#{pcscs},
+		       FRN_TAX_FREE_RATE=#{frnTaxFreeRate},
+		       IBSAJA_SAL_STAN_DAY=#{ibsajaSalStanDay},
+		       RE_EMP_SAL_CAL=#{reEmpSalCal},
+		       BELONG_MONTH_SECT=#{belongMonthSect},
+		       STAN_HOUR=#{stanHour},
+		       STAN_DAY=#{stanDay},
+		       PEPR=#{pepr},
+		       COUNT_DAY_OF_MONTH=#{countDayOfMonth},
+		       JOBFM=#{jobfm},
+		       START_DATE=#{startDate},
+		       PEP_RATE=#{pepRate},
+		       BONUS_TAX_CAL_STAN=#{bonusTaxCalStan},
+		       HOUR_OF_ONE_DAY=#{hourOfOneDay}
+		  WHERE JOBFM_CD = #{jobfmCd}
+	</update>
+	 
+</mapper>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.msv.sup.endoscoperadiologydiagnosis.dao.SpecimenCollectionReceiptBean">
+
+   <cache flushInterval="86400000" eviction="LRU" />
+
+   <select id="selectClinspeReceiptList" flushCache="false"  useCache="true" parameterType="map" resultType="SpecimenCollectionReceiptBean">
+        SELECT R.CLINSPE_NO,
+               R.CLINSPE_RECEIPT_DATE,
+               R.RECEIPT_CD,
+               R.EME_YN,
+               C.RECEIPT_CANCEL_CAU,
+               C.RECEIPT_CANCEL_DATE,
+               S.DGNS_NM,
+               S.EXMNT_CD,
+               S.CLINSPE_NM,
+               S.BLOODGET_DATE,
+               S.BLOODGET_EMP
+          FROM SL_CLINSPE S,
+               SL_CLINSPE_RECEIPT R
+           LEFT OUTER JOIN SL_CLINSPE_RECEIPT_CANCEL C
+               ON R.CLINSPE_NO = C.CLINSPE_NO
+         WHERE S.CLINSPE_NO = R.CLINSPE_NO
+               AND R.CLINSPE_RECEIPT_DATE BETWEEN #{receiptStartDate} AND #{receiptEndDate}
+            <trim prefix="AND" prefixOverrides="AND">
+                <if test="emeYn != null and !emeYn.equals('undefined') and !emeYn.equals('') ">
+                    AND R.EME_YN = #{emeYn}
+                </if>
+                <if test="receiptCd != null and !receiptCd.equals('undefined') and !receiptCd.equals('')">
+                    AND R.RECEIPT_CD = #{receiptCd}
+                </if>
+             </trim>
+    </select>
+
+  <insert id="insertClinspeReceipt" parameterType="SpecimenCollectionReceiptBean">
+        INSERT
+          INTO SL_CLINSPE_RECEIPT
+               (
+                   CLINSPE_NO,
+                   CLINSPE_RECEIPT_DATE,
+                   RECEIPT_CD,
+                   EME_YN
+               )
+               VALUES
+               (
+                   #{clinspeNo},
+                   #{clinspeReceiptDate},
+                   #{receiptCd},
+                   #{emeYn}
+               )
+    </insert>
+
+    <update id="updateClinspeReceipt" parameterType="SpecimenCollectionReceiptBean">
+        UPDATE SL_CLINSPE_RECEIPT
+               SET CLINSPE_RECEIPT_DATE=#{clinspeReceiptDate},
+               RECEIPT_CD=#{receiptCd},
+               EME_YN=#{emeYn}
+         WHERE CLINSPE_NO=#{clinspeNo}
+    </update>
+
+    <delete id="deleteClinspeReceipt" parameterType="SpecimenCollectionReceiptBean">
+        DELETE
+          FROM SL_CLINSPE_RECEIPT
+         WHERE CLINSPE_NO=#{clinspeNo}
+    </delete>
+
+    <insert id="insertClinspeReceiptCancel" parameterType="SpecimenCollectionReceiptBean">
+        INSERT
+          INTO SL_CLINSPE_RECEIPT_CANCEL
+               (
+                   CLINSPE_NO,
+                   RECEIPT_CANCEL_CAU,
+                   RECEIPT_CANCEL_DATE
+               )
+               VALUES
+               (
+                   #{clinspeNo},
+                   #{receiptCancelCau},
+                   #{receiptCancelDate}
+               )
+    </insert>
+
+    <update id="updateClinspeReceiptCancel" parameterType="SpecimenCollectionReceiptBean">
+        UPDATE SL_CLINSPE_RECEIPT_CANCEL
+               SET RECEIPT_CANCEL_CAU=#{receiptCancelCau},
+               RECEIPT_CANCEL_DATE=#{receiptCancelDate}
+         WHERE CLINSPE_NO=#{clinspeNo}
+    </update>
+
+    <delete id="deleteClinspeReceiptCancel" parameterType="SpecimenCollectionReceiptBean">
+        DELETE
+          FROM SL_CLINSPE_RECEIPT_CANCEL
+         WHERE CLINSPE_NO=#{clinspeNo}
+    </delete>
+
+</mapper>

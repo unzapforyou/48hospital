@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.msv.sup.endoscoperadiologydiagnosis.dao.DiagnosisDAO">
+
+    <cache flushInterval="86400000" eviction="LRU" />
+
+    <select id="selectMaxClinspeNo" flushCache="false"  useCache="true" resultType="ClinspeSequenceBean">
+        SELECT MAX(CLINSPE_NO) AS clinspeNo
+         FROM SL_CLINSPE
+   </select>
+
+   <select id="selectClinspeList" flushCache="false"  useCache="true" parameterType="map" resultType="SpecimenCollectionBean">
+        SELECT C.PRESC_NO ,
+               C.TRMT_DEPT ,
+               C.RESP_DOCT ,
+               C.DGNS_NM ,
+               C.EXMNT_CD ,
+               C.CLINSPE_NM ,
+               C.BLOODGET_DATE ,
+               C.BLOODGET_EMP ,
+               C.CLINSPE_NO ,
+               C.PAT_NO ,
+               C.PAT_NM ,
+               C.GENDER ,
+               C.WARD ,
+               C.HROOM ,
+               R.RECEIPT_CD
+          FROM SL_CLINSPE C
+               LEFT OUTER JOIN
+               SL_CLINSPE_RECEIPT R
+         ON C.CLINSPE_NO = R.CLINSPE_NO
+               WHERE C.BLOODGET_DATE BETWEEN #{bloodGetStartDate} AND #{bloodGetEndDate}
+            <trim prefix="AND" prefixOverrides="AND">
+                <if test="exmntCd != null and !exmntCd.equals('undefined') and !exmntCd.equals('')">
+                    AND C.EXMNT_CD = #{exmntCd}
+                </if>
+                <if test="clinspeNm != null and !clinspeNm.equals('undefined') and !clinspeNm.equals('')">
+                    AND C.CLINSPE_NM = #{clinspeNm}
+                </if>
+                <if test="patNo != null and !patNo.equals('undefined') and !patNo.equals('')">
+                    AND C.PAT_NO = #{patNo}
+                </if>
+                <if test="bloodgetEmp != null and !bloodgetEmp.equals('undefined') and !bloodgetEmp.equals('')">
+                    AND C.BLOODGET_EMP = #{bloodgetEmp}
+                </if>
+             </trim>
+    </select>
+
+    <insert id="insertClinspe" parameterType="SpecimenCollectionBean">
+        INSERT
+          INTO SL_CLINSPE
+               (
+                   PRESC_NO,
+                   TRMT_DEPT,
+                   RESP_DOCT,
+                   DGNS_NM,
+                   EXMNT_CD,
+                   CLINSPE_NM,
+                   BLOODGET_DATE,
+                   BLOODGET_EMP,
+                   CLINSPE_NO,
+                   PAT_NO,
+                   PAT_NM,
+                   GENDER,
+                   WARD,
+                   HROOM
+               )
+               VALUES
+               (
+                   #{prescNo} ,
+                   #{trmtDept} ,
+                   #{respDoct} ,
+                   #{dgnsNm} ,
+                   #{exmntCd} ,
+                   #{clinspeNm} ,
+                   #{bloodgetDate} ,
+                   #{bloodgetEmp} ,
+                   #{clinspeNo} ,
+                   #{patNo} ,
+                   #{patNm} ,
+                   #{gender} ,
+                   #{ward} ,
+                   #{hroom}
+               )
+    </insert>
+
+    <insert id="insertClinspeBlok" parameterType="SpecimenCollectionBean">
+        INSERT
+          INTO SL_CLINSPE_BLOK
+               (
+                   CLINSPE_NO,
+                   CLINSPE_BLOK_CODE,
+                   PAT_NO,
+                   PAT_NM
+               )
+               VALUES
+               (
+                   #{clinspeNo} ,
+                   #{clinspeBlokCode},
+                   #{patNo} ,
+                   #{patNm}
+               )
+
+    </insert>
+
+    <update id="updateClinspe" parameterType="SpecimenCollectionBean">
+        UPDATE SL_CLINSPE
+               SET PRESC_NO=#{prescNo} ,
+               TRMT_DEPT=#{trmtDept} ,
+               RESP_DOCT=#{respDoct} ,
+               DGNS_NM=#{dgnsNm} ,
+               EXMNT_CD=#{exmntCd} ,
+               CLINSPE_NM=#{clinspeNm} ,
+               BLOODGET_DATE=#{bloodgetDate} ,
+               BLOODGET_EMP=#{bloodgetEmp} ,
+               PAT_NO=#{patNo} ,
+               PAT_NM=#{patNm} ,
+               GENDER=#{gender} ,
+               WARD=#{ward} ,
+               HROOM=#{hroom}
+         WHERE CLINSPE_NO=#{clinspeNo}
+    </update>
+
+    <delete id="deleteClinspe" parameterType="SpecimenCollectionBean">
+        DELETE
+          FROM SL_CLINSPE
+         WHERE CLINSPE_NO=#{clinspeNo}
+    </delete>
+
+    <delete id="deleteClinspeBlok" parameterType="SpecimenCollectionBean">
+         DELETE
+          FROM SL_CLINSPE_BLOK
+         WHERE CLINSPE_NO=#{clinspeNo}
+    </delete>
+
+</mapper>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.log.store.dao.PrcsWhsHistDAO">
+
+    <select id="selectPrcsWhsHistList" flushCache="false" resultType="PrcsWhsHistBean">
+        SELECT
+            BUY_WHS_NO,
+            BUY_WHS_HIST_NO,
+            GDS_CD,
+            SUBUL_UNIT,
+            ORD_UNIT,
+            CNG_QNT,
+            GI_WHS_QNT,
+            HYUN_WHS_QNT,
+            PRICE,
+            AMT,
+            WH_CD,
+            SIGN_STAT
+        FROM
+            LI_BUY_WHS_HIST
+        WHERE
+            BUY_WHS_NO = #{buyWhsNo}
+        ORDER BY
+            BUY_WHS_NO
+    </select>
+
+    <insert id="insertPrcsWhsHist" flushCache="false" parameterType="PrcsWhsHistBean">
+        INSERT INTO
+            LI_BUY_WHS_HIST (
+                BUY_WHS_NO,
+                BUY_WHS_HIST_NO,
+                GDS_CD,
+                SUBUL_UNIT,
+                ORD_UNIT,
+                CNG_QNT,
+                GI_WHS_QNT,
+                HYUN_WHS_QNT,
+                PRICE,
+                AMT,
+                WH_CD,
+                SIGN_STAT
+            )
+        VALUES (
+            #{buyWhsNo},
+            #{buyWhsHistNo},
+            #{gdsCd},
+            #{subulUnit},
+            #{ordUnit},
+            #{cngQnt},
+            #{giWhsQnt},
+            #{hyunWhsQnt},
+            #{price},
+            #{amt},
+            #{whCd},
+            #{signStat}
+        )
+    </insert>
+
+    <update id="updatePrcsWhsHist" flushCache="false" parameterType="PrcsWhsHistBean">
+        UPDATE LI_BUY_WHS_HIST SET
+        BUY_WHS_NO = #{buyWhsNo},
+        BUY_WHS_HIST_NO = #{buyWhsHistNo},
+        GDS_CD = #{gdsCd},
+        SUBUL_UNIT = #{subulUnit},
+        ORD_UNIT = #{ordUnit},
+        CNG_QNT = #{cngQnt},
+        GI_WHS_QNT = #{giWhsQnt},
+        HYUN_WHS_QNT = #{hyunWhsQnt},
+        PRICE = #{price},
+        AMT = #{amt},
+        WH_CD = #{whCd},
+        SIGN_STAT = #{signStat}
+        WHERE
+        BUY_WHS_NO = #{buyWhsNo} AND BUY_WHS_HIST_NO = #{buyWhsHistNo}
+    </update>
+
+    <delete id="deletePrcsWhsHist" flushCache="false" parameterType="PrcsWhsHistBean">
+        DELETE FROM
+            LI_BUY_WHS_HIST
+        WHERE
+        BUY_WHS_NO = #{buyWhsNo} AND BUY_WHS_HIST_NO = #{buyWhsHistNo}
+    </delete>
+
+</mapper>

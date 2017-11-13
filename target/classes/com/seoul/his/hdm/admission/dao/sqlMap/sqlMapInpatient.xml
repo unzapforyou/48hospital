@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.hdm.admission.dao.InpatientDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+    <select id="selectInpatientList" flushCache="false" useCache="true"
+		resultType="InpatientBean">
+        SELECT DISTINCT o.TRMT_DEPT as trmtDept,
+			   o.TRMT_DOCT as trmtDoct,
+			   o.PAT_NO as patNo,
+			   p.PAT_NM as patNm,
+			   p.AGE as age,
+			   p.ADDR as addr,
+			   p.RRN1 as rrn1,
+			   p.GENDER as gender,
+			   h.DSCG_DATE as dscgDate,
+			   h.HOSPTLZ_DATE as hosptlzDate,
+			   h.WARD as ward,
+			   h.HROOM as hroom
+		FROM WS_OUTPA_RECEIPT o,
+			 WS_PAT p,
+			 WH_HOSPTLZ_RECEIPT h,
+			 (SELECT MAX(OUTPA_RECEIPT_NO) OUTPA_RECEIPT_NO,
+			 	    PAT_NO
+			 FROM WS_OUTPA_RECEIPT
+			 WHERE HOSPTLZ_YB='Y'
+			 GROUP BY PAT_NO
+			 ) maxO
+		WHERE o.OUTPA_RECEIPT_NO = MAXO.OUTPA_RECEIPT_NO
+		AND o.PAT_NO= p.PAT_NO
+		AND h.PAT_NO=o.PAT_NO
+		<if test="patNm != null">
+			AND p.PAT_NM = #{patNm}
+		</if>
+		<if test="patNo != null">
+			AND p.PAT_NO = #{patNo}
+		</if>
+		<if test="start != null and end != null">
+			AND h.HOSPTLZ_DATE BETWEEN #{start} AND #{end}
+		</if>
+		<if test="ward != null">
+			AND h.WARD = #{ward}
+		</if>
+		<if test="deptCd != null">
+			AND o.TRMT_DEPT = #{deptCd}
+		</if>
+		<if test="respDoctNm != null">
+			AND o.TRMT_DOCT =#{respDoctNm}
+		</if>
+    </select>
+
+
+
+</mapper>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.hrs.salBase.dao.PaydayDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+ 
+	<select id="findPaydayList" resultType="PaydayBean">
+	      SELECT
+			BELONG_YM AS belongYm,
+			PAYMENT_DATE AS paymentDate,
+			SAME_TIME_PUBLISH AS sameTimePublish,
+			TARGET_CHOICE AS targetChoice,
+			NOTE,
+			LOCATION_CODE AS locationCode,
+			JOB_CLASS AS jobClass,
+			SAL_SACT AS salSact,
+			SAL_TYPE AS salType
+		FROM HS_PAYDAY
+	    WHERE BELONG_YM = #{yearMonth}
+	</select>
+	
+	<select id="findPaydaySubList" resultType="PaydayBean">
+	    SELECT DISTINCT
+			BELONG_YM AS belongYm,
+			PAYMENT_DATE AS paymentDate,
+			SAME_TIME_PUBLISH AS sameTimePublish,
+			TARGET_CHOICE AS targetChoice,
+			NOTE,
+			LOCATION_CODE AS locationCode,
+			SAL_SACT AS salSact,
+			SAL_TYPE AS salType
+		FROM HS_PAYDAY
+	    WHERE BELONG_YM = #{yearMonth}
+	</select>
+	
+	<insert id="insertPayday" parameterType="PaydayBean">
+		INSERT INTO HS_PAYDAY
+			VALUES(
+				#{belongYm},
+				#{paymentDate},
+				#{sameTimePublish},
+				#{targetChoice},
+				#{note},
+				#{locationCode},
+				#{jobClass},
+				#{salSact},
+				#{salType}
+			)
+	</insert>
+	
+	<select id="callCreatePay" statementType="CALLABLE">
+		CALL PC_HS_CREATEPAY(
+				#{belongYm},
+				#{jobClass},
+				#{paymentDate}
+		)
+	</select>
+
+	<update id="updatePayday" parameterType="PayDayBean">
+		UPDATE HS_PAYDAY 
+		SET
+			payment_Date  = #{paymentDate}
+	    WHERE belong_Ym   = #{belongYm}
+	    	AND job_Class = #{jobClass}
+	</update>
+
+	<delete id="deletePayday">
+	    DELETE HS_PAYDAY
+	    WHERE belong_Ym = #{belongYm}
+	    	AND job_Class =#{jobClass}
+	    	AND payment_Date =#{paymentDate}
+	</delete>
+	
+	<delete id="deleteRegularWorksSal">
+	    DELETE HS_REGULAR_WORKS_SALARY
+	    WHERE belong_Ym = #{belongYm}
+	    	AND job_Class =#{jobClass}
+	</delete>
+	
+	<!-- 삭제시 직원 급여 마감여부 -->
+	<select id="findMagam" resultType="PaydayBean">
+	     SELECT DLINE,
+	     	BELONG_YM as belongYm,
+	     	JOB_CLASS as jobClass
+	     FROM HS_REGULAR_WORKS_SALARY
+		 WHERE BELONG_YM = #{belongYm}
+		 	AND JOB_CLASS = #{jobClass}
+		 	AND PAYMENT_DATE = #{paymentDate}
+		 	AND DLINE = 1
+	</select>
+	
+</mapper>

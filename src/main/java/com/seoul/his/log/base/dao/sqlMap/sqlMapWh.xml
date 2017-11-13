@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.log.base.dao.WhDAO">
+    <cache flushInterval="86400000" eviction="LRU" />
+    <resultMap type="WhBean" id="selectWhBeanResultMap">
+        <result property="whCd"             column="WH_CD" />
+        <result property="whNm"             column="WH_NM" />
+        <result property="ioCfmtCd"         column="IO_CFMT_CD" />
+        <result property="ioCfmt"           column="IO_CFMT" />
+        <result property="ioTypeCd"         column="IO_TYPE_CD" />
+        <result property="ioType"           column="IO_TYPE" />
+        <result property="useYb"            column="USE_YB" />
+        <result property="applyStartDate"   column="APPLY_START_DATE" />
+        <result property="applyEndDate"     column="APPLY_END_DATE" />
+        <result property="note"             column="NOTE" />
+    </resultMap>
+
+    <select id="selectBindWhCdList" flushCache="false" useCache="true" resultType="OutLogCdBean">
+        SELECT
+            DISTINCT(WH_CD) AS code
+          , WH_NM AS value
+        FROM
+            LC_WH
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="code != '' and code != null">
+                AND WH_CD LIKE '%'||#{code}||'%'
+            </if>
+            <if test="cdNm != '' and code != null">
+                AND WH_NM LIKE '%'||#{cdNm}||'%'
+            </if>
+        </trim>
+        ORDER BY
+            WH_CD
+    </select>
+
+    <select id="selectWhList" flushCache="false" useCache="true" resultType="WhBean">
+        SELECT
+            *
+        FROM
+            LC_WH
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="whCd != '' and whCd != null">
+                AND WH_CD LIKE '%'||#{whCd}||'%'
+            </if>
+            <if test="whNm != '' and whNm != null">
+                AND WH_NM LIKE '%'||#{whNm}||'%'
+            </if>
+        </trim>
+        ORDER BY
+            WH_CD
+    </select>
+
+    <update id="updateWh" flushCache="false">
+        UPDATE
+            LC_WH
+        SET
+            WH_NM            = #{whNm}
+          , IO_CFMT          = #{ioCfmt}
+          , IO_TYPE          = #{ioType}
+          , USE_YB           = #{useYb}
+          , APPLY_START_DATE = #{applyStartDate}
+          , APPLY_END_DATE   = #{applyEndDate}
+          , NOTE             = #{note}
+        WHERE 
+            WH_CD            = #{whCd}
+        AND IO_CFMT_CD       = #{ioCfmtCd}
+        AND IO_TYPE_CD       = #{ioTypeCd}
+    </update>
+
+</mapper>

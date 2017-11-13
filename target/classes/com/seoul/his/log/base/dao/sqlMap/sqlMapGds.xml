@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.log.base.dao.GdsDAO">
+    <cache flushInterval="86400000" eviction="LRU" />
+    <resultMap type="GdsBean" id="selectGdsBeanResultMap">
+        <result property="gdsCd"         column="GDS_CD" />
+        <result property="gdsNm"         column="GDS_NM" />
+        <result property="ediCd"         column="EDI_CD" />
+        <result property="vmiYb"         column="VMI_YB" />
+        <result property="useDept"       column="USE_DEPT" />
+        <result property="stand"         column="STAND" />
+        <result property="ordUnit"       column="ORD_UNIT" />
+        <result property="subulUnit"     column="SUBUL_UNIT" />
+        <result property="cngQnt"        column="CNG_QNT" />
+        <result property="cust"          column="CUST" />
+        <result property="ctrtPrice"     column="CTRT_PRICE" />
+        <result property="ctrtStartDate" column="CTRT_START_DATE" />
+        <result property="ctrtEndDate"   column="CTRT_END_DATE" />
+        <result property="spliesDiv"     column="SPLIES_DIV" />
+        <result property="wh"            column="WH" />
+        <result property="rackNo"        column="RACK_NO" />
+        <result property="insurDiv"      column="INSUR_DIV" />
+        <result property="disuseDate"    column="DISUSE_DATE" />
+        <result property="disuseDiv"     column="DISUSE_DIV" />
+        <result property="picLoc"        column="PIC_LOC" />
+        <result property="note"          column="NOTE" />
+        <result property="regWorkerId"   column="REG_WORKER_ID" />
+        <result property="regWorkerIp"   column="REG_WORKER_IP" />
+        <result property="regDate"       column="REG_DATE" />
+        <result property="modWorkerId"   column="MOD_WORKER_ID" />
+        <result property="modWorkerIp"   column="MOD_WORKER_IP" />
+        <result property="modDate"       column="MOD_DATE" />
+        <result property="midGrpCd"      column="MID_GRP_CD" />
+        <result property="smGrpCd"       column="SM_GRP_CD" />
+        <result property="bigGrpCd"      column="BIG_GRP_CD" />
+    </resultMap>
+
+    <!-- 물품목록 조회 -->
+    <select id="selectGdsList" flushCache="false" useCache="true" resultType="GdsBean">
+        SELECT 
+            SM_GRP_CD       AS smGrpCd
+          , DISUSE_DIV      AS disuseDiv
+          , CNG_QNT         AS cngQnt
+          , INSUR_DIV       AS insurDiv
+          , CUST            AS cust
+          , REG_DATE        AS regDate
+          , MID_GRP_CD      AS midGrpCd
+          , VMI_YB          AS vmiYb
+          , MOD_WORKER_ID   AS modWorkerId
+          , CTRT_START_DATE AS ctrtStartDate
+          , CTRT_END_DATE   AS ctrtEndDate
+          , EDI_CD          AS ediCd
+          , ORD_UNIT        AS ordUnit
+          , CTRT_PRICE      AS ctrtPrice
+          , STAND           AS stand
+          , GDS_CD          AS gdsCd
+          , BIG_GRP_CD      AS bigGrpCd
+          , SUBUL_UNIT      AS subulUnit
+          , REG_WORKER_IP   AS regWorkerIp
+          , DISUSE_DATE     AS disuseDate
+          , MOD_DATE        AS modDate
+          , SPLIES_DIV      AS spliesDiv
+          , MOD_WORKER_IP   AS modWorkerIp
+          , RACK_NO         AS rackNo
+          , PIC_LOC         AS picLoc
+          , GDS_NM          AS gdsNm
+          , REG_WORKER_ID   AS regWorkerId
+          , WH              AS wh
+          , USE_DEPT        AS useDept
+          , NOTE            AS note
+        FROM
+            LC_GDS
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="gdsCd != '' and gdsCd != null">
+                AND GDS_CD LIKE '%'||#{gdsCd}||'%'
+            </if>
+            <if test="gdsNm != '' and gdsNm != null">
+                AND GDS_NM LIKE '%'||#{gdsNm}||'%'
+            </if>
+            <if test="bGrpCd != '' and bGrpCd != null">
+                AND BIG_GRP_CD LIKE '%'||#{bGrpCd}||'%'
+            </if>
+            <if test="mGrpCd != '' and mGrpCd != null">
+                AND MID_GRP_CD LIKE '%'||#{mGrpCd}||'%'
+            </if>
+            <if test="sGrpCd != '' and sGrpCd != null">
+                AND SM_GRP_CD LIKE '%'||#{sGrpCd}||'%'
+            </if>
+        </trim>
+        ORDER BY
+            GDS_CD
+    </select>
+
+    <!-- 물품코드&물품명 조회 -->
+    <select id="selectBindGdsCdList" flushCache="false" useCache="true" resultType="OutLogCdBean">
+        SELECT
+            GDS_CD AS code
+          , GDS_NM AS value
+        FROM
+            LC_GDS
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="code != '' and code != null">
+                AND GDS_CD LIKE '%'||#{code}||'%'
+            </if>
+            <if test="cdNm != '' and code != null">
+                AND GDS_NM LIKE '%'||#{cdNm}||'%'
+            </if>
+        </trim>
+        ORDER BY
+            GDS_CD
+    </select>
+
+    <!-- 대중소분류코드(preCode) 를 받고 시퀀스넘버 생성 -->
+    <select id="callGdsCd" flushCache="false" useCache="true" resultType="String">
+        SELECT 
+            SUBSTR(MAX(GDS_CD),4,6)+1
+        FROM 
+            LC_GDS
+        WHERE
+            GDS_CD LIKE #{preCode}||'%'
+    </select>
+
+    <!-- 물품정보 등록  -->
+    <insert id="insertGds" flushCache="false">
+        INSERT INTO
+            LC_GDS (
+                SM_GRP_CD
+              , DISUSE_DIV
+              , CNG_QNT
+              , INSUR_DIV
+              , CUST
+              , REG_DATE
+              , MID_GRP_CD
+              , VMI_YB
+              , MOD_WORKER_ID
+              , EDI_CD
+              , ORD_UNIT
+              , CTRT_PRICE
+              , STAND
+              , GDS_CD
+              , BIG_GRP_CD
+              , SUBUL_UNIT
+              , REG_WORKER_IP
+              , DISUSE_DATE
+              , MOD_DATE
+              , SPLIES_DIV
+              , MOD_WORKER_IP
+              , CTRT_START_DATE
+              , RACK_NO
+              , PIC_LOC
+              , GDS_NM
+              , REG_WORKER_ID
+              , WH
+              , USE_DEPT
+              , NOTE
+              , CTRT_END_DATE
+            )
+        VALUES (
+            #{smGrpCd}
+          , #{disuseDiv}
+          , #{cngQnt}
+          , #{insurDiv}
+          , #{cust}
+          , #{regDate}
+          , #{midGrpCd}
+          , #{vmiYb}
+          , #{modWorkerId}
+          , #{ediCd}
+          , #{ordUnit}
+          , #{ctrtPrice}
+          , #{stand}
+          , #{gdsCd}
+          , #{bigGrpCd}
+          , #{subulUnit}
+          , #{regWorkerIp}
+          , #{disuseDate}
+          , #{modDate}
+          , #{spliesDiv}
+          , #{modWorkerIp}
+          , #{ctrtStartDate}
+          , #{rackNo}
+          , #{picLoc}
+          , #{gdsNm}
+          , #{regWorkerId}
+          , #{wh}
+          , #{useDept}
+          , #{note}
+          , #{ctrtEndDate}
+        )
+    </insert>
+
+    <!-- 물품정보 수정 -->
+    <update id="updateGds" flushCache="false">
+        UPDATE 
+            LC_GDS
+        SET
+            SM_GRP_CD       = #{smGrpCd}
+          , DISUSE_DIV      = #{disuseDiv}
+          , CNG_QNT         = #{cngQnt}
+          , INSUR_DIV       = #{insurDiv}
+          , CUST            = #{cust}
+          , REG_DATE        = #{regDate}
+          , MID_GRP_CD      = #{midGrpCd}
+          , VMI_YB          = #{vmiYb}
+          , MOD_WORKER_ID   = #{modWorkerId}
+          , EDI_CD          = #{ediCd}
+          , ORD_UNIT        = #{ordUnit}
+          , CTRT_PRICE      = #{ctrtPrice}
+          , STAND           = #{stand}
+          , GDS_CD          = #{gdsCd}
+          , BIG_GRP_CD      = #{bigGrpCd}
+          , SUBUL_UNIT      = #{subulUnit}
+          , REG_WORKER_IP   = #{regWorkerIp}
+          , DISUSE_DATE     = #{disuseDate}
+          , MOD_DATE        = #{modDate}
+          , SPLIES_DIV      = #{spliesDiv}
+          , MOD_WORKER_IP   = #{modWorkerIp}
+          , CTRT_START_DATE = #{ctrtStartDate}
+          , RACK_NO         = #{rackNo}
+          , PIC_LOC         = #{picLoc}
+          , GDS_NM          = #{gdsNm}
+          , REG_WORKER_ID   = #{regWorkerId}
+          , WH              = #{wh}
+          , USE_DEPT        = #{useDept}
+          , NOTE            = #{note}
+          , CTRT_END_DATE   = #{ctrtEndDate}
+        WHERE
+            SM_GRP_CD = #{smGrpCd}
+        AND MID_GRP_CD = #{midGrpCd}
+        AND BIG_GRP_CD = #{bigGrpCd}
+        AND GDS_CD = #{gdsCd}
+    </update>
+
+</mapper>

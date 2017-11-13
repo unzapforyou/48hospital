@@ -1,0 +1,45 @@
+package com.seoul.his.msv.mcm.patientservice.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.seoul.his.msv.mcm.patientservice.to.AdrBean;
+import com.seoul.his.msv.mcm.patientservice.to.AttentionalFieldBean;
+import com.seoul.his.msv.mcm.patientservice.to.AttentionalPatientBean;
+import com.seoul.his.msv.mcm.patientservice.to.DaySchBean;
+import com.seoul.his.msv.mcm.patientservice.to.EmrPrescBean;
+import com.seoul.his.msv.mcm.patientservice.to.MedicalConsultationRequestBean;
+import com.seoul.his.msv.mcm.patientservice.to.RsvPatBean;
+import com.seoul.his.msv.mcm.patientservice.to.TimeSchBean;
+import com.seoul.his.msv.mcm.patientservice.to.TransferPatientBean;
+
+/**
+ * <pre>
+ * com.seoul.his.msv.mcm.patientservice.service
+ *    |_ PatientServiceServiceFacade.java
+ * </pre>
+ *
+ * @date : 2016. 11. 30. 오후 5:44:11
+ * @version :
+ * @author : Minhyeog
+ */
+
+public interface PatientServiceServiceFacade {
+	List<AttentionalPatientBean> findAttentionalPatientList(Map<String, String> argsMap);
+	List<AttentionalFieldBean> findAttentionalFieldList(Map<String, String> argsMap);
+	List<AdrBean> findAdrList(Map<String, String> argsMap);
+	List<EmrPrescBean> findEmrPrescList(Map<String, String> argsMap);
+	void batchAdrProcess(List<AdrBean> adrList);
+	void batchAttentionalFieldProcess(List<AttentionalFieldBean> attentionalFieldList) ;
+	void registerAttentionalPatient(AttentionalPatientBean attentionalPatient);
+	void batchAttentionalPatientProcess(List<AttentionalPatientBean> attentionalPatientList );
+	List<DaySchBean> findDayScheduleList(Map<String, String> argsMap);
+	List<TimeSchBean> findTimeScheduleList(Map<String, String> argsMap);
+	List<MedicalConsultationRequestBean> findMedicalConsultationRequestList(Map<String, String> argsMap);
+	void batchMedicalConsultationRequestProcess(List<MedicalConsultationRequestBean> medicalConsultationRequestList);
+	List<RsvPatBean> findRsvByPatList(Map<String, String> argsMap);
+	List<TransferPatientBean> findTransferPatientList(Map<String, String> argsMap);
+	void registerTransferPatient(TransferPatientBean transferPatientBean);
+	void modifyTransferPatient(TransferPatientBean transferPatientBean);
+	void removeTransferPatient(TransferPatientBean transferPatientBean);
+}

@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.msv.sup.hosptaldiet.dao.CarteDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+ <!-- 음식 코드 리스트 -->
+    <select id="selectDietSeparateCodeList" flushCache="false"  useCache="true" resultType="HosptalDietCodeBean">
+	SELECT
+            SMALL_CODE,
+            FULL_NAME
+        FROM
+            SN_CODE
+        WHERE
+            LARGE_CODE=#{largeCode}
+        AND
+            MID_CODE=#{midCode}
+ </select>
+
+ <select id ="selectCarteList" flushCache="false"  useCache="true" resultType="CarteBean">
+	 select
+            a.MENU_GRP_CD,
+            to_char(A.CARTE_DATE,'yyyymmdd') CARTE_DATE,
+            a.CARTE_TIME,
+            a.R_NUM,
+            a.FOOD_CD,
+            b.FOOD_NM
+        from
+            SN_CARTE a,
+            SN_FOOD b
+        where
+            a.MENU_GRP_CD = #{divCombo}
+       and
+        a.CARTE_DATE  = to_date(#{standardDate},'yyyymmdd')
+       and
+        b.FOOD_CD    = a.FOOD_CD
+        order by 3,4
+
+ </select>
+ <select id="selectDCarteList" flushCache="false"  useCache="true" resultType="DCarteBean">
+SELECT
+            MAX(DECODE(MOD(carte_time,7), 1, DECODE(carte_date, to_date(#{startDate},'yyyymmdd'), food_nm))) AS breakfast1,
+            MAX(DECODE(MOD(carte_time,7), 2, DECODE(carte_date, to_date(#{startDate},'yyyymmdd'), food_nm))) AS lunch1,
+            MAX(DECODE(MOD(carte_time,7), 3, DECODE(carte_date, to_date(#{startDate},'yyyymmdd'), food_nm))) AS dinner1,
+            MAX(DECODE(MOD(carte_time,7), 1, DECODE(carte_date, to_date(#{middleDate},'yyyymmdd'), food_nm))) AS breakfast2,
+            MAX(DECODE(MOD(carte_time,7), 2, DECODE(carte_date, to_date(#{middleDate},'yyyymmdd'), food_nm))) AS lunch2,
+            MAX(DECODE(MOD(carte_time,7), 3, DECODE(carte_date, to_date(#{middleDate},'yyyymmdd'), food_nm))) AS dinner2,
+            MAX(DECODE(MOD(carte_time,7), 1, DECODE(carte_date, to_date(#{endDate},'yyyymmdd'), food_nm))) AS breakfast3,
+            MAX(DECODE(MOD(carte_time,7), 2, DECODE(carte_date, to_date(#{endDate},'yyyymmdd'), food_nm))) AS lunch3,
+            MAX(DECODE(MOD(carte_time,7), 3, DECODE(carte_date, to_date(#{endDate},'yyyymmdd'), food_nm))) AS dinner3
+        FROM
+            (SELECT
+                carte_time,
+                carte_date,
+                food_nm,
+                ROW_NUMBER() OVER(ORDER BY carte_time) asd
+            FROM
+                SN_CARTE c,
+                SN_FOOD f
+            WHERE
+                C.CARTE_DATE = to_date(#{startDate},'yyyymmdd')
+            AND
+                F.FOOD_CD=C.FOOD_CD
+            AND
+                carte_time='1'
+            AND
+                C.MENU_GRP_CD=#{menuGrpCd}
+
+            UNION ALL
+
+            SELECT
+                carte_time,
+                carte_date,
+                food_nm,
+                ROW_NUMBER() OVER(ORDER BY carte_time) asd
+            FROM
+                SN_CARTE c,
+                SN_FOOD f
+            WHERE
+                C.CARTE_DATE = to_date(#{startDate},'yyyymmdd')
+            AND
+                F.FOOD_CD=C.FOOD_CD
+            AND
+                carte_time='2'
+            AND
+                C.MENU_GRP_CD=#{menuGrpCd}
+
+            UNION ALL
+
+            SELECT
+                carte_time,
+                carte_date,
+                food_nm,
+                ROW_NUMBER() OVER(ORDER BY carte_time) asd
+            FROM
+                SN_CARTE c,
+                SN_FOOD f
+            WHERE
+                C.CARTE_DATE = to_date(#{startDate},'yyyymmdd')
+            AND
+                F.FOOD_CD=C.FOOD_CD
+            AND
+                carte_time='3'
+            AND
+                C.MENU_GRP_CD=#{menuGrpCd}
+
+            UNION ALL
+
+            SELECT
+                carte_time,
+                carte_date,
+                food_nm,
+                ROW_NUMBER() OVER(ORDER BY carte_time) asd
+            FROM
+                SN_CARTE c,
+                SN_FOOD f
+            WHERE
+                C.CARTE_DATE = to_date(#{middleDate},'yyyymmdd')
+            AND
+                F.FOOD_CD=C.FOOD_CD
+            AND
+                carte_time='1'
+            AND
+                C.MENU_GRP_CD=#{menuGrpCd}
+
+            UNION ALL
+
+            SELECT
+                carte_time,
+                carte_date,
+                food_nm,
+                ROW_NUMBER() OVER(ORDER BY carte_time) asd
+            FROM
+                SN_CARTE c,
+                SN_FOOD f
+            WHERE
+                C.CARTE_DATE = to_date(#{middleDate},'yyyymmdd')
+            AND
+                F.FOOD_CD=C.FOOD_CD
+            AND
+                carte_time='2'
+            AND
+                C.MENU_GRP_CD=#{menuGrpCd}
+
+            UNION ALL
+
+            SELECT
+                carte_time,
+                carte_date,
+                food_nm,
+                ROW_NUMBER() OVER(ORDER BY carte_time) asd
+            FROM
+                SN_CARTE c,
+                SN_FOOD f
+            WHERE
+                C.CARTE_DATE = to_date(#{middleDate},'yyyymmdd')
+            AND
+                F.FOOD_CD=C.FOOD_CD
+            AND
+                carte_time='3'
+            AND
+                C.MENU_GRP_CD=#{menuGrpCd}
+
+            UNION ALL
+
+            SELECT
+                carte_time,
+                carte_date,
+                food_nm,
+                ROW_NUMBER() OVER(ORDER BY carte_time) asd
+            FROM
+                SN_CARTE c,
+                SN_FOOD f
+            WHERE
+                C.CARTE_DATE = to_date(#{endDate},'yyyymmdd')
+            AND
+                F.FOOD_CD=C.FOOD_CD
+            AND
+                carte_time='1'
+            AND
+                C.MENU_GRP_CD=#{menuGrpCd}
+
+            UNION ALL
+
+            SELECT
+                carte_time,
+                carte_date,
+                food_nm,
+                ROW_NUMBER() OVER(ORDER BY carte_time) asd
+            FROM
+                SN_CARTE c,
+                SN_FOOD f
+            WHERE
+                C.CARTE_DATE = to_date(#{endDate},'yyyymmdd')
+            AND
+                F.FOOD_CD=C.FOOD_CD
+            AND
+                carte_time='2'
+            AND
+                C.MENU_GRP_CD=#{menuGrpCd}
+
+            UNION ALL
+
+            SELECT
+                carte_time,
+                carte_date,
+                food_nm,
+                ROW_NUMBER() OVER(ORDER BY carte_time) asd
+            FROM
+                SN_CARTE c,
+                SN_FOOD f
+            WHERE
+                C.CARTE_DATE = to_date(#{endDate},'yyyymmdd')
+            AND
+                F.FOOD_CD=C.FOOD_CD
+            AND
+                carte_time='3'
+            AND
+                C.MENU_GRP_CD=#{menuGrpCd}
+            )
+        GROUP BY asd
+ </select>
+
+   <insert id="insertCarte">
+        INSERT INTO SN_CARTE(
+            MENU_GRP_CD,
+            CARTE_DATE,
+            CARTE_TIME,
+            FOOD_CD
+        )
+        VALUES
+        (
+            #{menuGrpCd},
+            #{carteDate},
+            #{carteTime},
+            #{foodCd}
+        )
+    </insert>
+
+    <delete id="deleteCarte">
+        DELETE FROM SN_CARTE
+        WHERE MENU_GRP_CD = #{menuGrpCd}
+        AND CARTE_DATE = #{carteDate}
+        AND CARTE_TIME = #{carteTime}
+        AND FOOD_CD = #{foodCd}
+    </delete>
+ </mapper>

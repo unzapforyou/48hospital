@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.hrs.salBase.dao.HobongDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+
+	<select id="findJobList" flushCache="false" useCache="true" resultType="JobBean">
+		SELECT detail_code_name as detailCodeName,
+				   detail_code as detailCode
+		  FROM CM_CODE
+	 	WHERE code='GP074'
+	</select>
+
+ 	<select id="findHobongList" flushCache="false" useCache="true" resultType="HobongBean">
+		SELECT ht.BASIC_SAL AS basicSal,
+	       NVL(ht.GUBHO_ALLOWANCE,0) AS gubhoAllowance,
+	       NVL(ht.OVER_WORK_ALLOWANCE,0) AS overWorkAllowance,
+	       ht.hobong,
+	       ht.APPLY_START_DATE AS applyStartDate,
+	       ht.POSITION_CD AS positionCd
+	    FROM CM_CODE cd,
+	       HS_HOBONG_TABLE ht
+	    WHERE cd.DETAIL_CODE_NAME = ht.POSITION_CD
+	       AND ht.POSITION_CD = #{positionCd}
+	       AND cd.CODE = 'GP074'
+	   ORDER BY TO_NUMBER(ht.HOBONG)
+  	</select>
+
+   <select id="findHobongHistoryList" flushCache="false" useCache="true" resultType="HobongHistoryBean">
+		SELECT hh.APPLY_END_DATE AS applyEndDate,
+	      		   hh.APPLY_START_DATE AS applyStartDate
+	    FROM HS_HOBONG_HISTORY hh
+	    WHERE hh.DETAIL_CODE = #{detailCode}
+   </select>
+
+   	<!-- hobongProcess -->
+	<insert id="insertHobong" parameterType="HobongBean">
+		INSERT INTO HS_HOBONG_TABLE
+			VALUES(
+				#{positionCd},
+				#{hobong},
+				#{basicSal},
+				#{gubhoAllowance},
+				#{overWorkAllowance},
+				#{applyStartDate}
+			)
+	</insert>
+
+	<update id="updateHobong" parameterType="HobongBean">
+		UPDATE HS_HOBONG_TABLE SET
+			BASIC_SAL=#{basicSal},
+			GUBHO_ALLOWANCE=#{gubhoAllowance},
+			OVER_WORK_ALLOWANCE=#{overWorkAllowance}
+	    WHERE APPLY_START_DATE=#{applyStartDate}
+			    AND POSITION_CD=#{positionCd}
+			    AND HOBONG=#{hobong}
+	</update>
+
+	<delete id="deleteHobong" parameterType="HobongBean">
+		DELETE HS_HOBONG_TABLE
+			   WHERE APPLY_START_DATE=#{applyStartDate}
+			    	AND POSITION_CD=#{positionCd}
+			    	AND HOBONG=#{hobong}
+	</delete>
+
+ 	<!-- hobongHisProcess -->
+ 	<insert id="insertHobongHis" parameterType="HobongHistoryBean">
+		INSERT INTO HS_HOBONG_HISTORY
+			VALUES(
+				#{applyStartDate},
+				#{applyEndDate},
+				#{detailCode}
+			)
+	</insert>
+
+	<update id="updateHobongHis" parameterType="HobongHistoryBean">
+		UPDATE HS_HOBONG_HISTORY SET
+			APPLY_END_DATE=#{applyEndDate},
+			DETAIL_CODE=##{detailCode}
+	    WHERE APPLY_START_DATE=#{applyStartDate}
+	</update>
+
+	<delete id="deleteHobongHis" parameterType="HobongHistoryBean">
+		DELETE HS_HOBONG_HISTORY
+			   		WHERE APPLY_START_DATE=#{applyStartDate}
+	</delete> 
+	
+</mapper>

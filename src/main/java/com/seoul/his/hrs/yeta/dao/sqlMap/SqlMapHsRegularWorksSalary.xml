@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.hrs.yeta.dao.HsRegularWorksSalaryDAO">
+	<select id="selectHsRegularWorksSalaryList" resultType="hsRegularWorksSalaryBean">
+		SELECT * FROM HS_REGULAR_WORKS_SALARY
+	</select>
+	<insert id="insertHsRegularWorksSalary" parameterType="hsRegularWorksSalaryBean">
+		INSERT INTO HS_REGULAR_WORKS_SALARY
+		VALUES(
+		#{empNm}
+		,#{taxationTaxSum}
+		,#{compShare}
+		,#{aap}
+		,#{belongYm}
+		,#{dline}
+		,#{empNo}
+		,#{jobClass}
+		,#{freeTaxAmt}
+		,#{calYn}
+		)
+	</insert>
+	<update id="updateHsRegularWorksSalary" parameterType="hsRegularWorksSalaryBean">
+		UPDATE HS_REGULAR_WORKS_SALARY SET
+		EMP_NM=#{empNm}
+		,TAXATION_TAX_SUM=#{taxationTaxSum}
+		,COMP_SHARE=#{compShare}
+		,AAP=#{aap}
+		,DLINE=#{dline}
+		,JOB_CLASS=#{jobClass}
+		,FREE_TAX_AMT=#{freeTaxAmt}
+		,CAL_YN=#{calYn}
+		WHERE BELONG_YM=#{belongYm} AND EMP_NO=#{empNo}
+	</update>
+	<delete id="deleteHsRegularWorksSalary" parameterType="hsRegularWorksSalaryBean">
+		DELETE FROM HS_REGULAR_WORKS_SALARY
+		WHERE BELONG_YM=#{belongYm} AND EMP_NO=#{empNo}
+	</delete>
+</mapper>

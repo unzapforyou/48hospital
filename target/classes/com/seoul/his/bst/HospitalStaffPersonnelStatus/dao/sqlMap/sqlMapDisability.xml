@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.seoul.his.bst.HospitalStaffPersonnelStatus.dao.DisabilityDAO1">
+
+	<select id="findDisabilityList" resultType="DisabilityBean">
+		SELECT
+		EMP_NO AS empNo,							<!-- 사원번호 -->
+		DISABILITY_APV_DAY AS disabilityApvDay,     <!-- 장애인정일 -->
+		DISABILITY_APV_DIV AS disabilityApvDiv,		<!-- 장애인정 구분 -->
+		DISABILITY_TYPE AS disabilityType,          <!-- 장애유형 -->
+		DISABILITY_GRADE AS disabilityGrade,	    <!-- 장애등급 -->
+		INTENSIVE_YN AS intensiveYn,				<!-- 중증여부 -->
+		NOTE,									    <!-- 비고 -->
+		DISABILITY_SEQ AS disabilitySeq			    <!-- 장애시퀀스 -->
+		FROM HM_DISABILITY_INFO
+		where emp_no=#{empNo}						<!-- 사원번호 -->
+	</select>
+
+
+
+</mapper>

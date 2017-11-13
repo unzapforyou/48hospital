@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="his.log.demd.dao.GdsReturnHistDAO">
+	
+	<select id="selectGdsReturnHistList" resultType="GdsReturnHistBean">
+        SELECT * FROM LR_GDS_RETURN_HIST
+    </select>
+    <insert id="insertGdsReturnHist" parameterType="GdsReturnHistBean">
+        INSERT INTO LR_GDS_RETURN_HIST
+        VALUES(
+        #{gdsCd}
+        ,#{gdsNm}
+        ,#{unit}
+        ,#{qnt}
+        ,#{returnDate}
+        ,#{returnSeq}
+        ,#{returnHistSeq}
+        )
+    </insert>
+    <update id="updateGdsReturnHist" parameterType="GdsReturnHistBean">
+        UPDATE LR_GDS_RETURN_HIST SET
+        GDS_NM=#{gdsNm}
+        ,UNIT=#{unit}
+        ,QNT=#{qnt}
+        WHERE GDS_CD=#{gdsCd} AND RETURN_DATE=#{returnDate} AND RETURN_SEQ=#{returnSeq} AND RETURN_HIST_SEQ=#{returnHistSeq}
+    </update>
+    <delete id="deleteGdsReturnHist" parameterType="GdsReturnHistBean">
+        DELETE FROM LR_GDS_RETURN_HIST
+        WHERE GDS_CD=#{gdsCd} AND RETURN_DATE=#{returnDate} AND RETURN_SEQ=#{returnSeq} AND RETURN_HIST_SEQ=#{returnHistSeq}
+    </delete>
+</mapper>

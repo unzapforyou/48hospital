@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.acc.budget.dao.BudgMisaDAO">
+
+ 	<cache flushInterval="86400000" eviction="LRU" />
+
+ 	<resultMap type="BudgMisaBean" id="BudgMisa">
+     	<result column="CALC_REASON" property="calcReason"/>
+     	<result column="APP_DAY" property="appDay"/>
+     	<result column="SIGN_DIV" property="signDiv"/>
+     	<result column="misaNo" property="misaNo"/>
+     	<result column="accYear" property="accYear"/>
+     	<result column="APP_DEPT" property="appDept"/>
+     	<result column="DECI_DEPT" property="deciDept"/>
+     	<result column="DECI_DAY" property="deciDay"/>
+     	<result column="DECI_NOTE" property="deciNote"/>
+     	<collection property="budgMisaTagetList" column="{accYear=accYear,misaNo=misaNo}" select="com.seoul.his.acc.budget.dao.BudgMisaTagetDAO.selectBudgMisaTaget"  javaType="list"/>
+ 	</resultMap>
+
+ 	<select id="selectBudgMisaList" flushCache="false"  useCache="true" resultMap="BudgMisa">
+    	SELECT 	DECI_DEPT		AS deciDept
+		      	, DECI_NOTE		AS deciNote
+		      	, SIGN_DIV		AS signDiv
+		      	, APP_DEPT		AS appDept
+		      	, APP_DAY		AS appDay
+		      	, ACC_YEAR		AS accYear
+		      	, MISA_NO		AS misaNo
+		      	, CALC_REASON	AS calcReason
+		      	, DECI_DAY		AS deciDay
+		FROM AB_BUDG_MISA
+		WHERE 1=1
+		<if test="accYear != null">
+	   		AND ACC_YEAR = #{accYear}
+		</if>
+		<if test="signDiv != null">
+	   		AND SIGN_DIV = #{signDiv}
+		</if>
+		<if test="startDate != null and endDate == null">
+	    	AND APP_DAY BETWEEN #{startDate} AND sysdate
+		</if>
+		<if test="startDate != null and endDate != null">
+	    	AND APP_DAY BETWEEN #{startDate} AND #{endDate}
+		</if>
+		ORDER BY MISA_NO
+ 	</select>
+
+  	<select id="getMisaNo" flushCache="false"  useCache="true" resultType="string">
+		SELECT AB_MISA_SEQ.NEXTVAL FROM DUAL
+  	</select>
+
+	<insert id="insertBudgMisa">
+    	insert into AB_BUDG_MISA(
+                DECI_DEPT
+                , DECI_NOTE
+                , SIGN_DIV
+                , APP_DEPT
+                , APP_DAY
+                , ACC_YEAR
+                , MISA_NO
+                , CALC_REASON
+                , DECI_DAY
+    	)
+    	values(	#{deciDept}
+           		, #{deciNote}
+           		, #{signDiv}
+           		, #{appDept}
+           		, #{appDay}
+           		, #{accYear}
+           		, #{misaNo}
+           		, #{calcReason}
+           		, #{deciDay}
+    	)
+	</insert>
+	
+	<update id="updateBudgMisa">
+		UPDATE AB_BUDG_MISA SET
+	   			DECI_DEPT=#{deciDept}
+	   			, DECI_NOTE=#{deciNote}
+	   			, SIGN_DIV=#{signDiv}
+	  			, APP_DEPT=#{appDept}
+	   			, APP_DAY=#{appDay}
+	     		, CALC_REASON=#{calcReason}
+	   			, DECI_DAY=#{deciDay}
+	  	WHERE ACC_YEAR = #{accYear}
+   		AND MISA_NO = #{misaNo}
+	</update>
+	
+	<delete id="deleteBudgMisa">
+		DELETE FROM AB_BUDG_MISA
+    	WHERE ACC_YEAR = #{accYear} AND MISA_NO = #{misaNo}
+	</delete>
+
+ 	<select id="callDeciBudgMisa" statementType="CALLABLE" parameterType="map" resultType="map">
+     	{call PC_AB_DECI_BUDG_MISA (
+      		#{accYear, mode=IN, jdbcType=VARCHAR}
+      		, #{misaNo, mode=IN, jdbcType=VARCHAR}
+      		, #{deciDept, mode=IN, jdbcType=VARCHAR}
+      		, #{deciNote, mode=IN, jdbcType=VARCHAR}
+      		, #{errorCode, mode=OUT, jdbcType=VARCHAR}
+      		, #{errorMsg, mode=OUT, jdbcType=VARCHAR}
+     	) }
+ 	</select>
+</mapper>

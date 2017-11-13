@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.acc.budget.dao.BudgMisaTagetDAO">
+
+ 	<cache flushInterval="86400000" eviction="LRU" />
+ 	
+ 	<select id="selectBudgMisaTaget" resultType="BudgMisaTagetBean">
+      	SELECT 	A.MISA_NO,
+  			 	A.ACC_YEAR,
+	         	A.VARIATION_DIV,
+	         	A.BIMOK_CD,
+	         	A.VARIATION_AMOUNT,
+	         	B.BIMOK_NM,
+	         	A.BUDG_AMOUNT,
+	         	A.BUDG_BAL
+		FROM AB_BUDG_MISA_TAGET A
+		RIGHT OUTER JOIN (SELECT BIMOK_CD, BIMOK_NM
+	                      FROM AB_BUDG_BIMOK
+	                      WHERE ACC_YEAR = #{accYear}) B
+	  	ON A.BIMOK_CD = B.BIMOK_CD
+	  	WHERE A.ACC_YEAR = #{accYear}
+	 	AND A.MISA_NO = #{misaNo}
+ 	</select>
+ 	
+	<insert id="insertBudgMisaTaget">
+    	insert into AB_BUDG_MISA_TAGET(
+           		BIMOK_CD
+     			, VARIATION_DIV
+				, ACC_YEAR
+     			, MISA_NO
+      			, VARIATION_AMOUNT
+       			, BUDG_AMOUNT
+    			, BUDG_BAL
+    	)
+    	values(	#{bimokCd}
+           		, #{variationDiv}
+           		, #{accYear}
+           		, #{misaNo}
+           		, #{variationAmount}
+           		, #{budgAmount}
+           		, #{budgBal}
+    	)
+	</insert>
+
+	<delete id="deleteBudgMisaTaget">
+		DELETE FROM AB_BUDG_MISA_TAGET
+	    WHERE ACC_YEAR = #{accYear} AND MISA_NO = #{misaNo}  AND BIMOK_CD = #{bimokCd}
+	</delete>
+	
+	<delete id="deleteBudgMisaTagetCascade">
+		DELETE FROM AB_BUDG_MISA_TAGET
+	    WHERE ACC_YEAR = #{accYear} AND MISA_NO = #{misaNo}
+	</delete>
+	
+	<update id="updateBudgMisaTaget">
+		UPDATE AB_BUDG_MISA_TAGET SET
+	  			VARIATION_DIV=#{variationDiv},
+	    		VARIATION_AMOUNT=#{variationAmount},
+	      		BUDG_AMOUNT= #{budgAmount},
+	      		BUDG_BAL= #{budgBal}
+	  	WHERE BIMOK_CD = #{bimokCd}
+    		AND ACC_YEAR = #{accYear}
+      		AND MISA_NO = #{misaNo}
+	</update>
+</mapper>

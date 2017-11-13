@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.msv.sup.comprehensiveexam.dao.SynthesisCheckupReservationDAO">
+    <cache flushInterval="86400000" eviction="LRU" />
+    
+    <!-- 종합검진 예약관리 - 예약조회 -->
+	<select resultType="SynthesisCheckupReservationBean" flushCache="false" id="selectSynthesisCheckupReservationList">
+		SELECT R.RSVT_NO, R.PAT_NO, P.PAT_NM, P.RRN1, FN_WS_DECRYPT(P.RRN2) AS RRN2, P.AGE, P.GENDER, 
+		P.SMS_RECEIVE_NO AS SMS, RSVT_DATE, RSVT_TIME, TO_CHAR(TO_DATE(INSP_PLN_DATE,'YYYY-MM-DD'),'YYYYMMDD') AS INSP_PLN_DATE, 
+		INSP_PLN_TIME, APL_MAN, APL_MAN_TEL, RSHIP, R.PCK_CD AS PCK_CD, PCK.PCK_NM, BASIC_INSP_AMT, R.REDUC_CD, RD.REDUC_NM, 
+		R.REDUC_AMT, RSVT_AMT, BASIC_INSP_SUM_AMT, PAY_MAN, E.EMP_NM AS RSVT_RESP, MEMO, NVL(R.CANCEL_YN,'N') AS CANCEL_YN, 
+		CHO_INSP_AMT, INSP_SUM_AMT, RD.REDUC_NM, RECE_YN 
+		FROM SC_RSVT R, SC_REDUC RD, SC_PCK PCK, WS_PAT P, HM_EMP E 
+		<if test="receiptFlag != Y"> ,
+			SC_RECEIPT RC 
+		</if>
+			WHERE R.PAT_NO = P.PAT_NO AND R.RSVT_RESP = E.EMP_NO(+) AND R.REDUC_CD = RD.REDUC_CD(+) AND R.PCK_CD = PCK.PCK_CD(+) 
+		<if test="inspPlnDate != null"> 
+			AND TO_DATE(INSP_PLN_DATE,'YYYY-MM-DD') = TO_DATE(#{inspPlnDate},'YYYY-MM-DD') 
+		</if>
+		<if test="receiptFlag != Y"> 
+			AND NVL(R.CANCEL_YN,'N') = 'N' AND RC.RSVT_NO(+) = R.RSVT_NO AND (RC.CANCEL_YN = 'Y' OR APL_DATE IS NULL) 
+		</if>
+	</select>
+
+ 
+   
+     <!-- 종합검진 예약관리 - 새예약 -->
+     <select id="selectNewScrvNo" flushCache="false"  resultType="string">
+        SELECT
+            NVL(MAX(RSVT_NO)+1,
+            TO_CHAR(SYSDATE,'YYMMDD')||'001') AS rsvtNo
+        FROM 
+            SC_RSVT
+        WHERE 
+            RSVT_NO LIKE TO_CHAR(SYSDATE,'YYYYMMDD')||'%'
+     </select>
+     
+     <!-- 종합검진 접수, 예약관리 - 저장 -->
+     <update id="updateSynthesisCheckupReservation">
+         UPDATE SC_RSVT
+            SET PAT_NO=#{patNo},
+                RSVT_DATE=#{rsvtDate},
+                RSVT_AMT=#{rsvtAmt},
+                RSVT_NO=#{rsvtNo},
+                INSP_PLN_TIME=#{inspPlnTime},
+                PAY_MAN=#{payMan},
+                RSHIP=#{rship},
+                CHO_INSP_AMT=#{choInspAmt},
+                INSP_PLN_DATE=#{inspPlnDate},
+                APL_MAN_TEL=#{aplManTel},
+                MEMO=#{memo},
+                REDUC_AMT=#{reducAmt},
+                INSP_SUM_AMT=#{inspSumAmt},
+                PCK_CD=#{pckCd},
+                RSVT_TIME=#{rsvtTime},
+                BASIC_INSP_AMT=#{basicInspAmt},
+                BASIC_INSP_SUM_AMT=#{basicInspSumAmt},
+                REDUC_CD=#{reducCd},
+                APL_MAN=#{aplMan},
+                CANCEL_YN=#{cancelYn},
+                MOD_ID=#{userId},
+                MOD_IP=#{userIp},
+                MOD_DATE=TO_CHAR(SYSDATE,'YYYY-MM-DD')
+          WHERE RSVT_NO = #{rsvtNo}
+     </update>
+     
+     <update id="insertSynthesisCheckupReservation" >
+         
+        INSERT INTO SC_RSVT(PAT_NO,
+                RSVT_NO,
+                RSVT_DATE,
+                RSVT_AMT,
+                INSP_PLN_TIME,
+                RSVT_RESP,
+                PAY_MAN,
+                RSHIP,
+                CHO_INSP_AMT,
+                INSP_PLN_DATE,
+                APL_MAN_TEL,
+                MEMO,
+                REDUC_AMT,
+                INSP_SUM_AMT,
+                CANCEL_YN,
+                PCK_CD,
+                RSVT_TIME,
+                BASIC_INSP_AMT,
+                BASIC_INSP_SUM_AMT,
+                REDUC_CD,
+                APL_MAN,
+                REG_ID,
+                REG_IP,
+                REG_DATE
+                )
+        values(
+               #{patNo},
+               #{rsvtNo},
+               #{rsvtDate},
+               #{rsvtAmt},
+               #{inspPlnTime},
+               #{userId},
+               #{payMan},
+               #{rship},
+               #{choInspAmt},
+               #{inspPlnDate},
+               #{aplManTel},
+               #{memo},
+               #{reducAmt},
+               #{inspSumAmt},
+               #{cancelYn},
+               #{pckCd},
+               #{rsvtTime},
+               #{basicInspAmt},
+               #{basicInspSumAmt},
+               #{reducCd},
+               #{aplMan},
+               #{userId},
+               #{userIp},
+               TO_CHAR(SYSDATE,'YYYY-MM-DD')
+        )
+     </update>
+     
+    <!-- 종합검진 예약관리 - 예약취소 -->
+    <update id="updateCheckupReservationYN">
+         UPDATE SC_RSVT
+            SET CANCEL_YN=#{cancelYn},
+                MOD_ID=#{userId},
+                MOD_IP=#{userIp},
+                MOD_DATE=TO_CHAR(SYSDATE,'YYYY-MM-DD')
+          WHERE RSVT_NO = #{rsvtNo}
+     </update>
+     
+      <!-- 종합검진 접수 - 감면조회 -->
+	<select id="selectReducList" resultType="ReducBean" useCache="true" flushCache="false">
+		SELECT REDUC_CD, REDUC_NM, REDUC_AMT, RATE_AMT_DIV_CD, USE_YN FROM SC_REDUC 
+		<if test="reducCd != null"> 
+		WHERE REDUC_CD = #{reducCd} 
+		</if>
+	</select>
+</mapper>

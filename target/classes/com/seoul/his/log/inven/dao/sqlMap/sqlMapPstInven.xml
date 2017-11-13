@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.log.inven.dao.PstInvenDAO">
+
+  <cache flushInterval="86400000" eviction="LRU" />
+
+	<resultMap type="PstInvenBean" id="PstInvenResultMap">
+	<result property="whCd" column="WH_CD"/>
+	<result property="smGrpCd" column="SM_GRP_CD"/>
+	<result property="midGrpCd" column="MID_GRP_CD"/>
+	<result property="bigGrpCd" column="BIG_GRP_CD"/>
+	<result property="pstInvenQnt" column="PST_INVEN_QNT"/>
+	<result property="ioTypeCd" column="IO_TYPE_CD"/>
+	<result property="gdsCd" column="GDS_CD"/>
+	<result property="ioCfmtCd" column="IO_CFMT_CD"/>
+	<result property="gdsNm" column="GDS_NM"/>
+	<result property="unit" column="UNIT"/>
+	<result property="useDept" column="USE_DEPT"/>
+	</resultMap>
+
+
+	<select id="selectPstInvenList" resultType="PstInvenBean">
+	    SELECT
+	    *
+	      FROM LS_PST_INVEN
+		<trim prefix="WHERE" prefixOverrides="AND">
+        <if test="whCd != '' and whCd != null">
+           AND WH_CD = #{whCd}
+                </if>
+		<if test="gdsCd != '' and gdsCd != null">
+		   AND GDS_CD = #{gdsCd}
+		</if>
+	</trim>
+ 	</select>
+
+ 	<insert id="insertPstInvenList">
+	    INSERT INTO LS_PST_INVEN(
+	           		WH_CD
+                  , GDS_CD
+                  , MID_GRP_CD
+                  , SM_GRP_CD
+                  , PST_INVEN_QNT
+                  , BIG_GRP_CD
+                  , IO_CFMT_CD
+                  , IO_TYPE_CD
+                  , GDS_NM
+                  , UNIT
+                  , USE_DEPT
+	    )VALUES(#{whCd}
+                  , #{gdsCd}
+                  , #{midGrpCd}
+                  , #{smGrpCd}
+                  , #{pstInvenQnt}
+                  , #{bigGrpCd}
+                  , '1'
+                  , '02'
+                  , #{gdsNm}
+                  , #{unit}
+                  , #{useDept}
+                  )
+	</insert>
+
+        <update id="updatePstInvenList">
+	    UPDATE LS_PST_INVEN SET
+			  PST_INVEN_QNT=#{pstInvenQnt}
+			  USE_DEPT=#{useDept}
+	           PST_INVEN_QNT=#{pstInvenQnt}
+             WHERE WH_CD=#{whCd}
+               AND SM_GRP_CD=#{smGrpCd}
+               AND MID_GRP_CD=#{midGrpCd}
+               AND BIG_GRP_CD=#{bigGrpCd}
+               AND GDS_CD=#{gdsCd}
+
+	</update>
+
+	<delete id="deletePstInvenList">
+	 DELETE FROM LS_PST_INVEN
+	   WHERE WH_CD=#{whCd}
+               AND SM_GRP_CD=#{smGrpCd}
+               AND MID_GRP_CD=#{midGrpCd}
+               AND BIG_GRP_CD=#{bigGrpCd}
+               AND GDS_CD=#{gdsCd}
+	</delete>
+
+</mapper>

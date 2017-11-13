@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.hrs.salBase.dao.IncomeTaxSetDAO">
+	<cache flushInterval="86400000" eviction="LRU" />
+	 
+	<select id="findTaxChartList" resultType="IncomeTaxSetBean">
+		SELECT TAX_RANGE_FROM AS taxRangeFrom ,
+	       TAX_RATE AS taxRate,
+	       ACMLT_DDT AS acmltDdt,
+	       LIMIT_AMT AS limitAmt,
+	       ARTC_CD AS artcCd,
+	       TAX_RANGE_TO AS taxRangeTo,
+	       BELONG_YEAR AS belongYear,
+	       SEQ AS seq
+	 	FROM HS_TAX_CHART
+	 	WHERE BELONG_YEAR=#{year}
+    </select>
+    
+    <select id="findDeduChartList" resultType="DeduChartBean">
+        SELECT
+	    	DIV as division,
+			DEDUCT_AMT as deductAmt,
+			ARTC_CD as artcCd,
+			BELONG_YEAR as belongYear,
+			SEQ
+		FROM HS_DEDUCTION_CHART
+	    WHERE BELONG_YEAR=#{year}
+    </select>
+    
+    <insert id="insertTaxChart">
+        INSERT INTO HS_TAX_CHART(
+            BELONG_YEAR, 	
+            TAX_RANGE_FROM,	
+            TAX_RATE, 	  	
+            ACMLT_DDT, 		
+            LIMIT_AMT,   	
+            ARTC_CD, 	 	
+            TAX_RANGE_TO, 	
+            SEQ 			
+        )VALUES(
+            #{belongYear},    
+            #{taxRangeFrom}, 
+            #{taxRate},      
+            #{acmltDdt},     
+            #{limitAmt},     
+            #{artcCd},       
+            #{taxRangeTo},   
+      	    #{seq}    
+         )    
+    </insert>
+    
+    <insert id="insertDeductionChart">
+        INSERT INTO HS_DEDUCTION_CHART (
+            BELONG_YEAR, 
+            DIV,			
+            DEDUCT_AMT, 	
+            ARTC_CD, 	
+            SEQ 		
+        )VALUES(
+            #{belongYear},  
+            #{division},   
+            #{deductAmt},  
+            #{artcCd},     
+            #{seq}     
+         ) 	    
+    </insert>
+    
+    <update id="updateTaxChart">
+        UPDATE HS_TAX_CHART 
+        SET
+			TAX_RANGE_FROM		= #{taxRangeFrom},
+			TAX_RATE 	  		= #{taxRate},
+			ACMLT_DDT 		  	= #{acmltDdt},
+			LIMIT_AMT   		= #{limitAmt},
+			ARTC_CD 	 	 	= #{artcCd},
+			TAX_RANGE_TO 		= #{taxRangeTo},
+			SEQ 			  	= #{seq}
+	    WHERE BELONG_YEAR 	  	= #{belongYear}
+    </update>
+    
+    <update id="updateDeductionChart">
+        UPDATE HS_DEDUCTION_CHART 
+        SET
+			DIV					= #{division},
+			DEDUCT_AMT 	  		= #{deductAmt},
+			ARTC_CD 		  	= #{artcCd},
+			SEQ 			  	= #{seq}
+	    WHERE BELONG_YEAR 	  	= #{belongYear}
+    </update>
+
+    <select id="setTaxDeduCopy" statementType="CALLABLE">
+        CALL PC_HS_SALBASE_TAX_DEDU_COPY(
+         	#{year, mode=IN, jdbcType=INTEGER, javaType=int}
+        )
+    </select>
+     
+</mapper>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seoul.his.acc.budget.dao.BudgUseDeptDAO">
+
+	<cache flushInterval="86400000" eviction="LRU" />
+	
+	<resultMap type="BudgUseDeptBean" id="budgUseDept">
+		<result column="bimokCd" property="bimokCd"/>
+		<result column="useDeptNm" property="useDeptNm"/>
+		<result column="acntRespNm" property="acntRespNm"/>
+	    <result column="acntRespYn" property="acntRespYn"/>
+	    <result column="accYear" property="accYear"/>
+	    <result column="useDeptCd" property="useDeptCd"/>
+ 	</resultMap>
+ 	
+	<select id="selectBudgUseDept" flushCache="false"  useCache="true" resultType="BudgUseDeptBean">
+		SELECT 	BIMOK_CD		AS bimokCd
+				, USE_DEPT_NM	AS useDeptNm
+				, ACNT_RESP_NM	AS acntRespNm
+				, ACNT_RESP_YN	AS acntRespYn
+		      	, ACC_YEAR		AS accYear
+		      	, USE_DEPT_CD	AS useDeptCd
+		FROM AB_BUDG_USE_DEPT
+		WHERE 1=1
+		<if test="accYear != null">
+		   	AND ACC_YEAR = #{accYear}
+		</if>
+		<if test="bimokCd != null">
+		   	AND BIMOK_CD = #{bimokCd}
+		</if>
+	</select>
+	
+	<insert id="insertBudgUseDept">
+	    insert into AB_BUDG_USE_DEPT(
+	                   BIMOK_CD,
+	                   USE_DEPT_NM,
+	                   ACNT_RESP_NM,
+	                   ACNT_RESP_YN,
+	                   ACC_YEAR,
+	                   USE_DEPT_CD
+	    )
+	    values(
+	           #{bimokCd},
+	           #{useDeptNm},
+	           #{acntRespNm},
+	           #{acntRespYn},
+	           #{accYear},
+	           #{useDeptCd}
+	    )
+	</insert>
+	
+	<update id="updateBudgUseDept">
+		UPDATE AB_BUDG_USE_DEPT SET
+		             USE_DEPT_NM=#{useDeptNm},
+		             ACNT_RESP_NM=#{acntRespNm},
+		             ACNT_RESP_YN=#{acntRespYn},
+		             USE_DEPT_CD=#{useDeptCd}
+		WHERE BIMOK_CD = #{bimokCd}
+	    	AND ACC_YEAR = #{accYear}
+	</update>
+	
+	<delete id="deleteBudgUseDept">
+		DELETE FROM AB_BUDG_USE_DEPT
+	    WHERE ACC_YEAR = #{accYear}
+	    AND BIMOK_CD = #{bimokCd}
+	    AND USE_DEPT_CD = #{useDeptCd}
+	</delete>
+</mapper>

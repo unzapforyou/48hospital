@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.seoul.his.log.base.dao.CustDAO">
+    <cache flushInterval="86400000" eviction="LRU" />
+    <resultMap type="custBean" id="selectCustBeanResultMap">
+        <result property="custCd"   column="CUST_CD" />
+        <result property="custNm"   column="CUST_NM" />
+        <result property="adptDt"   column="ADPT_DT" />
+        <result property="bussNo"   column="BUSS_NO" />
+        <result property="zipCd"    column="ZIP_CD" />
+        <result property="addr"     column="ADDR" />
+        <result property="telNo"    column="TEL_NO" />
+        <result property="faxNo"    column="FAX_NO" />
+        <result property="bankCd"   column="BANK_CD" />
+        <result property="accNo"    column="ACC_NO" />
+        <result property="busCtgNm" column="BUS_CTG_NM" />
+        <result property="busShpNm" column="BUS_SHP_NM" />
+        <result property="prsdntNm" column="PRSDNT_NM" />
+        <result property="resNo"    column="RES_NO" />
+        <result property="resNo"    column="DPSTR" />
+        <result property="useYn"    column="USE_YN" />
+        <result property="gpUseYn"  column="GP_USE_YN" />
+        <result property="gdUseYn"  column="GD_USE_YN" />
+        <result property="cardYn"   column="CARD_YN" />
+        <result property="riUseYn"  column="RI_USE_YN" />
+        <result property="hospCls"  column="HOSP_CLS" />
+    </resultMap>
+
+    <select id="selectBindCustCdList" flushCache="false" useCache="true" resultType="OutLogCdBean">
+        SELECT 
+            DISTINCT(CUST_CD) AS code
+          , CUST_NM AS value
+        FROM 
+            LC_CUST
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="code != '' and code != null">
+                AND CUST_CD LIKE '%'||#{code}||'%'
+            </if>
+            <if test="cdNm != '' and cdNm != null">
+                AND CUST_NM LIKE '%'||#{cdNm}||'%'
+            </if>
+        </trim>
+        ORDER BY
+            CUST_CD
+    </select>
+
+    <select id="selectCustList" flushCache="false" useCache="true" resultType="CustBean">
+        SELECT
+            *
+        FROM
+            LC_CUST
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="custCd != '' and custCd != null">
+                AND CUST_CD LIKE '%'||#{custCd}||'%'
+            </if>
+            <if test="custNm != '' and custNm != null">
+                AND CUST_NM LIKE '%'||#{custNm}||'%'
+            </if>
+        </trim>
+        ORDER BY
+            CUST_CD
+    </select>
+
+    <insert id="insertCust" flushCache="false">
+        INSERT INTO
+            LC_CUST (
+                CUST_CD
+              , CUST_NM
+              , ADPT_DT
+              , BUSS_NO
+              , ZIP_CD
+              , ADDR
+              , TEL_NO
+              , FAX_NO
+              , BANK_CD
+              , ACC_NO
+              , BUS_CTG_NM
+              , BUS_SHP_NM
+              , PRSDNT_NM
+              , RES_NO
+              , DPSTR
+              , USE_YN
+              , GP_USE_YN
+              , GD_USE_YN
+              , CARD_YN
+              , RI_USE_YN
+              , HOSP_CLS
+            )
+        VALUES (
+            #{custCd}
+          , #{custNm}
+          , #{adptDt}
+          , #{bussNo}
+          , #{zipCd}
+          , #{addr}
+          , #{telNo}
+          , #{faxNo}
+          , #{bankCd}
+          , #{accNo}
+          , #{busCtgNm}
+          , #{busShpNm}
+          , #{prsdntNm}
+          , #{resNo}
+          , #{dpstr}
+          , #{useYn}
+          , #{gpUseYn}
+          , #{gdUseYn}
+          , #{cardYn}
+          , #{riUseYn}
+          , #{hospCls}
+        )
+    </insert>
+
+    <update id="updateCust" flushCache="false">
+        UPDATE
+            LC_CUST
+        SET 
+            CUST_NM     = #{custNm}
+          , ADPT_DT     = #{adptDt}
+          , BUSS_NO     = #{bussNo}
+          , ZIP_CD      = #{zipCd}
+          , ADDR        = #{addr}
+          , TEL_NO      = #{telNo}
+          , FAX_NO      = #{faxNo}
+          , BANK_CD     = #{bankCd}
+          , ACC_NO      = #{accNo}
+          , BUS_CTG_NM  = #{busCtgNm}
+          , BUS_SHP_NM  = #{busShpNm}
+          , PRSDNT_NM   = #{prsdntNm}
+          , RES_NO      = #{resNo}
+          , DPSTR       = #{dpstr}
+          , USE_YN      = #{useYn}
+          , GP_USE_YN   = #{gpUseYn}
+          , GD_USE_YN   = #{gdUseYn}
+          , CARD_YN     = #{cardYn}
+          , RI_USE_YN   = #{riUseYn}
+          , HOSP_CLS    = #{hospCls}
+        WHERE
+            CUST_CD     = #{custCd}
+    </update>
+    
+    <update id="upsertCust" flushCache="false">
+        MERGE INTO
+            LC_CUST c
+        USING DUAL ON (c.CUST_CD = #{custCd})
+        WHEN MATCHED THEN
+            UPDATE SET
+                c.CUST_NM     = #{custNm}
+              , c.ADPT_DT     = #{adptDt}
+              , c.BUSS_NO     = #{bussNo}
+              , c.ZIP_CD      = #{zipCd}
+              , c.ADDR        = #{addr}
+              , c.TEL_NO      = #{telNo}
+              , c.FAX_NO      = #{faxNo}
+              , c.BANK_CD     = #{bankCd}
+              , c.ACC_NO      = #{accNo}
+              , c.BUS_CTG_NM  = #{busCtgNm}
+              , c.BUS_SHP_NM  = #{busShpNm}
+              , c.PRSDNT_NM   = #{prsdntNm}
+              , c.RES_NO      = #{resNo}
+              , c.DPSTR       = #{dpstr}
+              , c.USE_YN      = #{useYn}
+              , c.GP_USE_YN   = #{gpUseYn}
+              , c.GD_USE_YN   = #{gdUseYn}
+              , c.CARD_YN     = #{cardYn}
+              , c.RI_USE_YN   = #{riUseYn}
+              , c.HOSP_CLS    = #{hospCls}
+        WHEN NOT MATCHED THEN
+            INSERT
+                 (
+                    CUST_CD
+                  , CUST_NM
+                  , ADPT_DT
+                  , BUSS_NO
+                  , ZIP_CD
+                  , ADDR
+                  , TEL_NO
+                  , FAX_NO
+                  , BANK_CD
+                  , ACC_NO
+                  , BUS_CTG_NM
+                  , BUS_SHP_NM
+                  , PRSDNT_NM
+                  , RES_NO
+                  , DPSTR
+                  , USE_YN
+                  , GP_USE_YN
+                  , GD_USE_YN
+                  , CARD_YN
+                  , RI_USE_YN
+                  , HOSP_CLS
+                )
+            VALUES (
+                #{custCd}
+              , #{custNm}
+              , #{adptDt}
+              , #{bussNo}
+              , #{zipCd}
+              , #{addr}
+              , #{telNo}
+              , #{faxNo}
+              , #{bankCd}
+              , #{accNo}
+              , #{busCtgNm}
+              , #{busShpNm}
+              , #{prsdntNm}
+              , #{resNo}
+              , #{dpstr}
+              , #{useYn}
+              , #{gpUseYn}
+              , #{gdUseYn}
+              , #{cardYn}
+              , #{riUseYn}
+              , #{hospCls}
+            )
+    </update>
+
+</mapper>
