@@ -54,7 +54,7 @@ public class GdsAnspController {
         dataSetBeanMapper.beansToDataset(outData, gdsAnspHistList, GdsAnspHistBean.class);
 
     }
-    
+  /*  
     //안씀
     @RequestMapping("log/demd/batchGdsAnspProcess.do")
     public void batchGdsAnspProcess(HttpServletRequest request,HttpServletResponse response) throws Exception {
@@ -64,13 +64,13 @@ public class GdsAnspController {
         List<GdsAnspBean> GdsAnspBeanList = dataSetBeanMapper.datasetToBeans(inData, GdsAnspBean.class);
         demdServiceFacade.batchGdsAnspProcess(GdsAnspBeanList);
     }
-
+*/
     //일괄처리
     @RequestMapping("log/demd/batchGdsAnspHistProcess.do")
     public void batchGdsAnspHistProcess(HttpServletRequest request,HttpServletResponse response) throws Exception {
         PlatformData inData = (PlatformData) request.getAttribute("inData");
         PlatformData outData = (PlatformData) request.getAttribute("outData");
-        
+        System.out.println("batch^^^^^^^^^^^^^^^^^^^^^^^^^^"+inData);
         List<GdsAnspBean> GdsAnspBeanList = dataSetBeanMapper.datasetToBeans(inData, GdsAnspBean.class);
         List<GdsAnspHistBean> GdsAnspHistBeanList = dataSetBeanMapper.datasetToBeans(inData, GdsAnspHistBean.class);
         
@@ -91,6 +91,7 @@ public class GdsAnspController {
                     }
                 }
                 anspBean.setGdsAnspHistList(tempGdsAnspHistList);
+                System.out.println(tempGdsAnspHistList);
             }
         }
         demdServiceFacade.batchGdsAnspHistProcess(GdsAnspBeanList,GdsAnspHistBeanList);
